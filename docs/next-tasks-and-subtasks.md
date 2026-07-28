@@ -86,12 +86,12 @@ Reference docs in the backend repo:
 
 ### Task 0.1 — Project architecture and conventions
 Subtasks:
-- Define folder structure under `src/` (e.g. `pages/`, `components/`, `features/`, `lib/`, `hooks/`, `types/`, `styles/`, `routes/`)
-- Keep environment config (`.env.example`) for `VITE_API_URL`
-- Configure **React Router** route modules (public vs authenticated layouts)
-- Configure **styled-components** (`ThemeProvider`, theme typing, babel plugin / Vite setup as required)
-- Add shared TypeScript types for the API envelope, pagination, and error codes
-- Establish lint/format conventions and keep README setup current against the backend
+- [x] **0.1.1** Define folder structure under `src/` (`pages/`, `components/`, `features/`, `lib/`, `hooks/`, `types/`, `styles/`, `routes/`, …)
+- [ ] **0.1.2** Keep environment config (`.env.example`) for `VITE_API_URL`
+- [ ] **0.1.3** Configure **React Router** route modules (public vs authenticated layouts)
+- [ ] **0.1.4** Configure **styled-components** (`ThemeProvider`, theme typing, Vite/babel setup as required)
+- [ ] **0.1.5** Add shared TypeScript types for the API envelope, pagination, and error codes
+- [ ] **0.1.6** Establish lint/format conventions and keep README setup current against the backend
 
 Acceptance criteria:
 - The Vite app boots with a clear module layout
@@ -355,7 +355,8 @@ Subtasks:
 ## Suggested execution checklist for the next implementation pass
 
 - [x] Scaffold Vite + React + React Router and `.env.example`
-- [ ] Expand `src/` feature/lib structure
+- [x] **0.1.1** Expand `src/` feature/lib folder structure
+- [ ] **0.1.2–0.1.6** Env helper docs, route shells, styled-components, API types, lint/README polish
 - [ ] Wire styled-components provider/theme
 - [ ] Initialize Storybook and document the first UI primitives with stories
 - [ ] Build typed client API layer with envelope unwrap + Bearer/`X-Organization-Id` support

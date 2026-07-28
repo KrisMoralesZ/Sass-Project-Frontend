@@ -26,6 +26,10 @@ App: [http://localhost:5173](http://localhost:5173)
 
 Set `VITE_API_URL` to the Nest backend origin (default `http://localhost:3000`).
 
+## Source layout
+
+See [`src/README.md`](./src/README.md) for the folder conventions (`components/`, `features/`, `pages/`, `routes/`, `lib/`, …).
+
 ## Scripts
 
 | Script | Purpose |
