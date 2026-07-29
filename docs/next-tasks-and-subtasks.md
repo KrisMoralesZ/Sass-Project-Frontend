@@ -88,7 +88,11 @@ Reference docs in the backend repo:
 Subtasks:
 - [x] **0.1.1** Define folder structure under `src/` (`pages/`, `components/`, `features/`, `lib/`, `hooks/`, `types/`, `styles/`, `routes/`, …)
 - [x] **0.1.2** Keep environment config (`.env.example`) for `VITE_API_URL`
-- [ ] **0.1.3** Configure **React Router** route modules (public vs authenticated layouts)
+- [x] **0.1.3** Configure **React Router** route modules (public vs authenticated layouts)
+  - [x] **0.1.3.1** Auth session stub for route guards
+  - [x] **0.1.3.2** Shared route paths + `RequireAuth` / `RequireGuest`
+  - [x] **0.1.3.3** `PublicLayout` and `AppLayout` shells
+  - [x] **0.1.3.4** Wire route tree + placeholder pages
 - [ ] **0.1.4** Configure **styled-components** (`ThemeProvider`, theme typing, Vite/babel setup as required)
 - [ ] **0.1.5** Add shared TypeScript types for the API envelope, pagination, and error codes
 - [ ] **0.1.6** Establish lint/format conventions and keep README setup current against the backend
@@ -356,12 +360,12 @@ Subtasks:
 
 - [x] Scaffold Vite + React + React Router and `.env.example`
 - [x] **0.1.1** Expand `src/` feature/lib folder structure
-- [ ] **0.1.2–0.1.6** Env helper docs, route shells, styled-components, API types, lint/README polish
+- [x] **0.1.3.1–0.1.3.4** Public vs authenticated React Router layout shells (split commits)
+- [ ] **0.1.4–0.1.6** styled-components, API types, lint/README polish
 - [ ] Wire styled-components provider/theme
 - [ ] Initialize Storybook and document the first UI primitives with stories
 - [ ] Build typed client API layer with envelope unwrap + Bearer/`X-Organization-Id` support
 - [ ] Implement auth session model, login, register, logout, refresh
-- [ ] Add unauthenticated + authenticated React Router layout shells
 - [ ] Build create-organization + org switcher flows
 - [ ] Wire profile settings and members directory
 - [ ] Add frontend permission helpers from the backend matrix
