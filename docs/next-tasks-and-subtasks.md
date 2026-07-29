@@ -87,7 +87,7 @@ Reference docs in the backend repo:
 ### Task 0.1 — Project architecture and conventions
 Subtasks:
 - [x] **0.1.1** Define folder structure under `src/` (`pages/`, `components/`, `features/`, `lib/`, `hooks/`, `types/`, `styles/`, `routes/`, …)
-- [ ] **0.1.2** Keep environment config (`.env.example`) for `VITE_API_URL`
+- [x] **0.1.2** Keep environment config (`.env.example`) for `VITE_API_URL`
 - [ ] **0.1.3** Configure **React Router** route modules (public vs authenticated layouts)
 - [ ] **0.1.4** Configure **styled-components** (`ThemeProvider`, theme typing, Vite/babel setup as required)
 - [ ] **0.1.5** Add shared TypeScript types for the API envelope, pagination, and error codes

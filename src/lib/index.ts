@@ -1,1 +1,1 @@
-export { getApiBaseUrl } from './env'
+export { getApiBaseUrl, getApiUrl } from './env'
