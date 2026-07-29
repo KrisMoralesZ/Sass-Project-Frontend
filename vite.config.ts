@@ -16,4 +16,17 @@ export default defineConfig({
   server: {
     port: 5173,
   },
+  // Vite 8 / Oxc transform for styled-components (display names + CSS minify).
+  // Replaces babel-plugin-styled-components for this toolchain.
+  oxc: {
+    plugins: {
+      styledComponents: {
+        displayName: true,
+        fileName: true,
+        minify: true,
+        // SPA only — no SSR stylesheet extraction needed.
+        ssr: false,
+      },
+    },
+  },
 })
