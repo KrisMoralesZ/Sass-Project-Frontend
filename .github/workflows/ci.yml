@@ -2,16 +2,17 @@ name: CI
 
 on:
   push:
-    branches: ["*"]
+    branches: ['*']
   pull_request:
-    branches: ["*"]
+    branches: ['*']
+
 jobs:
   build:
     runs-on: ubuntu-latest
 
     strategy:
       matrix:
-        node-version: [24.x]
+        node-version: [26.x]
 
     steps:
       - name: Checkout repository
@@ -25,6 +26,9 @@ jobs:
 
       - name: Install dependencies
         run: npm install
+
+      - name: Check formatting
+        run: npm run format:check
 
       - name: Run lint
         run: npm run lint

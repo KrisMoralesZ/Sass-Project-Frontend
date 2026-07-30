@@ -83,7 +83,7 @@ export const defaultTheme: AppTheme = {
   font: {
     family: {
       sans: "'Source Sans 3', 'Segoe UI', 'Helvetica Neue', sans-serif",
-      mono: "ui-monospace, SFMono-Regular, Menlo, Consolas, monospace",
+      mono: 'ui-monospace, SFMono-Regular, Menlo, Consolas, monospace',
     },
     size: {
       sm: '0.875rem',
