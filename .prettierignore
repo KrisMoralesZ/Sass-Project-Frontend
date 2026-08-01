@@ -3,3 +3,5 @@ node_modules
 coverage
 package-lock.json
 *.min.js
+storybook-static
+*storybook.log

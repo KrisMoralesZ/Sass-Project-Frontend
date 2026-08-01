@@ -126,12 +126,21 @@ Acceptance criteria:
 
 Subtasks:
 
-- Initialize **Storybook** with the Vite + React setup
-- Choose a visual direction and expand the styled-components theme tokens (avoid generic AI-default purple/cream looks)
-- Add base UI primitives (button, input, form field, dialog, toast, table/list)
-- Add a Storybook story for each shared primitive (default, disabled, loading, error, and key variants)
-- Restyle authenticated and unauthenticated layout shells with the design system
-- Add navigation placeholders for workspace areas (projects, boards, settings, members)
+- [x] **0.2.1** Initialize **Storybook** (Vite + React) and wire a `ThemeProvider` / `GlobalStyle` decorator so stories use the app theme
+- [ ] **0.2.2** Choose a clear visual direction and expand theme tokens as needed (avoid generic AI-default purple/cream looks; no full page restyle yet)
+- [ ] **0.2.3** Add **Button** primitive under `src/components/ui/` + Storybook stories (default, disabled, loading, key variants)
+- [ ] **0.2.4** Add **Input** + **FormField** primitives + stories (default, disabled, error, key variants)
+- [ ] **0.2.5** Add **Dialog** primitive + stories (open/closed, key variants)
+- [ ] **0.2.6** Add **Toast** primitive + stories (default, error/success if applicable, key variants)
+- [ ] **0.2.7** Add **Table** / list primitive + stories (default, empty, key variants)
+- [ ] **0.2.8** Restyle **PublicLayout** with the design system (guest shell only)
+- [ ] **0.2.9** Restyle **AppLayout** with the design system and workspace nav placeholders (projects, boards, settings, members)
+
+**0.2 out of scope** (later phases):
+
+- Real auth/API wiring on buttons/forms (Phase 1+)
+- Domain feature screens beyond layout shells
+- Pixel-perfect marketing/landing branding pass beyond the app shell
 
 Acceptance criteria:
 
