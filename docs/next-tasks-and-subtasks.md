@@ -127,7 +127,7 @@ Acceptance criteria:
 Subtasks:
 
 - [x] **0.2.1** Initialize **Storybook** (Vite + React) and wire a `ThemeProvider` / `GlobalStyle` decorator so stories use the app theme
-- [ ] **0.2.2** Choose a clear visual direction and expand theme tokens as needed (avoid generic AI-default purple/cream looks; no full page restyle yet)
+- [x] **0.2.2** Choose a clear visual direction and expand theme tokens as needed (avoid generic AI-default purple/cream looks; no full page restyle yet)
 - [ ] **0.2.3** Add **Button** primitive under `src/components/ui/` + Storybook stories (default, disabled, loading, key variants)
 - [ ] **0.2.4** Add **Input** + **FormField** primitives + stories (default, disabled, error, key variants)
 - [ ] **0.2.5** Add **Dialog** primitive + stories (open/closed, key variants)
