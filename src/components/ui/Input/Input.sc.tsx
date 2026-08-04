@@ -56,9 +56,7 @@ export const $Input = styled.input<{
     border-color: ${({ theme, $error }) =>
       $error ? theme.colors.danger : theme.colors.brand};
     box-shadow: ${({ theme, $error }) =>
-      $error
-        ? `0 0 0 3px ${theme.colors.dangerMuted}`
-        : theme.shadow.focus};
+      $error ? `0 0 0 3px ${theme.colors.dangerMuted}` : theme.shadow.focus};
   }
 
   &:disabled {

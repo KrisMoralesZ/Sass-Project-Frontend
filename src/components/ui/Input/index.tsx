@@ -3,8 +3,10 @@ import { $Input, type InputSize } from './Input.sc'
 
 export type { InputSize }
 
-export interface IInput
-  extends Omit<InputHTMLAttributes<HTMLInputElement>, 'size'> {
+export interface IInput extends Omit<
+  InputHTMLAttributes<HTMLInputElement>,
+  'size'
+> {
   size?: InputSize
   fullWidth?: boolean
   error?: boolean
