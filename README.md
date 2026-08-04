@@ -63,6 +63,8 @@ npm run build-storybook  # static build under storybook-static/
 
 Stories use `AppThemeProvider` (theme + global styles) via `.storybook/preview.tsx`.
 
+Visual direction and token reference: [`docs/design-direction.md`](./docs/design-direction.md) and **Foundation → Visual direction** in Storybook.
+
 ## Scripts
 
 | Script                    | Purpose                                  |
