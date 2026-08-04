@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import styled from 'styled-components'
-import { Button } from './Button'
+import Button from '.'
 
 const Row = styled.div`
   display: flex;

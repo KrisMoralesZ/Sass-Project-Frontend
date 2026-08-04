@@ -1,16 +1,7 @@
-import type { ButtonHTMLAttributes, ReactNode } from 'react'
 import styled, { css, keyframes } from 'styled-components'
 
 export type ButtonVariant = 'primary' | 'secondary' | 'ghost' | 'danger'
 export type ButtonSize = 'sm' | 'md'
-
-export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
-  variant?: ButtonVariant
-  size?: ButtonSize
-  loading?: boolean
-  fullWidth?: boolean
-  children?: ReactNode
-}
 
 const spin = keyframes`
   to {
@@ -74,7 +65,7 @@ const variantStyles = {
       filter: brightness(0.88);
     }
   `,
-}
+} satisfies Record<ButtonVariant, ReturnType<typeof css>>
 
 const sizeStyles = {
   sm: css`
@@ -87,9 +78,9 @@ const sizeStyles = {
     padding: ${({ theme }) => theme.space.sm} ${({ theme }) => theme.space.lg};
     font-size: ${({ theme }) => theme.font.size.sm};
   `,
-}
+} satisfies Record<ButtonSize, ReturnType<typeof css>>
 
-const StyledButton = styled.button<{
+export const $Button = styled.button<{
   $variant: ButtonVariant
   $size: ButtonSize
   $fullWidth: boolean
@@ -131,7 +122,7 @@ const StyledButton = styled.button<{
   }
 `
 
-const Spinner = styled.span`
+export const $Spinner = styled.span`
   width: 1em;
   height: 1em;
   flex-shrink: 0;
@@ -141,35 +132,6 @@ const Spinner = styled.span`
   animation: ${spin} 0.65s linear infinite;
 `
 
-const Label = styled.span<{ $loading: boolean }>`
+export const $Label = styled.span<{ $loading: boolean }>`
   opacity: ${({ $loading }) => ($loading ? 0.85 : 1)};
 `
-
-export function Button({
-  variant = 'primary',
-  size = 'md',
-  loading = false,
-  fullWidth = false,
-  disabled,
-  children,
-  type = 'button',
-  ...rest
-}: ButtonProps) {
-  const isDisabled = Boolean(disabled || loading)
-
-  return (
-    <StyledButton
-      $variant={variant}
-      $size={size}
-      $fullWidth={fullWidth}
-      $loading={loading}
-      type={type}
-      disabled={isDisabled}
-      aria-busy={loading || undefined}
-      {...rest}
-    >
-      {loading ? <Spinner aria-hidden="true" /> : null}
-      <Label $loading={loading}>{children}</Label>
-    </StyledButton>
-  )
-}
