@@ -93,9 +93,7 @@ export const Secondary: Story = {
     children: 'Cancel',
   },
   play: async ({ canvas }) => {
-    await expect(
-      canvas.getByRole('button', { name: 'Cancel' }),
-    ).toBeEnabled()
+    await expect(canvas.getByRole('button', { name: 'Cancel' })).toBeEnabled()
   },
 }
 
