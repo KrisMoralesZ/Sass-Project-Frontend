@@ -1,10 +1,10 @@
 /// <reference types="vitest/config" />
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
-import { defineConfig } from 'vite'
-import react from '@vitejs/plugin-react'
 import { storybookTest } from '@storybook/addon-vitest/vitest-plugin'
 import { playwright } from '@vitest/browser-playwright'
+import react from '@vitejs/plugin-react'
+import { defineConfig } from 'vite'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
@@ -37,13 +37,16 @@ export default defineConfig({
       {
         extends: true,
         plugins: [
-          // https://storybook.js.org/docs/next/writing-tests/integrations/vitest-addon
+          // https://storybook.js.org/docs/writing-tests/integrations/vitest-addon
           storybookTest({
             configDir: path.join(__dirname, '.storybook'),
+            // Starts Storybook in the background during watch mode for debugging.
+            storybookScript: 'npm run storybook -- --no-open',
           }),
         ],
         test: {
           name: 'storybook',
+          setupFiles: [path.join(__dirname, '.storybook/vitest.setup.ts')],
           browser: {
             enabled: true,
             headless: true,
