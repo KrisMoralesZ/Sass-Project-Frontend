@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
+import { expect, fn } from 'storybook/test'
 import styled from 'styled-components'
 import Input from '.'
 
@@ -39,6 +40,7 @@ const meta = {
     error: false,
     disabled: false,
     fullWidth: false,
+    onChange: fn(),
   },
 } satisfies Meta<typeof Input>
 
@@ -46,12 +48,29 @@ export default meta
 
 type Story = StoryObj<typeof meta>
 
-export const Default: Story = {}
+export const Default: Story = {
+  play: async ({ args, canvas, userEvent }) => {
+    const input = canvas.getByPlaceholderText('Workspace name')
+
+    await expect(input).toBeEnabled()
+    await expect(input).not.toHaveAttribute('aria-invalid')
+
+    await userEvent.type(input, 'Canopy')
+    await expect(input).toHaveValue('Canopy')
+    await expect(args.onChange).toHaveBeenCalled()
+  },
+}
 
 export const Disabled: Story = {
   args: {
     disabled: true,
     value: 'Acme Corp',
+  },
+  play: async ({ canvas }) => {
+    const input = canvas.getByDisplayValue('Acme Corp')
+
+    await expect(input).toBeDisabled()
+    await expect(input).toHaveValue('Acme Corp')
   },
 }
 
@@ -61,12 +80,21 @@ export const Error: Story = {
     defaultValue: 'taken-slug',
     placeholder: 'Slug',
   },
+  play: async ({ canvas }) => {
+    const input = canvas.getByDisplayValue('taken-slug')
+
+    await expect(input).toBeEnabled()
+    await expect(input).toHaveAttribute('aria-invalid', 'true')
+  },
 }
 
 export const Small: Story = {
   args: {
     size: 'sm',
     placeholder: 'Search…',
+  },
+  play: async ({ canvas }) => {
+    await expect(canvas.getByPlaceholderText('Search…')).toBeEnabled()
   },
 }
 
@@ -83,6 +111,15 @@ export const FullWidth: Story = {
       </Stack>
     ),
   ],
+  play: async ({ canvas }) => {
+    const input = canvas.getByPlaceholderText('Email address')
+    const parent = input.parentElement
+
+    await expect(input).toBeEnabled()
+    await expect(input).toHaveAttribute('type', 'email')
+    await expect(parent).not.toBeNull()
+    await expect(input.offsetWidth).toBe(parent!.clientWidth)
+  },
 }
 
 export const Password: Story = {
@@ -90,6 +127,13 @@ export const Password: Story = {
     type: 'password',
     placeholder: 'Password',
     autoComplete: 'current-password',
+  },
+  play: async ({ canvas, userEvent }) => {
+    const input = canvas.getByPlaceholderText('Password')
+
+    await expect(input).toHaveAttribute('type', 'password')
+    await userEvent.type(input, 'secret')
+    await expect(input).toHaveValue('secret')
   },
 }
 
@@ -100,6 +144,10 @@ export const Sizes: Story = {
       <Input size="md" placeholder="Medium" />
     </Row>
   ),
+  play: async ({ canvas }) => {
+    await expect(canvas.getByPlaceholderText('Small')).toBeVisible()
+    await expect(canvas.getByPlaceholderText('Medium')).toBeVisible()
+  },
 }
 
 export const States: Story = {
@@ -110,4 +158,12 @@ export const States: Story = {
       <Input error defaultValue="Invalid value" />
     </Stack>
   ),
+  play: async ({ canvas }) => {
+    await expect(canvas.getByPlaceholderText('Default')).toBeEnabled()
+    await expect(canvas.getByDisplayValue('Disabled')).toBeDisabled()
+
+    const invalid = canvas.getByDisplayValue('Invalid value')
+    await expect(invalid).toBeEnabled()
+    await expect(invalid).toHaveAttribute('aria-invalid', 'true')
+  },
 }
