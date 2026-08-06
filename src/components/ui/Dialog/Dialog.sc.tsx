@@ -1,21 +1,10 @@
 import styled, { keyframes } from 'styled-components'
 
-const fadeIn = keyframes`
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
-`
-
 const riseIn = keyframes`
   from {
-    opacity: 0;
     transform: translateY(0.5rem) scale(0.98);
   }
   to {
-    opacity: 1;
     transform: translateY(0) scale(1);
   }
 `
@@ -29,8 +18,6 @@ export const $Overlay = styled.div`
   justify-content: center;
   padding: ${({ theme }) => theme.space.md};
   background: ${({ theme }) => theme.colors.overlay};
-  animation: ${fadeIn} ${({ theme }) => theme.motion.duration.normal}
-    ${({ theme }) => theme.motion.easing.enter};
 `
 
 export const $Panel = styled.div`

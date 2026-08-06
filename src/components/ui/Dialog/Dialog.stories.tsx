@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { useState } from 'react'
-import { fn } from 'storybook/test'
+import { expect, fn, screen, userEvent, waitFor } from 'storybook/test'
 import Button from '../Button'
 import Dialog from '.'
 
@@ -34,11 +34,29 @@ export default meta
 
 type Story = StoryObj<typeof meta>
 
-export const Open: Story = {}
+async function findDialog(name: string) {
+  const dialog = await screen.findByRole('dialog', { name })
+  await waitFor(() => expect(dialog).toBeVisible())
+  return dialog
+}
+
+export const Open: Story = {
+  play: async ({ args }) => {
+    const dialog = await findDialog('Invite teammate')
+
+    await expect(dialog).toHaveAttribute('aria-modal', 'true')
+
+    await userEvent.click(screen.getByRole('button', { name: 'Close' }))
+    await expect(args.onClose).toHaveBeenCalledOnce()
+  },
+}
 
 export const Closed: Story = {
   args: {
     open: false,
+  },
+  play: async () => {
+    await expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
   },
 }
 
@@ -52,6 +70,15 @@ export const WithFooter: Story = {
         <Button>Save</Button>
       </>
     ),
+  },
+  play: async () => {
+    await findDialog('Save changes?')
+    await expect(
+      screen.getByRole('button', { name: 'Cancel' }),
+    ).toBeInTheDocument()
+    await expect(
+      screen.getByRole('button', { name: 'Save' }),
+    ).toBeInTheDocument()
   },
 }
 
@@ -67,6 +94,12 @@ export const DangerConfirm: Story = {
       </>
     ),
   },
+  play: async () => {
+    await findDialog('Delete workspace')
+    await expect(
+      screen.getByRole('button', { name: 'Delete workspace' }),
+    ).toBeInTheDocument()
+  },
 }
 
 export const NoOverlayDismiss: Story = {
@@ -75,6 +108,17 @@ export const NoOverlayDismiss: Story = {
     children: 'Finish the required steps before closing this dialog.',
     closeOnOverlayClick: false,
     footer: <Button>Continue</Button>,
+  },
+  play: async ({ args }) => {
+    const dialog = await findDialog('Complete setup')
+    const overlay = dialog.parentElement
+
+    await expect(overlay).not.toBeNull()
+    await userEvent.click(overlay!)
+    await expect(args.onClose).not.toHaveBeenCalled()
+
+    await userEvent.keyboard('{Escape}')
+    await expect(args.onClose).toHaveBeenCalledOnce()
   },
 }
 
@@ -90,6 +134,17 @@ export const Interactive: Story = {
         <Button onClick={() => setOpen(true)}>Open dialog</Button>
         <Dialog {...args} open={open} onClose={() => setOpen(false)} />
       </>
+    )
+  },
+  play: async ({ canvas }) => {
+    await expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
+
+    await userEvent.click(canvas.getByRole('button', { name: 'Open dialog' }))
+    await findDialog('Invite teammate')
+
+    await userEvent.click(screen.getByRole('button', { name: 'Close' }))
+    await waitFor(() =>
+      expect(screen.queryByRole('dialog')).not.toBeInTheDocument(),
     )
   },
 }
