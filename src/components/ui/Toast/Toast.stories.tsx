@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { useState } from 'react'
-import { fn } from 'storybook/test'
+import { expect, fn, screen, userEvent, waitFor } from 'storybook/test'
 import Button from '../Button'
 import Toast from '.'
 
@@ -37,13 +37,36 @@ export default meta
 
 type Story = StoryObj<typeof meta>
 
-export const Default: Story = {}
+async function findStatusToast() {
+  const toast = await screen.findByRole('status')
+  await waitFor(() => expect(toast).toBeVisible())
+  return toast
+}
+
+export const Default: Story = {
+  play: async ({ args }) => {
+    const toast = await findStatusToast()
+
+    await expect(toast).toHaveTextContent('Invite sent')
+    await expect(toast).toHaveAttribute('aria-live', 'polite')
+
+    await userEvent.click(screen.getByRole('button', { name: 'Dismiss' }))
+    await expect(args.onClose).toHaveBeenCalledOnce()
+  },
+}
 
 export const Success: Story = {
   args: {
     variant: 'success',
     title: 'Changes saved',
     children: 'Your workspace settings were updated.',
+  },
+  play: async () => {
+    const toast = await findStatusToast()
+    await expect(toast).toHaveTextContent('Changes saved')
+    await expect(toast).toHaveTextContent(
+      'Your workspace settings were updated.',
+    )
   },
 }
 
@@ -53,6 +76,13 @@ export const Error: Story = {
     title: 'Couldn’t save changes',
     children: 'Check your connection and try again.',
   },
+  play: async () => {
+    const toast = await screen.findByRole('alert')
+    await waitFor(() => expect(toast).toBeVisible())
+
+    await expect(toast).toHaveAttribute('aria-live', 'assertive')
+    await expect(toast).toHaveTextContent('Couldn’t save changes')
+  },
 }
 
 export const Warning: Story = {
@@ -60,6 +90,10 @@ export const Warning: Story = {
     variant: 'warning',
     title: 'Invite expires soon',
     children: 'This invite link will expire in 24 hours.',
+  },
+  play: async () => {
+    const toast = await findStatusToast()
+    await expect(toast).toHaveTextContent('Invite expires soon')
   },
 }
 
@@ -69,6 +103,10 @@ export const Info: Story = {
     title: 'New board created',
     children: 'You can start adding issues right away.',
   },
+  play: async () => {
+    const toast = await findStatusToast()
+    await expect(toast).toHaveTextContent('New board created')
+  },
 }
 
 export const TitleOnly: Story = {
@@ -76,11 +114,22 @@ export const TitleOnly: Story = {
     title: 'Copied to clipboard',
     children: undefined,
   },
+  play: async () => {
+    const toast = await findStatusToast()
+    await expect(toast).toHaveTextContent('Copied to clipboard')
+    await expect(toast).not.toHaveTextContent(
+      'Alex will get an email with a link to join the workspace.',
+    )
+  },
 }
 
 export const Closed: Story = {
   args: {
     open: false,
+  },
+  play: async () => {
+    await expect(screen.queryByRole('status')).not.toBeInTheDocument()
+    await expect(screen.queryByRole('alert')).not.toBeInTheDocument()
   },
 }
 
@@ -99,6 +148,18 @@ export const Interactive: Story = {
         <Button onClick={() => setOpen(true)}>Show toast</Button>
         <Toast {...args} open={open} onClose={() => setOpen(false)} />
       </>
+    )
+  },
+  play: async ({ canvas }) => {
+    await expect(screen.queryByRole('status')).not.toBeInTheDocument()
+
+    await userEvent.click(canvas.getByRole('button', { name: 'Show toast' }))
+    await findStatusToast()
+    await expect(screen.getByText('Member invited')).toBeVisible()
+
+    await userEvent.click(screen.getByRole('button', { name: 'Dismiss' }))
+    await waitFor(() =>
+      expect(screen.queryByRole('status')).not.toBeInTheDocument(),
     )
   },
 }

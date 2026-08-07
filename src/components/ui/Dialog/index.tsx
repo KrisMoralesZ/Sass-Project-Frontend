@@ -80,11 +80,7 @@ const Dialog: FC<IDialog> = ({
 
   return createPortal(
     <$Overlay onClick={onOverlayClick}>
-      <$Panel
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby={titleId}
-      >
+      <$Panel role="dialog" aria-modal="true" aria-labelledby={titleId}>
         <$Header>
           <$Title id={titleId}>{title}</$Title>
           <$CloseButton
