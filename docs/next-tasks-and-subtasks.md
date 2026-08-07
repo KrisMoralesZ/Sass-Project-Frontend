@@ -130,7 +130,7 @@ Subtasks:
 - [x] **0.2.2** Choose a clear visual direction and expand theme tokens as needed (avoid generic AI-default purple/cream looks; no full page restyle yet)
 - [x] **0.2.3** Add **Button** primitive under `src/components/ui/` + Storybook stories (default, disabled, loading, key variants)
 - [x] **0.2.4** Add **Input** + **FormField** primitives + stories (default, disabled, error, key variants)
-- [ ] **0.2.5** Add **Dialog** primitive + stories (open/closed, key variants)
+- [x] **0.2.5** Add **Dialog** primitive + stories (open/closed, key variants)
 - [ ] **0.2.6** Add **Toast** primitive + stories (default, error/success if applicable, key variants)
 - [ ] **0.2.7** Add **Table** / list primitive + stories (default, empty, key variants)
 - [ ] **0.2.8** Restyle **PublicLayout** with the design system (guest shell only)
