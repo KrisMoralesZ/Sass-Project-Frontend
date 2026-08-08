@@ -66,12 +66,22 @@ export const Default: Story = {
     const table = canvas.getByRole('table')
     await expect(table).toBeVisible()
 
-    await expect(canvas.getByRole('columnheader', { name: 'Name' })).toBeVisible()
-    await expect(canvas.getByRole('columnheader', { name: 'Email' })).toBeVisible()
-    await expect(canvas.getByRole('columnheader', { name: 'Role' })).toBeVisible()
+    await expect(
+      canvas.getByRole('columnheader', { name: 'Name' }),
+    ).toBeVisible()
+    await expect(
+      canvas.getByRole('columnheader', { name: 'Email' }),
+    ).toBeVisible()
+    await expect(
+      canvas.getByRole('columnheader', { name: 'Role' }),
+    ).toBeVisible()
 
-    await expect(canvas.getByRole('cell', { name: 'Alex Rivera' })).toBeVisible()
-    await expect(canvas.getByRole('cell', { name: 'jordan@acme.com' })).toBeVisible()
+    await expect(
+      canvas.getByRole('cell', { name: 'Alex Rivera' }),
+    ).toBeVisible()
+    await expect(
+      canvas.getByRole('cell', { name: 'jordan@acme.com' }),
+    ).toBeVisible()
     await expect(canvas.getByRole('cell', { name: 'Member' })).toBeVisible()
 
     // Header row + 3 body rows
@@ -163,15 +173,23 @@ export const AlignedColumns: Story = {
     </Table>
   ),
   play: async ({ canvas }) => {
-    await expect(canvas.getByRole('columnheader', { name: 'Project' })).toBeVisible()
-    await expect(canvas.getByRole('columnheader', { name: 'Issues' })).toHaveStyle({
+    await expect(
+      canvas.getByRole('columnheader', { name: 'Project' }),
+    ).toBeVisible()
+    await expect(
+      canvas.getByRole('columnheader', { name: 'Issues' }),
+    ).toHaveStyle({
       textAlign: 'center',
     })
-    await expect(canvas.getByRole('columnheader', { name: 'Updated' })).toHaveStyle({
+    await expect(
+      canvas.getByRole('columnheader', { name: 'Updated' }),
+    ).toHaveStyle({
       textAlign: 'right',
     })
 
-    await expect(canvas.getByRole('cell', { name: 'Launch checklist' })).toBeVisible()
+    await expect(
+      canvas.getByRole('cell', { name: 'Launch checklist' }),
+    ).toBeVisible()
     await expect(canvas.getByRole('cell', { name: '12' })).toHaveStyle({
       textAlign: 'center',
     })
