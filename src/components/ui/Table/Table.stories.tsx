@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
+import { expect } from 'storybook/test'
 import styled from 'styled-components'
 import Table, {
   TableBody,
@@ -61,6 +62,31 @@ export const Default: Story = {
       </TableBody>
     </Table>
   ),
+  play: async ({ canvas }) => {
+    const table = canvas.getByRole('table')
+    await expect(table).toBeVisible()
+
+    await expect(
+      canvas.getByRole('columnheader', { name: 'Name' }),
+    ).toBeVisible()
+    await expect(
+      canvas.getByRole('columnheader', { name: 'Email' }),
+    ).toBeVisible()
+    await expect(
+      canvas.getByRole('columnheader', { name: 'Role' }),
+    ).toBeVisible()
+
+    await expect(
+      canvas.getByRole('cell', { name: 'Alex Rivera' }),
+    ).toBeVisible()
+    await expect(
+      canvas.getByRole('cell', { name: 'jordan@acme.com' }),
+    ).toBeVisible()
+    await expect(canvas.getByRole('cell', { name: 'Member' })).toBeVisible()
+
+    // Header row + 3 body rows
+    await expect(canvas.getAllByRole('row')).toHaveLength(4)
+  },
 }
 
 export const Empty: Story = {
@@ -78,6 +104,13 @@ export const Empty: Story = {
       </TableBody>
     </Table>
   ),
+  play: async ({ canvas }) => {
+    await expect(canvas.getByRole('table')).toBeVisible()
+    await expect(
+      canvas.getByRole('cell', { name: 'No members in this workspace yet.' }),
+    ).toBeVisible()
+    await expect(canvas.queryByRole('cell', { name: 'Alex Rivera' })).toBeNull()
+  },
 }
 
 export const WithCaption: Story = {
@@ -102,6 +135,12 @@ export const WithCaption: Story = {
       </TableBody>
     </Table>
   ),
+  play: async ({ canvas }) => {
+    const table = canvas.getByRole('table', { name: 'Workspace members' })
+    await expect(table).toBeVisible()
+    await expect(canvas.getByText('Workspace members')).toBeVisible()
+    await expect(canvas.getByRole('cell', { name: 'Sam Chen' })).toBeVisible()
+  },
 }
 
 export const AlignedColumns: Story = {
@@ -133,4 +172,29 @@ export const AlignedColumns: Story = {
       </TableBody>
     </Table>
   ),
+  play: async ({ canvas }) => {
+    await expect(
+      canvas.getByRole('columnheader', { name: 'Project' }),
+    ).toBeVisible()
+    await expect(
+      canvas.getByRole('columnheader', { name: 'Issues' }),
+    ).toHaveStyle({
+      textAlign: 'center',
+    })
+    await expect(
+      canvas.getByRole('columnheader', { name: 'Updated' }),
+    ).toHaveStyle({
+      textAlign: 'right',
+    })
+
+    await expect(
+      canvas.getByRole('cell', { name: 'Launch checklist' }),
+    ).toBeVisible()
+    await expect(canvas.getByRole('cell', { name: '12' })).toHaveStyle({
+      textAlign: 'center',
+    })
+    await expect(canvas.getByRole('cell', { name: 'Yesterday' })).toHaveStyle({
+      textAlign: 'right',
+    })
+  },
 }
