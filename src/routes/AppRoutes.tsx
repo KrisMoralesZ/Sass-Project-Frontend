@@ -1,5 +1,5 @@
 import { Route, Routes } from 'react-router-dom'
-import { AppLayout } from '@/components/layout/AppLayout'
+import AppLayout from '@/components/layout/AppLayout'
 import PublicLayout from '@/components/layout/PublicLayout'
 import { HomePage } from '@/pages/HomePage'
 import { LoginPage } from '@/pages/LoginPage'
@@ -32,6 +32,15 @@ export function AppRoutes() {
               <PlaceholderPage
                 title="Projects"
                 description="Project list and CRUD UI land in Phase 4."
+              />
+            }
+          />
+          <Route
+            path={paths.boards}
+            element={
+              <PlaceholderPage
+                title="Boards"
+                description="Board views land in Phase 5."
               />
             }
           />

@@ -133,8 +133,8 @@ Subtasks:
 - [x] **0.2.5** Add **Dialog** primitive + stories (open/closed, key variants)
 - [x] **0.2.6** Add **Toast** primitive + stories (default, error/success if applicable, key variants)
 - [x] **0.2.7** Add **Table** / list primitive + stories (default, empty, key variants)
-- [ ] **0.2.8** Restyle **PublicLayout** with the design system (guest shell only)
-- [ ] **0.2.9** Restyle **AppLayout** with the design system and workspace nav placeholders (projects, boards, settings, members)
+- [x] **0.2.8** Restyle **PublicLayout** with the design system (guest shell only)
+- [x] **0.2.9** Restyle **AppLayout** with the design system and workspace nav placeholders (projects, boards, settings, members)
 
 **0.2 out of scope** (later phases):
 
