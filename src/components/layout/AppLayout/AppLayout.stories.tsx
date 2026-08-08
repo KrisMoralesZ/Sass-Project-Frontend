@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import type { ReactNode } from 'react'
 import { MemoryRouter } from 'react-router-dom'
+import { expect, within } from 'storybook/test'
 import styled from 'styled-components'
 import Table, {
   TableBody,
@@ -81,6 +82,36 @@ export default meta
 
 type Story = StoryObj<typeof meta>
 
+async function expectWorkspaceShell(
+  canvas: Parameters<NonNullable<Story['play']>>[0]['canvas'],
+) {
+  await expect(
+    canvas.getByRole('link', { name: /Sass Project/i }),
+  ).toHaveAttribute('href', paths.home)
+
+  const nav = canvas.getByRole('navigation', { name: 'Workspace' })
+  const navQueries = within(nav)
+
+  await expect(navQueries.getByRole('link', { name: 'Home' })).toHaveAttribute(
+    'href',
+    paths.home,
+  )
+  await expect(
+    navQueries.getByRole('link', { name: 'Projects' }),
+  ).toHaveAttribute('href', paths.projects)
+  await expect(
+    navQueries.getByRole('link', { name: 'Boards' }),
+  ).toHaveAttribute('href', paths.boards)
+  await expect(
+    navQueries.getByRole('link', { name: 'Members' }),
+  ).toHaveAttribute('href', paths.members)
+  await expect(
+    navQueries.getByRole('link', { name: 'Settings' }),
+  ).toHaveAttribute('href', paths.settings)
+
+  await expect(canvas.getByRole('button', { name: 'Sign out' })).toBeEnabled()
+}
+
 export const Home: Story = {
   args: {
     children: (
@@ -89,6 +120,18 @@ export const Home: Story = {
         description="Authenticated workspace shell with navigation placeholders for projects, boards, members, and settings."
       />
     ),
+  },
+  play: async ({ canvas }) => {
+    await expectWorkspaceShell(canvas)
+
+    await expect(
+      canvas.getByRole('heading', { level: 1, name: 'Home' }),
+    ).toBeVisible()
+    await expect(
+      canvas.getByText(
+        'Authenticated workspace shell with navigation placeholders for projects, boards, members, and settings.',
+      ),
+    ).toBeVisible()
   },
 }
 
@@ -126,6 +169,15 @@ export const Projects: Story = {
       </PageBlock>
     ),
   },
+  play: async ({ canvas }) => {
+    await expectWorkspaceShell(canvas)
+
+    await expect(
+      canvas.getByRole('heading', { level: 1, name: 'Projects' }),
+    ).toBeVisible()
+    await expect(canvas.getByText('Launch checklist')).toBeVisible()
+    await expect(canvas.getByText('Invite flow')).toBeVisible()
+  },
 }
 
 export const Boards: Story = {
@@ -139,6 +191,18 @@ export const Boards: Story = {
         description="Board views land in Phase 5. Nav placeholder only for now."
       />
     ),
+  },
+  play: async ({ canvas }) => {
+    await expectWorkspaceShell(canvas)
+
+    await expect(
+      canvas.getByRole('heading', { level: 1, name: 'Boards' }),
+    ).toBeVisible()
+    await expect(
+      canvas.getByText(
+        'Board views land in Phase 5. Nav placeholder only for now.',
+      ),
+    ).toBeVisible()
   },
 }
 
@@ -154,6 +218,16 @@ export const Members: Story = {
       />
     ),
   },
+  play: async ({ canvas }) => {
+    await expectWorkspaceShell(canvas)
+
+    await expect(
+      canvas.getByRole('heading', { level: 1, name: 'Members' }),
+    ).toBeVisible()
+    await expect(
+      canvas.getByText('Members directory lands in Phase 3.'),
+    ).toBeVisible()
+  },
 }
 
 export const Settings: Story = {
@@ -167,5 +241,15 @@ export const Settings: Story = {
         description="Organization and profile settings land in Phases 2–3."
       />
     ),
+  },
+  play: async ({ canvas }) => {
+    await expectWorkspaceShell(canvas)
+
+    await expect(
+      canvas.getByRole('heading', { level: 1, name: 'Settings' }),
+    ).toBeVisible()
+    await expect(
+      canvas.getByText('Organization and profile settings land in Phases 2–3.'),
+    ).toBeVisible()
   },
 }
