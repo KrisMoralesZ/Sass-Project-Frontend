@@ -1,5 +1,6 @@
 import { Route, Routes } from 'react-router-dom'
-import { AppLayout, PublicLayout } from '@/components/layout'
+import { AppLayout } from '@/components/layout/AppLayout'
+import PublicLayout from '@/components/layout/PublicLayout'
 import { HomePage } from '@/pages/HomePage'
 import { LoginPage } from '@/pages/LoginPage'
 import { NotFoundPage } from '@/pages/NotFoundPage'
