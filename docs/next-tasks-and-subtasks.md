@@ -160,7 +160,7 @@ Subtasks:
 - [x] **0.3.2** Create a typed browser `apiClient` (**axios**) that unwraps the backend envelope and throws a typed `ApiError`
 - [x] **0.3.3** Attach `Authorization: Bearer` when an access token exists, and `X-Organization-Id` when an active org id is present (stub getter ok until Phase 2)
 - [x] **0.3.4** Add single-flight **401 → refresh → retry once** behavior; clear session tokens if refresh fails (client plumbing only)
-- [ ] **0.3.5** Map backend `error.code` values to user-facing messages (incl. tenant missing/forbidden)
+- [x] **0.3.5** Map backend `error.code` values to user-facing messages (incl. tenant missing/forbidden)
 - [ ] **0.3.6** Document the convention that features call the API only via the client + Query hooks; optional thin smoke usage
 
 **0.3 out of scope** (land in Phase 1+ instead):

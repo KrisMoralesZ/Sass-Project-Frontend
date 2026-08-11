@@ -1,6 +1,9 @@
 export {
   apiClient,
   ApiError,
+  ERROR_CODE_MESSAGES,
+  getApiErrorMessage,
+  getErrorCodeMessage,
   http,
   isApiError,
   ORGANIZATION_ID_HEADER,
