@@ -13,6 +13,7 @@ import {
 } from '@/types'
 import { ApiError } from './api-error'
 import { ORGANIZATION_ID_HEADER } from './constants'
+import { attachRefreshInterceptor } from './refresh-interceptor'
 
 type ApiRequestConfig = Omit<AxiosRequestConfig, 'method' | 'url' | 'data'>
 
@@ -39,6 +40,8 @@ function createAxiosInstance(): AxiosInstance {
 
     return config
   })
+
+  attachRefreshInterceptor(instance)
 
   return instance
 }
@@ -96,7 +99,6 @@ async function request<T>(
 
 /**
  * Typed API client: paths are relative to `/api/v1`, responses are unwrapped `data`.
- * Refresh retry lands in 0.3.4.
  */
 export const apiClient = {
   get<T>(url: string, config?: ApiRequestConfig): Promise<T> {
