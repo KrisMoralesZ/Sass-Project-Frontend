@@ -1,4 +1,5 @@
 import { useCallback, useMemo, useState, type ReactNode } from 'react'
+import { clearActiveOrganizationId } from '@/features/organizations'
 import { AuthSessionContext } from './auth-session-context'
 import {
   clearSessionTokens,
@@ -16,6 +17,7 @@ export function AuthSessionProvider({ children }: { children: ReactNode }) {
 
   const clearSession = useCallback(() => {
     clearSessionTokens()
+    clearActiveOrganizationId()
     setIsAuthenticated(false)
   }, [])
 

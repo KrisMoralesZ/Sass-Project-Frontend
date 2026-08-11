@@ -3,6 +3,8 @@ import axios, {
   type AxiosRequestConfig,
   type Method,
 } from 'axios'
+import { getAccessToken } from '@/features/auth'
+import { getActiveOrganizationId } from '@/features/organizations'
 import { getApiUrl } from '@/lib/env'
 import {
   isApiErrorResponse,
@@ -10,6 +12,7 @@ import {
   type ApiResponse,
 } from '@/types'
 import { ApiError } from './api-error'
+import { ORGANIZATION_ID_HEADER } from './constants'
 
 type ApiRequestConfig = Omit<AxiosRequestConfig, 'method' | 'url' | 'data'>
 
@@ -21,9 +24,19 @@ function createAxiosInstance(): AxiosInstance {
     },
   })
 
-  // Resolve base URL per request so importing the module does not require env.
   instance.interceptors.request.use((config) => {
     config.baseURL = getApiUrl()
+
+    const accessToken = getAccessToken()
+    if (accessToken) {
+      config.headers.set('Authorization', `Bearer ${accessToken}`)
+    }
+
+    const organizationId = getActiveOrganizationId()
+    if (organizationId) {
+      config.headers.set(ORGANIZATION_ID_HEADER, organizationId)
+    }
+
     return config
   })
 
@@ -83,7 +96,7 @@ async function request<T>(
 
 /**
  * Typed API client: paths are relative to `/api/v1`, responses are unwrapped `data`.
- * Auth headers (0.3.3) and refresh retry (0.3.4) attach to `http` later.
+ * Refresh retry lands in 0.3.4.
  */
 export const apiClient = {
   get<T>(url: string, config?: ApiRequestConfig): Promise<T> {
