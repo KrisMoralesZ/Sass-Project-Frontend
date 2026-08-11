@@ -4,14 +4,17 @@ import { isApiError } from './api-error'
 const ERROR_CODE_MESSAGES: Record<ErrorCode, string> = {
   [ErrorCode.INTERNAL_SERVER_ERROR]:
     'Something went wrong on our side. Please try again.',
-  [ErrorCode.BAD_REQUEST]: 'The request was invalid. Please check and try again.',
-  [ErrorCode.VALIDATION_FAILED]: 'Please fix the highlighted fields and try again.',
+  [ErrorCode.BAD_REQUEST]:
+    'The request was invalid. Please check and try again.',
+  [ErrorCode.VALIDATION_FAILED]:
+    'Please fix the highlighted fields and try again.',
   [ErrorCode.UNAUTHORIZED]: 'Please sign in to continue.',
   [ErrorCode.FORBIDDEN]: 'You do not have permission to do that.',
-  [ErrorCode.RESOURCE_NOT_FOUND]: 'We could not find what you were looking for.',
-  [ErrorCode.CONFLICT]: 'That conflicts with existing data. Please try a different value.',
-  [ErrorCode.TENANT_ORGANIZATION_REQUIRED]:
-    'Select a workspace to continue.',
+  [ErrorCode.RESOURCE_NOT_FOUND]:
+    'We could not find what you were looking for.',
+  [ErrorCode.CONFLICT]:
+    'That conflicts with existing data. Please try a different value.',
+  [ErrorCode.TENANT_ORGANIZATION_REQUIRED]: 'Select a workspace to continue.',
   [ErrorCode.TENANT_ORGANIZATION_FORBIDDEN]:
     'You do not have access to this workspace.',
   [ErrorCode.INVALID_SORT_FIELD]: 'Sorting is not available for that field.',
