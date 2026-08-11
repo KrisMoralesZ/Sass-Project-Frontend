@@ -1,5 +1,13 @@
-import { useCallback, useMemo, useState, type ReactNode } from 'react'
+import {
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+  type ReactNode,
+} from 'react'
+import { clearActiveOrganizationId } from '@/features/organizations'
 import { AuthSessionContext } from './auth-session-context'
+import { subscribeSessionCleared } from './session-events'
 import {
   clearSessionTokens,
   hasSession,
@@ -9,6 +17,12 @@ import {
 export function AuthSessionProvider({ children }: { children: ReactNode }) {
   const [isAuthenticated, setIsAuthenticated] = useState(() => hasSession())
 
+  useEffect(() => {
+    return subscribeSessionCleared(() => {
+      setIsAuthenticated(false)
+    })
+  }, [])
+
   const enterDevPreviewSession = useCallback(() => {
     setDevPreviewSession()
     setIsAuthenticated(true)
@@ -16,6 +30,7 @@ export function AuthSessionProvider({ children }: { children: ReactNode }) {
 
   const clearSession = useCallback(() => {
     clearSessionTokens()
+    clearActiveOrganizationId()
     setIsAuthenticated(false)
   }, [])
 
