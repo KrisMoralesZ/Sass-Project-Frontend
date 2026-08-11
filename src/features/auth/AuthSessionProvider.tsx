@@ -1,4 +1,10 @@
-import { useCallback, useEffect, useMemo, useState, type ReactNode } from 'react'
+import {
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+  type ReactNode,
+} from 'react'
 import { clearActiveOrganizationId } from '@/features/organizations'
 import { AuthSessionContext } from './auth-session-context'
 import { subscribeSessionCleared } from './session-events'

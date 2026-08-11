@@ -37,9 +37,7 @@ let refreshInFlight: Promise<string> | null = null
 
 function shouldSkipRefresh(config?: InternalAxiosRequestConfig): boolean {
   const url = config?.url ?? ''
-  return SKIP_REFRESH_PATHS.some(
-    (path) => url === path || url.endsWith(path),
-  )
+  return SKIP_REFRESH_PATHS.some((path) => url === path || url.endsWith(path))
 }
 
 function clearClientSession(): void {
