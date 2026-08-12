@@ -180,48 +180,87 @@ Acceptance criteria:
 
 ## Phase 1 — Authentication
 
+Real auth UI and session lifecycle on top of the **0.1.3** route-guard stub,
+**0.3** `apiClient` / refresh interceptor, and `features/auth/api/get-current-user.ts`.
+Follow [`docs/api-client-v1.md`](./api-client-v1.md): features call APIs only via
+`apiClient` + TanStack Query; surface failures with `getApiErrorMessage`.
+
+Backend endpoints already available: `POST /auth/register`, `POST /auth/login`,
+`POST /auth/refresh`, `POST /auth/logout`, `GET /auth/me`.
+
 ### Task 1.1 — Auth session model
+
+Turn the Phase 0 stub into a real session: confirm storage, hydrate the user, and
+keep route guards honest while tokens/profile load.
 
 Subtasks:
 
-- Decide token storage strategy for v1 (memory + httpOnly cookie proxy vs local/session storage)
-- Persist access/refresh tokens safely enough for local development
-- Hydrate session on app load (`GET /auth/me` and/or profile)
-- Protect authenticated routes and redirect anonymous users to login
+- [x] **1.1.1** Confirm **v1 token storage**: `sessionStorage` for access + refresh (`session-storage.ts`). Document that httpOnly cookie proxy is deferred (needs a BFF; not in SPA v1)
+- [x] **1.1.2** Keep `setSessionTokens` / `clearSessionTokens` / `hasSession` as the single persistence API used by login, refresh, and logout
+- [x] **1.1.3** Extend `AuthSessionProvider` beyond the boolean stub: hold `user` (`AuthUserProfile | null`), `status` (`anonymous` | `loading` | `authenticated`), and `establishSession(tokens)` / `clearSession`
+- [ ] **1.1.4** Hydrate on app load when tokens exist: `GET /auth/me` via `currentUserQueryOptions` / `getCurrentUser`; on failure clear tokens and treat as anonymous
+- [x] **1.1.5** Keep `RequireAuth` / `RequireGuest` on public vs app shells (`paths.login` / `paths.register` already exist)
+- [ ] **1.1.6** Gate `RequireAuth` on hydrate `status` (avoid flash-redirect while `loading`; send anonymous users to login with `state.from`)
+- [ ] **1.1.7** Retire or tightly gate `setDevPreviewSession` / “Enter preview session” once real login works (dev-only escape hatch optional)
+
+**1.1 out of scope** (later):
+
+- Remember-me / `localStorage` persistence
+- httpOnly cookie BFF or OAuth providers
 
 Acceptance criteria:
 
-- Authenticated routes require a valid session
-- Logout clears session state and tokens
-- Hard refresh keeps the user signed in according to the chosen storage policy
+- Authenticated routes require a hydrated session (tokens + successful `/auth/me`)
+- Hard refresh restores the session when refresh tokens are still valid
+- Failed hydrate or cleared tokens leave the user on login, not a half-loaded shell
 
 ### Task 1.2 — Registration and login UI
 
 Subtasks:
 
-- Build `/register` and `/login` screens
-- Wire `POST /auth/register` and `POST /auth/login`
-- Surface validation and backend errors (`VALIDATION_FAILED`, `ACCOUNT_LOCKED`, `TOO_MANY_REQUESTS`, conflicts)
-- Enforce client-side password rules aligned with backend (8–72 chars, upper/lower/digit)
+- [ ] **1.2.1** Add typed auth API helpers under `features/auth/api/` (`register`, `login`) mirroring backend `RegisterResponse` / `LoginResponse` (`user` + `tokens`)
+- [ ] **1.2.2** Build `/register` screen with PublicLayout: email, display name (optional if backend allows), password + confirm; client password rules aligned with backend (8–72 chars, upper/lower/digit)
+- [ ] **1.2.3** Build `/login` screen with PublicLayout: email + password; support redirect back to `state.from` after success
+- [ ] **1.2.4** Wire forms with TanStack `useMutation` → `establishSession(tokens)` → invalidate/prefetch `['auth', 'me']` → navigate into the app shell
+- [ ] **1.2.5** Surface backend errors via `getApiErrorMessage` (`VALIDATION_FAILED`, `CONFLICT` / duplicate email, `UNAUTHORIZED`, `ACCOUNT_LOCKED`, `TOO_MANY_REQUESTS`)
+- [ ] **1.2.6** Add Storybook stories for login/register form states (idle, submitting, field error, API error) before or alongside route wiring
+- [ ] **1.2.7** Cross-links between login ↔ register; guest-only via `RequireGuest`
+
+**1.2 out of scope** (later):
+
+- Email verification / password reset flows
+- Social / SSO login
 
 Acceptance criteria:
 
-- A new user can register and land in an authenticated state
-- An existing user can log in and reach the app shell
+- A new user can register and land authenticated in the app shell
+- An existing user can log in and reach the app shell (including deep-link return)
 - Duplicate email and invalid credentials fail with clear messaging
+- Forms use shared UI primitives (`Input`, `FormField`, `Button`) and design-system PublicLayout
 
-### Task 1.3 — Session refresh and logout
+### Task 1.3 — Logout and session-expired UX
+
+Refresh **retry plumbing** already lives in **0.3.4**. This task is product UX:
+explicit logout and recovery when the session cannot be refreshed.
 
 Subtasks:
 
-- Wire `POST /auth/logout` (refresh retry path lands in **0.3.4**)
-- Add “session expired” recovery UX when refresh fails
-- Confirm short-lived access tokens refresh transparently during normal use
+- [ ] **1.3.1** Add `logout` API helper: `POST /auth/logout` with `{ refreshToken }`; always clear local session afterward (even if the network call fails)
+- [ ] **1.3.2** Add logout control in `AppLayout` (or shell header) that calls logout, clears org id, and navigates to `/login`
+- [ ] **1.3.3** Session-expired recovery: when `subscribeSessionCleared` fires (failed refresh), show a toast/banner and redirect to `/login` with a clear “session expired” message
+- [ ] **1.3.4** Confirm transparent refresh during normal authenticated browsing (manual QA against short-lived access tokens); no extra UI when refresh succeeds
+- [ ] **1.3.5** On logout / session clear: invalidate auth-related Query cache (`['auth', 'me']` and related keys)
+
+**1.3 out of scope** (later / Phase 2):
+
+- Organization switcher and active-org empty-state after login (**2.x**)
+- Changing storage strategy
 
 Acceptance criteria:
 
-- Short-lived access tokens refresh transparently during normal use
-- Logout revokes the refresh token and returns the user to login
+- Short-lived access tokens refresh transparently during normal use (no forced re-login on every expiry)
+- Logout revokes the refresh token when possible and always returns the user to login with a clean client state
+- Failed refresh never leaves the user stuck in an authenticated shell with dead tokens
 
 ---
 
@@ -464,15 +503,14 @@ Subtasks:
 ## Suggested execution checklist for the next implementation pass
 
 - [x] Scaffold Vite + React + React Router and `.env.example`
-- [x] **0.1.1** Expand `src/` feature/lib folder structure
-- [x] **0.1.3.1–0.1.3.4** Public vs authenticated React Router layout shells (split commits)
-- [ ] **0.1.4.1–0.1.4.5** styled-components foundation (install → theme → provider → one shell → docs)
-- [ ] **0.1.5–0.1.6** API types, lint/README polish
-- [ ] Initialize Storybook and document the first UI primitives with stories (0.2)
-- [ ] Build typed client API layer with envelope unwrap + Bearer/`X-Organization-Id` support
-- [ ] Implement auth session model, login, register, logout, refresh
-- [ ] Build create-organization + org switcher flows
-- [ ] Wire profile settings and members directory
+- [x] **0.1** Foundation (structure, routes, styled-components, API types, lint/README)
+- [x] **0.2** Design system + Storybook primitives + layout shells
+- [x] **0.3** API client + TanStack Query + refresh interceptor + error mapping
+- [ ] **1.1.3–1.1.4 / 1.1.6–1.1.7** Real session model: hydrate `/auth/me`, loading-aware guards, retire preview session
+- [ ] **1.2** Login + register UI, mutations, error surfacing, stories
+- [ ] **1.3** Logout UI + session-expired recovery (refresh plumbing already in 0.3.4)
+- [ ] Build create-organization + org switcher flows (Phase 2)
+- [ ] Wire profile settings and members directory (Phase 3)
 - [ ] Add frontend permission helpers from the backend matrix
 - [ ] Defer invites/member mutations/projects/boards/issues until matching backend APIs ship
 - [ ] Keep screens aligned with backend seed users for local QA
