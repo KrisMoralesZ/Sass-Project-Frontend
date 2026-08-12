@@ -6,41 +6,80 @@ import {
   type ReactNode,
 } from 'react'
 import { clearActiveOrganizationId } from '@/features/organizations'
-import { AuthSessionContext } from './auth-session-context'
+import type { AuthUserProfile } from './auth-api.types'
+import {
+  AuthSessionContext,
+  type AuthSessionStatus,
+  type EstablishSessionTokens,
+} from './auth-session-context'
 import { subscribeSessionCleared } from './session-events'
 import {
   clearSessionTokens,
   hasSession,
   setDevPreviewSession,
+  setSessionTokens,
 } from './session-storage'
 
+function initialStatus(): AuthSessionStatus {
+  // Hydrate (`GET /auth/me`) lands in 1.1.4; until then, tokens ⇒ authenticated.
+  return hasSession() ? 'authenticated' : 'anonymous'
+}
+
 export function AuthSessionProvider({ children }: { children: ReactNode }) {
-  const [isAuthenticated, setIsAuthenticated] = useState(() => hasSession())
+  const [status, setStatus] = useState<AuthSessionStatus>(initialStatus)
+  const [user, setUser] = useState<AuthUserProfile | null>(null)
+
+  const resetToAnonymous = useCallback(() => {
+    setUser(null)
+    setStatus('anonymous')
+  }, [])
 
   useEffect(() => {
     return subscribeSessionCleared(() => {
-      setIsAuthenticated(false)
+      resetToAnonymous()
     })
-  }, [])
+  }, [resetToAnonymous])
 
-  const enterDevPreviewSession = useCallback(() => {
-    setDevPreviewSession()
-    setIsAuthenticated(true)
-  }, [])
+  const establishSession = useCallback(
+    (
+      tokens: EstablishSessionTokens,
+      nextUser: AuthUserProfile | null = null,
+    ) => {
+      setSessionTokens(tokens)
+      setUser(nextUser)
+      setStatus('authenticated')
+    },
+    [],
+  )
 
   const clearSession = useCallback(() => {
     clearSessionTokens()
     clearActiveOrganizationId()
-    setIsAuthenticated(false)
+    resetToAnonymous()
+  }, [resetToAnonymous])
+
+  const enterDevPreviewSession = useCallback(() => {
+    setDevPreviewSession()
+    setUser(null)
+    setStatus('authenticated')
   }, [])
 
   const value = useMemo(
     () => ({
-      isAuthenticated,
-      enterDevPreviewSession,
+      user,
+      status,
+      isAuthenticated: status === 'authenticated',
+      establishSession,
       clearSession,
+      enterDevPreviewSession,
     }),
-    [isAuthenticated, enterDevPreviewSession, clearSession],
+    [
+      user,
+      status,
+      establishSession,
+      clearSession,
+      enterDevPreviewSession,
+    ],
   )
 
   return (
