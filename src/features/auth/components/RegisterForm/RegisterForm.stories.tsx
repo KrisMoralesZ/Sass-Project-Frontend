@@ -88,7 +88,10 @@ export const PasswordMismatch: Story = {
   play: async ({ canvas, args }) => {
     await userEvent.type(canvas.getByLabelText(/Email/i), 'owner@company.com')
     await userEvent.type(canvas.getByLabelText(/^Password/i), 'Password1')
-    await userEvent.type(canvas.getByLabelText(/Confirm password/i), 'Password2')
+    await userEvent.type(
+      canvas.getByLabelText(/Confirm password/i),
+      'Password2',
+    )
     await userEvent.click(
       canvas.getByRole('button', { name: 'Create account' }),
     )
@@ -103,7 +106,10 @@ export const ValidSubmit: Story = {
     await userEvent.type(canvas.getByLabelText(/Email/i), 'owner@company.com')
     await userEvent.type(canvas.getByLabelText(/Display name/i), 'Jane Owner')
     await userEvent.type(canvas.getByLabelText(/^Password/i), 'Password1')
-    await userEvent.type(canvas.getByLabelText(/Confirm password/i), 'Password1')
+    await userEvent.type(
+      canvas.getByLabelText(/Confirm password/i),
+      'Password1',
+    )
     await userEvent.click(
       canvas.getByRole('button', { name: 'Create account' }),
     )
