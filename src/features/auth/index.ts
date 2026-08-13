@@ -18,6 +18,15 @@ export {
   getCurrentUser,
 } from './api/get-current-user'
 export { register } from './api/register'
+export type { IRegisterForm } from './components/RegisterForm'
+export {
+  getPasswordError,
+  PASSWORD_HINT,
+  PASSWORD_MAX_LENGTH,
+  PASSWORD_MIN_LENGTH,
+  PASSWORD_PATTERN,
+  PASSWORD_VALIDATION_MESSAGE,
+} from './password'
 export { useAuthSession } from './useAuthSession'
 export { notifySessionCleared, subscribeSessionCleared } from './session-events'
 export {

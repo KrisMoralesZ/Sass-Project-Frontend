@@ -219,7 +219,7 @@ Acceptance criteria:
 Subtasks:
 
 - [x] **1.2.1** Add typed auth API helpers under `features/auth/api/` (`register`, `login`) mirroring backend `RegisterResponse` / `LoginResponse` (`user` + `tokens`)
-- [ ] **1.2.2** Build `/register` screen with PublicLayout: email, display name (optional if backend allows), password + confirm; client password rules aligned with backend (8–72 chars, upper/lower/digit)
+- [x] **1.2.2** Build `/register` screen with PublicLayout: email, display name (optional if backend allows), password + confirm; client password rules aligned with backend (8–72 chars, upper/lower/digit)
 - [ ] **1.2.3** Build `/login` screen with PublicLayout: email + password; support redirect back to `state.from` after success
 - [ ] **1.2.4** Wire forms with TanStack `useMutation` → `establishSession(tokens)` → invalidate/prefetch `['auth', 'me']` → navigate into the app shell
 - [ ] **1.2.5** Surface backend errors via `getApiErrorMessage` (`VALIDATION_FAILED`, `CONFLICT` / duplicate email, `UNAUTHORIZED`, `ACCOUNT_LOCKED`, `TOO_MANY_REQUESTS`)
