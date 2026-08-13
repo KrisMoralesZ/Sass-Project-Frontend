@@ -1,5 +1,10 @@
 export { AuthSessionProvider } from './AuthSessionProvider'
 export type {
+  AuthSessionContextValue,
+  AuthSessionStatus,
+  EstablishSessionTokens,
+} from './auth-session-context'
+export type {
   AuthTokens,
   AuthUserProfile,
   RefreshResponse,
@@ -16,6 +21,5 @@ export {
   getAccessToken,
   getRefreshToken,
   hasSession,
-  setDevPreviewSession,
   setSessionTokens,
 } from './session-storage'

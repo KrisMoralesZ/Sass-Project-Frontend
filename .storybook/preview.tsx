@@ -1,11 +1,14 @@
 import type { Preview } from '@storybook/react-vite'
+import { AppQueryProvider } from '../src/lib'
 import { AppThemeProvider } from '../src/styles'
 
 const preview: Preview = {
   decorators: [
     (Story) => (
       <AppThemeProvider>
-        <Story />
+        <AppQueryProvider>
+          <Story />
+        </AppQueryProvider>
       </AppThemeProvider>
     ),
   ],
