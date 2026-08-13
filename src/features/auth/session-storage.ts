@@ -2,8 +2,8 @@ const ACCESS_TOKEN_KEY = 'sass.auth.accessToken'
 const REFRESH_TOKEN_KEY = 'sass.auth.refreshToken'
 
 /**
- * Temporary token storage helpers for route-guard wiring (task 0.1.3).
- * Real login/refresh persistence lands in Phase 1.
+ * v1 token persistence (`sessionStorage`).
+ * httpOnly cookie / BFF storage is deferred — see task 1.1.1.
  */
 export function getAccessToken(): string | null {
   return window.sessionStorage.getItem(ACCESS_TOKEN_KEY)
@@ -28,14 +28,4 @@ export function clearSessionTokens(): void {
 
 export function hasSession(): boolean {
   return Boolean(getAccessToken())
-}
-
-/**
- * Dev-only helper so layout shells can be previewed before auth APIs are wired.
- */
-export function setDevPreviewSession(): void {
-  setSessionTokens({
-    accessToken: 'dev-access-token',
-    refreshToken: 'dev-refresh-token',
-  })
 }

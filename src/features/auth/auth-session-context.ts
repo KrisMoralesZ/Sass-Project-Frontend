@@ -23,8 +23,6 @@ export interface AuthSessionContextValue {
     user?: AuthUserProfile | null,
   ) => void
   clearSession: () => void
-  /** Temporary until Phase 1 login/register wire-up (retire in 1.1.7). */
-  enterDevPreviewSession: () => void
 }
 
 export const AuthSessionContext = createContext<AuthSessionContextValue | null>(

@@ -21,6 +21,5 @@ export {
   getAccessToken,
   getRefreshToken,
   hasSession,
-  setDevPreviewSession,
   setSessionTokens,
 } from './session-storage'

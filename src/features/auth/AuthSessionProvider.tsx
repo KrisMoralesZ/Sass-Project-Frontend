@@ -22,7 +22,6 @@ import { subscribeSessionCleared } from './session-events'
 import {
   clearSessionTokens,
   hasSession,
-  setDevPreviewSession,
   setSessionTokens,
 } from './session-storage'
 
@@ -108,13 +107,6 @@ export function AuthSessionProvider({ children }: { children: ReactNode }) {
     resetToAnonymous()
   }, [queryClient, resetToAnonymous])
 
-  const enterDevPreviewSession = useCallback(() => {
-    sessionEpochRef.current += 1
-    setDevPreviewSession()
-    setUser(null)
-    setStatus('authenticated')
-  }, [])
-
   const value = useMemo(
     () => ({
       user,
@@ -122,15 +114,8 @@ export function AuthSessionProvider({ children }: { children: ReactNode }) {
       isAuthenticated: status === 'authenticated',
       establishSession,
       clearSession,
-      enterDevPreviewSession,
     }),
-    [
-      user,
-      status,
-      establishSession,
-      clearSession,
-      enterDevPreviewSession,
-    ],
+    [user, status, establishSession, clearSession],
   )
 
   return (

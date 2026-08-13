@@ -201,7 +201,7 @@ Subtasks:
 - [x] **1.1.4** Hydrate on app load when tokens exist: `GET /auth/me` via `currentUserQueryOptions` / `getCurrentUser`; on failure clear tokens and treat as anonymous
 - [x] **1.1.5** Keep `RequireAuth` / `RequireGuest` on public vs app shells (`paths.login` / `paths.register` already exist)
 - [x] **1.1.6** Gate `RequireAuth` on hydrate `status` (avoid flash-redirect while `loading`; send anonymous users to login with `state.from`)
-- [ ] **1.1.7** Retire or tightly gate `setDevPreviewSession` / “Enter preview session” once real login works (dev-only escape hatch optional)
+- [x] **1.1.7** Retire or tightly gate `setDevPreviewSession` / “Enter preview session” once real login works (dev-only escape hatch optional)
 
 **1.1 out of scope** (later):
 
@@ -506,7 +506,7 @@ Subtasks:
 - [x] **0.1** Foundation (structure, routes, styled-components, API types, lint/README)
 - [x] **0.2** Design system + Storybook primitives + layout shells
 - [x] **0.3** API client + TanStack Query + refresh interceptor + error mapping
-- [ ] **1.1.7** Retire or tightly gate `setDevPreviewSession` / “Enter preview session” once real login works (dev-only escape hatch optional)
+- [x] **1.1** Auth session model (storage, hydrate, loading-aware guards; preview gated to DEV)
 - [ ] **1.2** Login + register UI, mutations, error surfacing, stories
 - [ ] **1.3** Logout UI + session-expired recovery (refresh plumbing already in 0.3.4)
 - [ ] Build create-organization + org switcher flows (Phase 2)
