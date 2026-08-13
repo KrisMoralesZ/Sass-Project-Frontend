@@ -42,6 +42,16 @@ export const $Form = styled.form`
   gap: ${({ theme }) => theme.space.md};
 `
 
+export const $FormError = styled.p`
+  margin: 0;
+  padding: ${({ theme }) => theme.space.sm} ${({ theme }) => theme.space.md};
+  border-radius: ${({ theme }) => theme.radii.md};
+  background: ${({ theme }) => theme.colors.dangerMuted};
+  color: ${({ theme }) => theme.colors.danger};
+  font-size: ${({ theme }) => theme.font.size.sm};
+  line-height: ${({ theme }) => theme.font.lineHeight.relaxed};
+`
+
 export const $Footer = styled.p`
   margin: 0;
   color: ${({ theme }) => theme.colors.textMuted};

@@ -2,6 +2,7 @@ import {
   type ChangeEvent,
   type FC,
   type FormEvent,
+  type ReactNode,
   useCallback,
   useState,
 } from 'react'
@@ -15,6 +16,7 @@ import {
   $Footer,
   $FooterLink,
   $Form,
+  $FormError,
   $Header,
   $Lead,
   $Panel,
@@ -27,6 +29,8 @@ export interface IRegisterForm {
   /** Called after client-side validation succeeds. API wiring lands in 1.2.4. */
   onSubmit?: (values: RegisterRequest) => void
   isSubmitting?: boolean
+  /** Server/API error shown above the submit button (task 1.2.5). */
+  formError?: ReactNode
 }
 
 interface RegisterFormValues {
@@ -79,6 +83,7 @@ function validateRegisterForm(values: RegisterFormValues): FieldErrors {
 const RegisterForm: FC<IRegisterForm> = ({
   onSubmit,
   isSubmitting = false,
+  formError,
 }) => {
   const [values, setValues] = useState<RegisterFormValues>(INITIAL_VALUES)
   const [errors, setErrors] = useState<FieldErrors>({})
@@ -192,6 +197,8 @@ const RegisterForm: FC<IRegisterForm> = ({
             fullWidth
           />
         </FormField>
+
+        {formError ? <$FormError role="alert">{formError}</$FormError> : null}
 
         <Button type="submit" fullWidth loading={isSubmitting}>
           Create account
