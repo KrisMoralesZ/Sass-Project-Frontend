@@ -8,7 +8,6 @@ const DEV_PREVIEW_TOKENS = {
   refreshToken: 'dev-refresh-token',
 } as const
 
-
 // TODO: Refactor this page to use FC instead of function component
 export function LoginPage() {
   const navigate = useNavigate()
