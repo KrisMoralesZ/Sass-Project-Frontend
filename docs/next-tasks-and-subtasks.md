@@ -99,7 +99,7 @@ Subtasks:
   - [x] **0.1.4.3** Wire `ThemeProvider` + minimal `createGlobalStyle` (replace/supplement the tiny CSS reset)
   - [x] **0.1.4.4** Smoke-convert one shell (`PublicLayout` **or** `AppLayout`) to prove the stack end-to-end
   - [x] **0.1.4.5** Document styled-components conventions (theme import path, no CSS Modules/Tailwind for components)
-- [ ] **0.1.5** Add shared TypeScript types for the API envelope, pagination, and error codes
+- [x] **0.1.5** Add shared TypeScript types for the API envelope, pagination, and error codes
 - [ ] **0.1.6** Establish lint/format conventions and keep README setup current against the backend
 
 **0.1.4 out of scope** (land in **0.2** instead):
