@@ -17,10 +17,10 @@ src/
 
 ## Routing (task 0.1.3)
 
-| Area | Paths | Shell / guard |
-|---|---|---|
-| Guest | `/login`, `/register` | `RequireGuest` → `PublicLayout` |
-| App | `/`, `/projects`, `/members`, `/settings` | `RequireAuth` → `AppLayout` |
+| Area  | Paths                                     | Shell / guard                   |
+| ----- | ----------------------------------------- | ------------------------------- |
+| Guest | `/login`, `/register`                     | `RequireGuest` → `PublicLayout` |
+| App   | `/`, `/projects`, `/members`, `/settings` | `RequireAuth` → `AppLayout`     |
 
 Unauthenticated visits to app routes redirect to `/login`. Until Phase 1 auth is wired, use **Preview app shell** on the login page to enter a temporary session.
 
