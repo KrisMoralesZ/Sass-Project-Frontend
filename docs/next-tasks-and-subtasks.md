@@ -93,9 +93,19 @@ Subtasks:
   - [x] **0.1.3.2** Shared route paths + `RequireAuth` / `RequireGuest`
   - [x] **0.1.3.3** `PublicLayout` and `AppLayout` shells
   - [x] **0.1.3.4** Wire route tree + placeholder pages
-- [ ] **0.1.4** Configure **styled-components** (`ThemeProvider`, theme typing, Vite/babel setup as required)
+- [x] **0.1.4** Configure **styled-components** (foundation only; one commit per nested subtask)
+  - [x] **0.1.4.1** Install `styled-components` (+ types) and configure Vite/React plugin for styled-components
+  - [x] **0.1.4.2** Add typed theme tokens (`DefaultTheme`) under `src/styles/` — tokens only, no visual polish pass
+  - [x] **0.1.4.3** Wire `ThemeProvider` + minimal `createGlobalStyle` (replace/supplement the tiny CSS reset)
+  - [x] **0.1.4.4** Smoke-convert one shell (`PublicLayout` **or** `AppLayout`) to prove the stack end-to-end
+  - [x] **0.1.4.5** Document styled-components conventions (theme import path, no CSS Modules/Tailwind for components)
 - [ ] **0.1.5** Add shared TypeScript types for the API envelope, pagination, and error codes
 - [ ] **0.1.6** Establish lint/format conventions and keep README setup current against the backend
+
+**0.1.4 out of scope** (land in **0.2** instead):
+- Full brand/visual design system
+- Shared UI primitives (button, input, dialog, toast, …) and Storybook stories
+- Restyling every page/layout at once
 
 Acceptance criteria:
 - The Vite app boots with a clear module layout
@@ -107,10 +117,10 @@ Acceptance criteria:
 ### Task 0.2 — Storybook + design system and app shell
 Subtasks:
 - Initialize **Storybook** with the Vite + React setup
-- Choose a visual direction and expose tokens through the styled-components theme (avoid generic AI-default purple/cream looks)
+- Choose a visual direction and expand the styled-components theme tokens (avoid generic AI-default purple/cream looks)
 - Add base UI primitives (button, input, form field, dialog, toast, table/list)
 - Add a Storybook story for each shared primitive (default, disabled, loading, error, and key variants)
-- Build authenticated and unauthenticated layout shells with React Router outlets
+- Restyle authenticated and unauthenticated layout shells with the design system
 - Add navigation placeholders for workspace areas (projects, boards, settings, members)
 
 Acceptance criteria:
@@ -361,9 +371,9 @@ Subtasks:
 - [x] Scaffold Vite + React + React Router and `.env.example`
 - [x] **0.1.1** Expand `src/` feature/lib folder structure
 - [x] **0.1.3.1–0.1.3.4** Public vs authenticated React Router layout shells (split commits)
-- [ ] **0.1.4–0.1.6** styled-components, API types, lint/README polish
-- [ ] Wire styled-components provider/theme
-- [ ] Initialize Storybook and document the first UI primitives with stories
+- [ ] **0.1.4.1–0.1.4.5** styled-components foundation (install → theme → provider → one shell → docs)
+- [ ] **0.1.5–0.1.6** API types, lint/README polish
+- [ ] Initialize Storybook and document the first UI primitives with stories (0.2)
 - [ ] Build typed client API layer with envelope unwrap + Bearer/`X-Organization-Id` support
 - [ ] Implement auth session model, login, register, logout, refresh
 - [ ] Build create-organization + org switcher flows
