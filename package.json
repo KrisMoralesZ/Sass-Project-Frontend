@@ -10,7 +10,12 @@
     "lint:fix": "oxlint --fix",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "storybook": "storybook dev -p 6006",
+    "build-storybook": "storybook build",
+    "test": "vitest",
+    "test:storybook": "vitest --project=storybook",
+    "test:storybook:run": "vitest run --project=storybook"
   },
   "dependencies": {
     "react": "^19.2.7",
@@ -26,6 +31,17 @@
     "oxlint": "^1.71.0",
     "prettier": "^3.9.6",
     "typescript": "~5.9.3",
-    "vite": "^8.1.1"
+    "vite": "^8.1.1",
+    "storybook": "^10.5.5",
+    "@storybook/react-vite": "^10.5.5",
+    "@chromatic-com/storybook": "^5.2.1",
+    "@storybook/addon-vitest": "^10.5.5",
+    "@storybook/addon-a11y": "^10.5.5",
+    "@storybook/addon-docs": "^10.5.5",
+    "@storybook/addon-mcp": "^0.7.0",
+    "vitest": "^4.1.10",
+    "playwright": "^1.62.1",
+    "@vitest/browser-playwright": "^4.1.10",
+    "@vitest/coverage-v8": "^4.1.10"
   }
 }

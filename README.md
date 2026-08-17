@@ -54,14 +54,45 @@ npm run format:check  # prettier --check (also runs in CI)
 
 Editor defaults live in [`.vscode/settings.json`](./.vscode/settings.json) (format on save via Prettier).
 
+## Storybook
+
+```bash
+npm run storybook        # http://localhost:6006
+npm run build-storybook  # static build under storybook-static/
+```
+
+Stories use `AppThemeProvider` (theme + global styles) via `.storybook/preview.tsx`.
+
+Visual direction and token reference: [`docs/design-direction.md`](./docs/design-direction.md) and **Foundation → Visual direction** in Storybook.
+
+### Storybook tests (Vitest browser mode)
+
+Stories are turned into component tests via `@storybook/addon-vitest` + Playwright Chromium.
+
+```bash
+# First-time / CI browser binaries
+npx playwright install chromium
+
+# Watch mode (Storybook UI test widget also works while `npm run storybook` is open)
+npm run test:storybook
+
+# Single CI-style run
+npm run test:storybook:run
+```
+
 ## Scripts
 
-| Script                 | Purpose                                  |
-| ---------------------- | ---------------------------------------- |
-| `npm run dev`          | Start Vite dev server                    |
-| `npm run build`        | Typecheck + production build             |
-| `npm run preview`      | Preview production build                 |
-| `npm run lint`         | Lint with oxlint                         |
-| `npm run lint:fix`     | Auto-fix oxlint issues where possible    |
-| `npm run format`       | Format the repo with Prettier            |
-| `npm run format:check` | Fail if files are not Prettier-formatted |
+| Script                       | Purpose                                  |
+| ---------------------------- | ---------------------------------------- |
+| `npm run dev`                | Start Vite dev server                    |
+| `npm run build`              | Typecheck + production build             |
+| `npm run preview`            | Preview production build                 |
+| `npm run storybook`          | Start Storybook                          |
+| `npm run build-storybook`    | Build static Storybook                   |
+| `npm run test`               | Vitest (all projects)                    |
+| `npm run test:storybook`     | Storybook Vitest project (watch)         |
+| `npm run test:storybook:run` | Storybook Vitest project (one run)       |
+| `npm run lint`               | Lint with oxlint                         |
+| `npm run lint:fix`           | Auto-fix oxlint issues where possible    |
+| `npm run format`             | Format the repo with Prettier            |
+| `npm run format:check`       | Fail if files are not Prettier-formatted |
