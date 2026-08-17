@@ -5,9 +5,12 @@ export function HomePage() {
     <main>
       <h1>Sass Project</h1>
       <p>
-        Vite + React + React Router scaffold. See{' '}
-        <code>docs/next-tasks-and-subtasks.md</code> for the implementation
-        backlog.
+        Vite + React + React Router. Source layout lives under{' '}
+        <code>src/</code> — see <code>src/README.md</code>.
+      </p>
+      <p>
+        Implementation backlog:{' '}
+        <code>docs/next-tasks-and-subtasks.md</code>
       </p>
       <p>
         <Link to="/">Home</Link>

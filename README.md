@@ -24,7 +24,11 @@ npm run dev
 
 App: [http://localhost:5173](http://localhost:5173)
 
-Set `VITE_API_URL` to the Nest backend origin (default `http://localhost:3000`).
+Set `VITE_API_URL` to the Nest backend origin (default `http://localhost:3000`). Use the origin only — the app appends `/api/v1` itself via `getApiUrl()` in `src/lib/env.ts`.
+
+## Source layout
+
+See [`src/README.md`](./src/README.md) for the folder conventions (`components/`, `features/`, `pages/`, `routes/`, `lib/`, …).
 
 ## Scripts
 
