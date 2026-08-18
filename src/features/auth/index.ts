@@ -33,6 +33,9 @@ export {
   PASSWORD_VALIDATION_MESSAGE,
 } from './password'
 export { useAuthSession } from './useAuthSession'
+export { useLoginMutation } from './hooks/use-login-mutation'
+export { useRegisterMutation } from './hooks/use-register-mutation'
+export { applyAuthSessionResponse } from './apply-auth-session'
 export { notifySessionCleared, subscribeSessionCleared } from './session-events'
 export {
   clearSessionTokens,
