@@ -2,6 +2,7 @@ import type { Meta, StoryObj } from '@storybook/react-vite'
 import { MemoryRouter } from 'react-router-dom'
 import { expect, userEvent, within } from 'storybook/test'
 import PublicLayout from '@/components/layout/PublicLayout'
+import { AuthSessionProvider } from '@/features/auth'
 import { paths } from '@/routes/paths'
 import RegisterPage from './RegisterPage'
 
@@ -15,9 +16,11 @@ const meta = {
   decorators: [
     (Story) => (
       <MemoryRouter initialEntries={[paths.register]}>
-        <PublicLayout>
-          <Story />
-        </PublicLayout>
+        <AuthSessionProvider>
+          <PublicLayout>
+            <Story />
+          </PublicLayout>
+        </AuthSessionProvider>
       </MemoryRouter>
     ),
   ],

@@ -221,8 +221,8 @@ Subtasks:
 - [x] **1.2.1** Add typed auth API helpers under `features/auth/api/` (`register`, `login`) mirroring backend `RegisterResponse` / `LoginResponse` (`user` + `tokens`)
 - [x] **1.2.2** Build `/register` screen with PublicLayout: email, display name (optional if backend allows), password + confirm; client password rules aligned with backend (8–72 chars, upper/lower/digit)
 - [x] **1.2.3** Build `/login` screen with PublicLayout: email + password; support redirect back to `state.from` after success
-- [ ] **1.2.4** Wire forms with TanStack `useMutation` → `establishSession(tokens)` → invalidate/prefetch `['auth', 'me']` → navigate into the app shell
-- [ ] **1.2.5** Surface backend errors via `getApiErrorMessage` (`VALIDATION_FAILED`, `CONFLICT` / duplicate email, `UNAUTHORIZED`, `ACCOUNT_LOCKED`, `TOO_MANY_REQUESTS`)
+- [x] **1.2.4** Wire forms with TanStack `useMutation` → `establishSession(tokens)` → invalidate/prefetch `['auth', 'me']` → navigate into the app shell
+- [x] **1.2.5** Surface backend errors via `getApiErrorMessage` (`VALIDATION_FAILED`, `CONFLICT` / duplicate email, `UNAUTHORIZED`, `ACCOUNT_LOCKED`, `TOO_MANY_REQUESTS`)
 - [ ] **1.2.6** Add Storybook stories for login/register form states (idle, submitting, field error, API error) before or alongside route wiring
 - [ ] **1.2.7** Cross-links between login ↔ register; guest-only via `RequireGuest`
 
@@ -507,7 +507,9 @@ Subtasks:
 - [x] **0.2** Design system + Storybook primitives + layout shells
 - [x] **0.3** API client + TanStack Query + refresh interceptor + error mapping
 - [x] **1.1** Auth session model (storage, hydrate, loading-aware guards; preview gated to DEV)
-- [ ] **1.2** Login + register UI, mutations, error surfacing, stories
+- [x] **1.2.1–1.2.5** Login + register UI, mutations, session establish, error surfacing
+- [ ] **1.2.6** Storybook stories for login/register (forms done; keep page stories current)
+- [ ] **1.2.7** Cross-links between login ↔ register; guest-only via `RequireGuest`
 - [ ] **1.3** Logout UI + session-expired recovery (refresh plumbing already in 0.3.4)
 - [ ] Build create-organization + org switcher flows (Phase 2)
 - [ ] Wire profile settings and members directory (Phase 3)
