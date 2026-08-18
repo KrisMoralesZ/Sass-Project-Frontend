@@ -8,6 +8,8 @@ export type {
   AuthTokens,
   AuthUserProfile,
   AuthSessionResponse,
+  LoginRequest,
+  LoginResponse,
   RefreshResponse,
   RegisterRequest,
   RegisterResponse,
@@ -17,7 +19,10 @@ export {
   currentUserQueryOptions,
   getCurrentUser,
 } from './api/get-current-user'
+export { login } from './api/login'
 export { register } from './api/register'
+export { default as LoginForm } from './components/LoginForm'
+export type { ILoginForm } from './components/LoginForm'
 export type { IRegisterForm } from './components/RegisterForm'
 export {
   getPasswordError,
