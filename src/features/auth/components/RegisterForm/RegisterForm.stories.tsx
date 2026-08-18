@@ -134,3 +134,14 @@ export const ApiError: Story = {
     )
   },
 }
+
+export const RateLimited: Story = {
+  args: {
+    formError: 'Too many attempts. Please wait a moment and try again.',
+  },
+  play: async ({ canvas }) => {
+    const alert = canvas.getByRole('alert')
+    await expect(alert).toBeVisible()
+    await expect(alert).toHaveTextContent(/Too many attempts/i)
+  },
+}

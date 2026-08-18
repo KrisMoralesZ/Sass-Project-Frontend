@@ -45,6 +45,16 @@ export const Default: Story = {
     ).toHaveAttribute('href', paths.login)
 
     await expect(canvas.getByLabelText(/Email/i)).toBeEnabled()
+
+    // Form footer cross-link (nav also has Sign in).
+    await expect(canvas.getByText(/Already have an account/i)).toBeVisible()
+    const panel = canvas
+      .getByRole('heading', { level: 1, name: 'Create account' })
+      .closest('section')
+    await expect(panel).not.toBeNull()
+    await expect(
+      within(panel as HTMLElement).getByRole('link', { name: 'Sign in' }),
+    ).toHaveAttribute('href', paths.login)
   },
 }
 

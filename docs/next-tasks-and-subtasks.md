@@ -223,8 +223,8 @@ Subtasks:
 - [x] **1.2.3** Build `/login` screen with PublicLayout: email + password; support redirect back to `state.from` after success
 - [x] **1.2.4** Wire forms with TanStack `useMutation` → `establishSession(tokens)` → invalidate/prefetch `['auth', 'me']` → navigate into the app shell
 - [x] **1.2.5** Surface backend errors via `getApiErrorMessage` (`VALIDATION_FAILED`, `CONFLICT` / duplicate email, `UNAUTHORIZED`, `ACCOUNT_LOCKED`, `TOO_MANY_REQUESTS`)
-- [ ] **1.2.6** Add Storybook stories for login/register form states (idle, submitting, field error, API error) before or alongside route wiring
-- [ ] **1.2.7** Cross-links between login ↔ register; guest-only via `RequireGuest`
+- [x] **1.2.6** Add Storybook stories for login/register form states (idle, submitting, field error, API error) before or alongside route wiring
+- [x] **1.2.7** Cross-links between login ↔ register; guest-only via `RequireGuest`
 
 **1.2 out of scope** (later):
 
@@ -508,8 +508,7 @@ Subtasks:
 - [x] **0.3** API client + TanStack Query + refresh interceptor + error mapping
 - [x] **1.1** Auth session model (storage, hydrate, loading-aware guards; preview gated to DEV)
 - [x] **1.2.1–1.2.5** Login + register UI, mutations, session establish, error surfacing
-- [ ] **1.2.6** Storybook stories for login/register (forms done; keep page stories current)
-- [ ] **1.2.7** Cross-links between login ↔ register; guest-only via `RequireGuest`
+- [x] **1.2.6–1.2.7** Auth Storybook stories + login↔register cross-links / `RequireGuest`
 - [ ] **1.3** Logout UI + session-expired recovery (refresh plumbing already in 0.3.4)
 - [ ] Build create-organization + org switcher flows (Phase 2)
 - [ ] Wire profile settings and members directory (Phase 3)

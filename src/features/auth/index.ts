@@ -23,6 +23,7 @@ export { login } from './api/login'
 export { register } from './api/register'
 export { default as LoginForm } from './components/LoginForm'
 export type { ILoginForm } from './components/LoginForm'
+export { default as RegisterForm } from './components/RegisterForm'
 export type { IRegisterForm } from './components/RegisterForm'
 export {
   getPasswordError,
