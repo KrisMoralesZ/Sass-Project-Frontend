@@ -23,6 +23,7 @@ export { login } from './api/login'
 export { register } from './api/register'
 export { default as LoginForm } from './components/LoginForm'
 export type { ILoginForm } from './components/LoginForm'
+export { default as RegisterForm } from './components/RegisterForm'
 export type { IRegisterForm } from './components/RegisterForm'
 export {
   getPasswordError,
@@ -33,6 +34,9 @@ export {
   PASSWORD_VALIDATION_MESSAGE,
 } from './password'
 export { useAuthSession } from './useAuthSession'
+export { useLoginMutation } from './hooks/use-login-mutation'
+export { useRegisterMutation } from './hooks/use-register-mutation'
+export { applyAuthSessionResponse } from './apply-auth-session'
 export { notifySessionCleared, subscribeSessionCleared } from './session-events'
 export {
   clearSessionTokens,
