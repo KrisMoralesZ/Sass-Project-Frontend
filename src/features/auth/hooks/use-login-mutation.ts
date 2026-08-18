@@ -4,9 +4,7 @@ import { applyAuthSessionResponse } from '../apply-auth-session'
 import type { LoginRequest } from '../auth-api.types'
 import { useAuthSession } from '../useAuthSession'
 
-export function useLoginMutation(options?: {
-  onAuthenticated?: () => void
-}) {
+export function useLoginMutation(options?: { onAuthenticated?: () => void }) {
   const queryClient = useQueryClient()
   const { establishSession } = useAuthSession()
 

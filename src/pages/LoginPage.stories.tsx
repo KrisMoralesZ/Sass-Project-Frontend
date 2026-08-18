@@ -17,9 +17,8 @@ const meta = {
     (Story, context) => {
       const initialEntry =
         (context.parameters.initialEntry as
-          | string
-          | { pathname: string; state?: unknown }
-          | undefined) ?? paths.login
+          string | { pathname: string; state?: unknown } | undefined) ??
+        paths.login
 
       return (
         <MemoryRouter initialEntries={[initialEntry]}>
