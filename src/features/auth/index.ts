@@ -10,6 +10,8 @@ export type {
   AuthSessionResponse,
   LoginRequest,
   LoginResponse,
+  LogoutRequest,
+  LogoutResponse,
   RefreshResponse,
   RegisterRequest,
   RegisterResponse,
@@ -20,6 +22,7 @@ export {
   getCurrentUser,
 } from './api/get-current-user'
 export { login } from './api/login'
+export { logout } from './api/logout'
 export { register } from './api/register'
 export { default as LoginForm } from './components/LoginForm'
 export type { ILoginForm } from './components/LoginForm'
@@ -37,6 +40,7 @@ export { useAuthSession } from './useAuthSession'
 export { useLoginMutation } from './hooks/use-login-mutation'
 export { useRegisterMutation } from './hooks/use-register-mutation'
 export { applyAuthSessionResponse } from './apply-auth-session'
+export { clearClientSession } from './clear-client-session'
 export { notifySessionCleared, subscribeSessionCleared } from './session-events'
 export {
   clearSessionTokens,

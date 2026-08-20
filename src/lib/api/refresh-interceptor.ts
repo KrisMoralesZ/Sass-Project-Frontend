@@ -4,13 +4,8 @@ import axios, {
   type InternalAxiosRequestConfig,
 } from 'axios'
 import type { RefreshResponse } from '@/features/auth/auth-api.types'
-import {
-  clearSessionTokens,
-  getRefreshToken,
-  setSessionTokens,
-} from '@/features/auth/session-storage'
-import { notifySessionCleared } from '@/features/auth/session-events'
-import { clearActiveOrganizationId } from '@/features/organizations'
+import { clearClientSession } from '@/features/auth/clear-client-session'
+import { getRefreshToken, setSessionTokens } from '@/features/auth/session-storage'
 import { getApiUrl } from '@/lib/env'
 import {
   isApiErrorResponse,
@@ -38,12 +33,6 @@ let refreshInFlight: Promise<string> | null = null
 function shouldSkipRefresh(config?: InternalAxiosRequestConfig): boolean {
   const url = config?.url ?? ''
   return SKIP_REFRESH_PATHS.some((path) => url === path || url.endsWith(path))
-}
-
-function clearClientSession(): void {
-  clearSessionTokens()
-  clearActiveOrganizationId()
-  notifySessionCleared()
 }
 
 async function refreshAccessToken(): Promise<string> {
