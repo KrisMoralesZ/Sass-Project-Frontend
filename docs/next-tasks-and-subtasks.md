@@ -246,7 +246,7 @@ explicit logout and recovery when the session cannot be refreshed.
 Subtasks:
 
 - [x] **1.3.1** Add `logout` API helper: `POST /auth/logout` with `{ refreshToken }`; always clear local session afterward (even if the network call fails)
-- [ ] **1.3.2** Add logout control in `AppLayout` (or shell header) that calls logout, clears org id, and navigates to `/login`
+- [x] **1.3.2** Add logout control in `AppLayout` (or shell header) that calls logout, clears org id, and navigates to `/login`
 - [ ] **1.3.3** Session-expired recovery: when `subscribeSessionCleared` fires (failed refresh), show a toast/banner and redirect to `/login` with a clear “session expired” message
 - [ ] **1.3.4** Confirm transparent refresh during normal authenticated browsing (manual QA against short-lived access tokens); no extra UI when refresh succeeds
 - [ ] **1.3.5** On logout / session clear: invalidate auth-related Query cache (`['auth', 'me']` and related keys)

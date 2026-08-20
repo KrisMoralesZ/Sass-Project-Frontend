@@ -38,6 +38,7 @@ export {
 } from './password'
 export { useAuthSession } from './useAuthSession'
 export { useLoginMutation } from './hooks/use-login-mutation'
+export { useLogout } from './hooks/use-logout'
 export { useRegisterMutation } from './hooks/use-register-mutation'
 export { applyAuthSessionResponse } from './apply-auth-session'
 export { clearClientSession } from './clear-client-session'
