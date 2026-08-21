@@ -42,6 +42,14 @@ export { useLogout } from './hooks/use-logout'
 export { useRegisterMutation } from './hooks/use-register-mutation'
 export { applyAuthSessionResponse } from './apply-auth-session'
 export { clearClientSession } from './clear-client-session'
+export { SessionExpiredRecovery } from './SessionExpiredRecovery'
+export type { SessionClearReason } from './session-events'
+export {
+  consumeSessionExpiredNotice,
+  SESSION_EXPIRED_MESSAGE,
+  SESSION_EXPIRED_TITLE,
+  setSessionExpiredNotice,
+} from './session-expired-notice'
 export { notifySessionCleared, subscribeSessionCleared } from './session-events'
 export {
   clearSessionTokens,

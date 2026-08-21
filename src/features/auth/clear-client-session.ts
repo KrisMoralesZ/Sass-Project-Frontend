@@ -1,5 +1,6 @@
 import { clearActiveOrganizationId } from '@/features/organizations'
-import { notifySessionCleared } from './session-events'
+import { notifySessionCleared, type SessionClearReason } from './session-events'
+import { setSessionExpiredNotice } from './session-expired-notice'
 import { clearSessionTokens } from './session-storage'
 
 /**
@@ -7,8 +8,13 @@ import { clearSessionTokens } from './session-storage'
  * Used by logout, failed refresh, and other flows that drop credentials
  * without going through `AuthSessionProvider.clearSession()`.
  */
-export function clearClientSession(): void {
+export function clearClientSession(reason: SessionClearReason = 'expired'): void {
   clearSessionTokens()
   clearActiveOrganizationId()
-  notifySessionCleared()
+
+  if (reason === 'expired') {
+    setSessionExpiredNotice()
+  }
+
+  notifySessionCleared(reason)
 }

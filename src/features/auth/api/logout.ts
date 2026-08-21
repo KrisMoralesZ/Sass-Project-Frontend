@@ -17,6 +17,6 @@ export async function logout(): Promise<void> {
   } catch {
     // Server revocation is best-effort; client session is cleared in `finally`.
   } finally {
-    clearClientSession()
+    clearClientSession('logout')
   }
 }
