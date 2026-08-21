@@ -1,10 +1,12 @@
-type SessionClearedListener = () => void
+export type SessionClearReason = 'logout' | 'expired'
+
+type SessionClearedListener = (reason: SessionClearReason) => void
 
 const listeners = new Set<SessionClearedListener>()
 
 /**
  * Lets the API client notify React auth state when tokens are cleared
- * outside of `clearSession()` (e.g. failed refresh in 0.3.4).
+ * outside of `AuthSessionProvider.clearSession()` (e.g. failed refresh).
  */
 export function subscribeSessionCleared(
   listener: SessionClearedListener,
@@ -15,8 +17,8 @@ export function subscribeSessionCleared(
   }
 }
 
-export function notifySessionCleared(): void {
+export function notifySessionCleared(reason: SessionClearReason): void {
   for (const listener of listeners) {
-    listener()
+    listener(reason)
   }
 }

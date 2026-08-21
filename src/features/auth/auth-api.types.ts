@@ -33,6 +33,14 @@ export type RegisterResponse = AuthSessionResponse
 
 export type LoginResponse = AuthSessionResponse
 
+export interface LogoutRequest {
+  refreshToken: string
+}
+
+export interface LogoutResponse {
+  message: string
+}
+
 export interface RefreshResponse {
   tokens: AuthTokens
 }
