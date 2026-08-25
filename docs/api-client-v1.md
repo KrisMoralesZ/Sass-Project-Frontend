@@ -20,6 +20,29 @@ Conventions for **task 0.3** — how feature modules talk to the Nest API.
 | 401 → refresh → retry once        | response interceptor                         |
 | User-facing copy for `error.code` | `getApiErrorMessage` / `getErrorCodeMessage` |
 
+## Transparent refresh (task 1.3.4)
+
+When an authenticated request gets **401**, the interceptor:
+
+1. Calls `POST /auth/refresh` with `{ refreshToken }` (single-flight if several requests fail together).
+2. Writes the new access + refresh tokens to `sessionStorage`.
+3. Retries the original request once with `Authorization: Bearer <new access>`.
+
+A **successful** refresh is invisible in the product UI: no toast, no login redirect, no session-expired banner. `notifySessionCleared` / `SessionExpiredRecovery` run only when refresh **fails** (task **1.3.3**).
+
+### Manual QA (short-lived access tokens)
+
+Default access TTL is `15m` (`JWT_ACCESS_EXPIRES_IN` in the backend `.env`). To watch refresh during normal browsing:
+
+1. In `sass-backend/.env`, set `JWT_ACCESS_EXPIRES_IN=15s` (keep refresh TTL long, e.g. `7d`) and restart the API.
+2. Sign in on the SPA (seed user `owner@acme.local` / `Password1` is fine).
+3. Stay on an authenticated route (`/`, `/projects`, …) and wait past 15s, then trigger another API call (navigate, or hard-refresh the app so `GET /auth/me` runs).
+4. In DevTools → Network: expect `401` on the original call, then `POST /api/v1/auth/refresh` **200**, then the retried call **200**.
+5. Confirm you remain in the app shell with **no** “Session expired” toast and **no** bounce to `/login`.
+6. Restore `JWT_ACCESS_EXPIRES_IN=15m` when finished.
+
+Unit coverage for the silent-success contract: `src/lib/api/refresh-interceptor.test.ts` (`npm run test:unit`).
+
 ## Feature layout
 
 ```
@@ -80,6 +103,4 @@ A minimal live call lives at `src/features/auth/api/get-current-user.ts` for Pha
 
 ## Out of scope here
 
-- Login/register screens (**1.2**)
-- Session-expired UX (**1.3**)
 - Org create/switcher (**2.x**)

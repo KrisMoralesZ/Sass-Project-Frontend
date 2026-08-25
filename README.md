@@ -90,6 +90,7 @@ npm run test:storybook:run
 | `npm run storybook`          | Start Storybook                          |
 | `npm run build-storybook`    | Build static Storybook                   |
 | `npm run test`               | Vitest (all projects)                    |
+| `npm run test:unit`          | Unit tests (refresh interceptor, …)      |
 | `npm run test:storybook`     | Storybook Vitest project (watch)         |
 | `npm run test:storybook:run` | Storybook Vitest project (one run)       |
 | `npm run lint`               | Lint with oxlint                         |

@@ -5,7 +5,10 @@ import axios, {
 } from 'axios'
 import type { RefreshResponse } from '@/features/auth/auth-api.types'
 import { clearClientSession } from '@/features/auth/clear-client-session'
-import { getRefreshToken, setSessionTokens } from '@/features/auth/session-storage'
+import {
+  getRefreshToken,
+  setSessionTokens,
+} from '@/features/auth/session-storage'
 import { getApiUrl } from '@/lib/env'
 import {
   isApiErrorResponse,
@@ -29,6 +32,11 @@ type RetriableConfig = InternalAxiosRequestConfig & {
 }
 
 let refreshInFlight: Promise<string> | null = null
+
+/** Test-only: drop a stuck in-flight refresh between cases. */
+export function resetRefreshSingleFlight(): void {
+  refreshInFlight = null
+}
 
 function shouldSkipRefresh(config?: InternalAxiosRequestConfig): boolean {
   const url = config?.url ?? ''
@@ -109,7 +117,8 @@ function refreshAccessTokenSingleFlight(): Promise<string> {
 
 /**
  * On 401: refresh once (shared in-flight promise), retry the request.
- * Clears tokens + active org when refresh fails.
+ * Success stays silent (task 1.3.4): new tokens in sessionStorage, no toast,
+ * no redirect, no `notifySessionCleared`. Failed refresh still clears the session.
  */
 export function attachRefreshInterceptor(instance: AxiosInstance): void {
   instance.interceptors.response.use(

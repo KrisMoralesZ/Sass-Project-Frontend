@@ -10,6 +10,7 @@ import { subscribeSessionCleared } from './session-events'
 
 /**
  * When refresh fails, shows a toast and sends the user to login.
+ * Successful 401 → refresh → retry must not reach this path (task 1.3.4).
  * Explicit logout (`reason: 'logout'`) is handled separately in `useLogout`.
  */
 export function SessionExpiredRecovery() {

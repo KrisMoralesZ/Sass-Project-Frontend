@@ -8,7 +8,9 @@ import { clearSessionTokens } from './session-storage'
  * Used by logout, failed refresh, and other flows that drop credentials
  * without going through `AuthSessionProvider.clearSession()`.
  */
-export function clearClientSession(reason: SessionClearReason = 'expired'): void {
+export function clearClientSession(
+  reason: SessionClearReason = 'expired',
+): void {
   clearSessionTokens()
   clearActiveOrganizationId()
 

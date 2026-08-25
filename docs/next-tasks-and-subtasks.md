@@ -248,7 +248,7 @@ Subtasks:
 - [x] **1.3.1** Add `logout` API helper: `POST /auth/logout` with `{ refreshToken }`; always clear local session afterward (even if the network call fails)
 - [x] **1.3.2** Add logout control in `AppLayout` (or shell header) that calls logout, clears org id, and navigates to `/login`
 - [x] **1.3.3** Session-expired recovery: when `subscribeSessionCleared` fires (failed refresh), show a toast/banner and redirect to `/login` with a clear “session expired” message
-- [ ] **1.3.4** Confirm transparent refresh during normal authenticated browsing (manual QA against short-lived access tokens); no extra UI when refresh succeeds
+- [x] **1.3.4** Confirm transparent refresh during normal authenticated browsing (manual QA against short-lived access tokens); no extra UI when refresh succeeds
 - [ ] **1.3.5** On logout / session clear: invalidate auth-related Query cache (`['auth', 'me']` and related keys)
 
 **1.3 out of scope** (later / Phase 2):
@@ -509,7 +509,8 @@ Subtasks:
 - [x] **1.1** Auth session model (storage, hydrate, loading-aware guards; preview gated to DEV)
 - [x] **1.2.1–1.2.5** Login + register UI, mutations, session establish, error surfacing
 - [x] **1.2.6–1.2.7** Auth Storybook stories + login↔register cross-links / `RequireGuest`
-- [ ] **1.3** Logout UI + session-expired recovery (refresh plumbing already in 0.3.4)
+- [x] **1.3.1–1.3.4** Logout, session-expired recovery, transparent refresh (silent on success)
+- [ ] **1.3.5** Invalidate auth Query cache on logout / session clear
 - [ ] Build create-organization + org switcher flows (Phase 2)
 - [ ] Wire profile settings and members directory (Phase 3)
 - [ ] Add frontend permission helpers from the backend matrix
