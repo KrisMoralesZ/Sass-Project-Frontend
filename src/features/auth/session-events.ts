@@ -1,6 +1,6 @@
 export type SessionClearReason = 'logout' | 'expired'
 
-type SessionClearedListener = (reason: SessionClearReason) => void
+export type SessionClearedListener = (reason: SessionClearReason) => void
 
 const listeners = new Set<SessionClearedListener>()
 
