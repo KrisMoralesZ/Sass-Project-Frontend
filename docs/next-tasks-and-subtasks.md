@@ -266,46 +266,68 @@ Acceptance criteria:
 
 ## Phase 2 — Organizations and workspace context
 
+Build organization workflows on the authenticated app shell, the typed
+`apiClient`, TanStack Query, and the `X-Organization-Id` tenant header.
+Available backend endpoints include organization list/create/update/archive
+operations.
+
 ### Task 2.1 — Organization onboarding
 
 Subtasks:
 
-- Build create-organization flow (`POST /organizations`)
-- Handle empty-state for users with zero organizations
-- Show org name/slug/plan fields with slug validation feedback
+- [ ] **2.1.1** Add typed organization API helpers and Query options for list/create/update/archive operations under `features/organizations/api/`
+- [ ] **2.1.2** Build the create-organization flow (`POST /organizations`) with name, slug, and plan placeholder fields
+- [ ] **2.1.3** Validate organization slugs on the client and surface backend validation/conflict errors through `getApiErrorMessage`
+- [ ] **2.1.4** Handle the authenticated empty state for users with zero organizations
+- [ ] **2.1.5** Set the newly created organization as the active workspace and navigate into its app context
 
 Acceptance criteria:
 
 - A newly registered user can create their first workspace
-- Creator lands inside that organization as the active workspace
+- Organization name, slug, and plan placeholder data are displayed consistently
+- Invalid or duplicate slugs fail with clear inline feedback
+- The creator lands inside that organization as the active workspace
 
 ### Task 2.2 — Organization list and switcher
 
 Subtasks:
 
-- Wire `GET /organizations` into an org picker / switcher
-- Persist the active organization id for subsequent requests
-- Send `X-Organization-Id` on all tenant-scoped calls
-- Optionally probe `GET /tenant/context` after switching
+- [ ] **2.2.1** Wire `GET /organizations` into an organization picker/switcher in the authenticated shell
+- [ ] **2.2.2** Persist the active organization id through one client-side active-organization storage API
+- [ ] **2.2.3** Restore a valid active organization after authentication and hard refresh; fall back to the first available organization when needed
+- [ ] **2.2.4** Send `X-Organization-Id` on all tenant-scoped API calls after an organization is active
+- [ ] **2.2.5** Invalidate organization-scoped Query data when switching workspaces
+- [ ] **2.2.6** Handle missing, archived, forbidden, and unavailable organization context without rendering stale workspace data
+- [ ] **2.2.7** Optionally probe `GET /tenant/context` after switching when the endpoint is available
 
 Acceptance criteria:
 
 - Multi-org users can switch workspaces without re-login
 - Active org is visible in the shell and used consistently by the API client
+- Active organization state survives a hard refresh when the organization remains available
+- Switching organizations does not display data from the previous workspace
 
 ### Task 2.3 — Organization settings and archive
 
 Subtasks:
 
-- Build organization settings UI (`PATCH /organizations/:id`) for timezone/locale/branding placeholders
-- Gate settings edits behind client permission checks (`settings:update`)
-- Add archive/delete confirmation for owners (`DELETE /organizations/:id`)
-- Hide archived orgs from the active switcher after refresh
+- [ ] **2.3.1** Build organization settings UI for timezone, locale, and branding placeholders (`PATCH /organizations/:id`)
+- [ ] **2.3.2** Gate settings edits behind the client permission check for `settings:update`, while retaining backend enforcement
+- [ ] **2.3.3** Surface forbidden, validation, and tenant-context errors with clear field or page feedback
+- [ ] **2.3.4** Add archive/delete confirmation for organization owners (`DELETE /organizations/:id`)
+- [ ] **2.3.5** Clear or replace the active organization after archive and hide archived organizations from the switcher after refresh
 
 Acceptance criteria:
 
 - Admins/owners can update settings when permitted
 - Only owners can archive; forbidden responses are handled cleanly
+- Archived organizations cannot remain selected as the active workspace
+
+**Phase 2 out of scope** (land in later phases):
+
+- Profile settings and member directory screens (Phase 3)
+- Invitations and member role/removal mutations until the backend endpoints exist
+- Projects, boards, issues, and other organization-scoped domain screens
 
 ---
 
