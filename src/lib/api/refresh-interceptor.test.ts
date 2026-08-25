@@ -12,6 +12,7 @@ import {
   getRefreshToken,
   setSessionTokens,
   subscribeSessionCleared,
+  type SessionClearedListener,
 } from '@/features/auth'
 import { ErrorCode, type ApiResponseMeta } from '@/types'
 import {
@@ -86,7 +87,7 @@ function createClient(
 }
 
 describe('refresh interceptor (task 1.3.4)', () => {
-  let sessionCleared: ReturnType<typeof vi.fn>
+  let sessionCleared: SessionClearedListener
   let unsubscribe: () => void
 
   beforeEach(() => {

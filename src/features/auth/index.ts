@@ -50,7 +50,11 @@ export {
   SESSION_EXPIRED_TITLE,
   setSessionExpiredNotice,
 } from './session-expired-notice'
-export { notifySessionCleared, subscribeSessionCleared } from './session-events'
+export {
+  notifySessionCleared,
+  subscribeSessionCleared,
+  type SessionClearedListener,
+} from './session-events'
 export {
   clearSessionTokens,
   getAccessToken,
