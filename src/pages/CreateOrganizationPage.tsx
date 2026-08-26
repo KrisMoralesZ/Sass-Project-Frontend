@@ -3,7 +3,8 @@ import { useNavigate } from 'react-router-dom'
 import Button from '@/components/ui/Button'
 import FormField from '@/components/ui/FormField'
 import Input from '@/components/ui/Input'
-import { getApiErrorMessage } from '@/lib'
+import { getApiErrorMessage, isApiError } from '@/lib'
+import { ErrorCode } from '@/types'
 import {
   ORGANIZATION_PLANS,
   setActiveOrganizationId,
@@ -20,6 +21,40 @@ import {
   $Status,
 } from './CreateOrganizationPage.sc'
 
+const ORGANIZATION_SLUG_MAX_LENGTH = 120
+const ORGANIZATION_SLUG_PATTERN = /^[a-z0-9]+(?:-[a-z0-9]+)*$/
+
+function validateOrganizationSlug(slug: string): string | undefined {
+  if (slug.length > ORGANIZATION_SLUG_MAX_LENGTH) {
+    return `Slug must be ${ORGANIZATION_SLUG_MAX_LENGTH} characters or fewer.`
+  }
+
+  if (!ORGANIZATION_SLUG_PATTERN.test(slug)) {
+    return 'Use lowercase letters, numbers, and single hyphens only.'
+  }
+
+  return undefined
+}
+
+function getSlugApiError(error: unknown): string | undefined {
+  if (!isApiError(error)) {
+    return undefined
+  }
+
+  if (error.code === ErrorCode.CONFLICT) {
+    return getApiErrorMessage(error)
+  }
+
+  if (
+    error.code === ErrorCode.VALIDATION_FAILED &&
+    getApiErrorMessage(error).toLowerCase().includes('slug')
+  ) {
+    return getApiErrorMessage(error)
+  }
+
+  return undefined
+}
+
 export function CreateOrganizationPage() {
   const navigate = useNavigate()
   const createOrganizationMutation = useCreateOrganization()
@@ -28,19 +63,41 @@ export function CreateOrganizationPage() {
     slug: '',
     plan: 'FREE',
   })
+  const [slugError, setSlugError] = useState<string>()
 
-  const updateField = (field: keyof CreateOrganizationRequest, value: string) =>
+  const updateField = (
+    field: keyof CreateOrganizationRequest,
+    value: string,
+  ) => {
     setForm((current) => ({ ...current, [field]: value }))
+    if (field === 'slug') {
+      setSlugError(undefined)
+      createOrganizationMutation.reset()
+    }
+  }
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault()
+    const trimmedSlug = form.slug?.trim() ?? ''
+    const nextSlugError = trimmedSlug
+      ? validateOrganizationSlug(trimmedSlug)
+      : undefined
+
+    setSlugError(nextSlugError)
+    if (nextSlugError) {
+      return
+    }
+
     const body = {
       ...form,
       name: form.name.trim(),
-      slug: form.slug?.trim() || undefined,
+      slug: trimmedSlug || undefined,
     }
 
     createOrganizationMutation.mutate(body, {
+      onError: (error) => {
+        setSlugError(getSlugApiError(error))
+      },
       onSuccess: (organization) => {
         setActiveOrganizationId(organization.id)
         void navigate('/')
@@ -78,6 +135,7 @@ export function CreateOrganizationPage() {
             label="Slug"
             htmlFor="organization-slug"
             hint="Optional. Leave blank to generate one from the name."
+            error={slugError}
           >
             <Input
               id="organization-slug"
