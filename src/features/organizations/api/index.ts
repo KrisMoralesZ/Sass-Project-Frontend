@@ -11,6 +11,7 @@ export {
   organizationsQueryOptions,
 } from './list-organizations'
 export { updateOrganization } from './update-organization'
+export { ORGANIZATION_PLANS } from './organization-api.types'
 export type {
   CreateOrganizationRequest,
   CreateOrganizationResponse,

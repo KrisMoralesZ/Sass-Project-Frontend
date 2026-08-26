@@ -276,7 +276,7 @@ operations.
 Subtasks:
 
 - [x] **2.1.1** Add typed organization API helpers and Query options for list/create/update/archive operations under `features/organizations/api/`
-- [ ] **2.1.2** Build the create-organization flow (`POST /organizations`) with name, slug, and plan placeholder fields
+- [x] **2.1.2** Build the create-organization flow (`POST /organizations`) with name, slug, and plan placeholder fields
 - [ ] **2.1.3** Validate organization slugs on the client and surface backend validation/conflict errors through `getApiErrorMessage`
 - [ ] **2.1.4** Handle the authenticated empty state for users with zero organizations
 - [ ] **2.1.5** Set the newly created organization as the active workspace and navigate into its app context

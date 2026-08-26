@@ -2,6 +2,7 @@ import { Route, Routes } from 'react-router-dom'
 import AppLayout from '@/components/layout/AppLayout'
 import PublicLayout from '@/components/layout/PublicLayout'
 import { HomePage } from '@/pages/HomePage'
+import { CreateOrganizationPage } from '@/pages/CreateOrganizationPage'
 import { LoginPage } from '@/pages/LoginPage'
 import { NotFoundPage } from '@/pages/NotFoundPage'
 import { PlaceholderPage } from '@/pages/PlaceholderPage'
@@ -26,6 +27,10 @@ export function AppRoutes() {
       <Route element={<RequireAuth />}>
         <Route element={<AppLayout />}>
           <Route path={paths.home} element={<HomePage />} />
+          <Route
+            path={paths.createOrganization}
+            element={<CreateOrganizationPage />}
+          />
           <Route
             path={paths.projects}
             element={
