@@ -48,5 +48,9 @@ export function useRestoreActiveOrganization() {
     if (firstOrg) {
       setActiveOrganizationId(firstOrg.id)
     }
-  }, [organizationsQuery.isLoading, organizationsQuery.isError, organizationsQuery.data])
+  }, [
+    organizationsQuery.isLoading,
+    organizationsQuery.isError,
+    organizationsQuery.data,
+  ])
 }
