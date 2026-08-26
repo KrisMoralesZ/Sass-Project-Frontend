@@ -292,7 +292,7 @@ Acceptance criteria:
 
 Subtasks:
 
-- [ ] **2.2.1** Wire `GET /organizations` into an organization picker/switcher in the authenticated shell
+- [x] **2.2.1** Wire `GET /organizations` into an organization picker/switcher in the authenticated shell
 - [ ] **2.2.2** Persist the active organization id through one client-side active-organization storage API
 - [ ] **2.2.3** Restore a valid active organization after authentication and hard refresh; fall back to the first available organization when needed
 - [ ] **2.2.4** Send `X-Organization-Id` on all tenant-scoped API calls after an organization is active
