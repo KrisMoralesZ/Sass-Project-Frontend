@@ -2,8 +2,10 @@ import { type ReactNode } from 'react'
 import { useNavigate, Outlet } from 'react-router-dom'
 import Button from '@/components/ui/Button'
 import { getApiErrorMessage, isApiError } from '@/lib'
-import { useListOrganizations } from '@/features/organizations'
-import { useRestoreActiveOrganization } from '@/features/organizations'
+import {
+  useListOrganizations,
+  useRestoreActiveOrganization,
+} from '@/features/organizations'
 import { paths } from './paths'
 import {
   $Actions,
@@ -19,11 +21,14 @@ export interface IRequireOrganization {
 export function RequireOrganization({ children }: IRequireOrganization) {
   const navigate = useNavigate()
   const organizationsQuery = useListOrganizations()
-  // Restore active org after hard refresh; fall back to first available (task 2.2.3)
-  useRestoreActiveOrganization()
+  const { isRestored } = useRestoreActiveOrganization()
 
   if (organizationsQuery.isPending) {
     return <$Message>Loading your workspaces...</$Message>
+  }
+
+  if (!isRestored) {
+    return <$Message>Restoring your workspace...</$Message>
   }
 
   if (organizationsQuery.isError) {

@@ -1,5 +1,6 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import {
+  clearActiveOrganizationId,
   getActiveOrganizationId,
   setActiveOrganizationId,
 } from '@/features/organizations/active-organization-storage'
@@ -13,44 +14,44 @@ import { useListOrganizations } from './use-list-organizations'
  */
 export function useRestoreActiveOrganization() {
   const organizationsQuery = useListOrganizations()
+  const [isRestored, setIsRestored] = useState(false)
 
   useEffect(() => {
-    // Only run when query has successfully loaded
     if (organizationsQuery.isLoading || organizationsQuery.isError) {
       return
     }
 
     const organizations = organizationsQuery.data?.items ?? []
 
-    // No organizations available; clear any stale active org
     if (organizations.length === 0) {
-      const currentActive = getActiveOrganizationId()
-      if (currentActive) {
-        // Do not clear; let RequireOrganization handle the empty state
-        // (user may be in the process of creating their first org)
-      }
+      clearActiveOrganizationId()
+      setIsRestored(true)
       return
     }
 
     const storedActiveId = getActiveOrganizationId()
 
-    // Verify stored org still exists in the list
     if (storedActiveId) {
       const orgExists = organizations.some((org) => org.id === storedActiveId)
       if (orgExists) {
-        // Stored org is still valid; nothing to do
+        setIsRestored(true)
         return
       }
     }
 
-    // Fall back to first available organization (task 2.2.3 fallback)
     const firstOrg = organizations[0]
     if (firstOrg) {
       setActiveOrganizationId(firstOrg.id)
     }
+    setIsRestored(true)
   }, [
     organizationsQuery.isLoading,
     organizationsQuery.isError,
     organizationsQuery.data,
   ])
+
+  return {
+    isRestored:
+      isRestored || organizationsQuery.isPending || organizationsQuery.isError,
+  }
 }

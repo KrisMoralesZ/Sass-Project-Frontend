@@ -1,9 +1,10 @@
 import { useQueryClient } from '@tanstack/react-query'
-import { type ChangeEvent, type FC } from 'react'
-import { useListOrganizations } from '@/features/organizations'
+import { type ChangeEvent, type FC, useState } from 'react'
 import {
   getActiveOrganizationId,
   setActiveOrganizationId,
+  useListOrganizations,
+  useTenantContext,
 } from '@/features/organizations'
 import { getApiErrorMessage, isApiError } from '@/lib'
 import {
@@ -21,12 +22,14 @@ import {
 export const OrganizationSwitcher: FC = () => {
   const queryClient = useQueryClient()
   const organizationsQuery = useListOrganizations()
-  const activeOrgId = getActiveOrganizationId()
+  const [activeOrgId, setActiveOrgId] = useState(getActiveOrganizationId)
+  const tenantContextQuery = useTenantContext(activeOrgId)
 
   const handleChange = (event: ChangeEvent<HTMLSelectElement>) => {
     const nextOrgId = event.target.value
     if (nextOrgId && nextOrgId !== activeOrgId) {
       setActiveOrganizationId(nextOrgId)
+      setActiveOrgId(nextOrgId)
       void queryClient.invalidateQueries({
         predicate: (query) =>
           query.queryKey[0] === 'organizations' &&
@@ -55,6 +58,13 @@ export const OrganizationSwitcher: FC = () => {
 
   return (
     <$SelectWrapper>
+      {activeOrgId && tenantContextQuery.isError && (
+        <$SelectError>
+          {isApiError(tenantContextQuery.error)
+            ? getApiErrorMessage(tenantContextQuery.error)
+            : 'This workspace is unavailable.'}
+        </$SelectError>
+      )}
       <$Select value={activeOrgId || ''} onChange={handleChange}>
         <option value="" disabled>
           Select a workspace

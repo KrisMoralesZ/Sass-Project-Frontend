@@ -297,8 +297,8 @@ Subtasks:
 - [x] **2.2.3** Restore a valid active organization after authentication and hard refresh; fall back to the first available organization when needed
 - [x] **2.2.4** Send `X-Organization-Id` on all tenant-scoped API calls after an organization is active
 - [x] **2.2.5** Invalidate organization-scoped Query data when switching workspaces
-- [ ] **2.2.6** Handle missing, archived, forbidden, and unavailable organization context without rendering stale workspace data
-- [ ] **2.2.7** Optionally probe `GET /tenant/context` after switching when the endpoint is available
+- [x] **2.2.6** Handle missing, archived, forbidden, and unavailable organization context without rendering stale workspace data
+- [x] **2.2.7** Optionally probe `GET /tenant/context` after switching when the endpoint is available
 
 Acceptance criteria:
 
