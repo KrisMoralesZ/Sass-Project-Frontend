@@ -9,6 +9,7 @@ import { PlaceholderPage } from '@/pages/PlaceholderPage'
 import { RegisterPage } from '@/pages/RegisterPage'
 import { RequireAuth } from './RequireAuth'
 import { RequireGuest } from './RequireGuest'
+import { RequireOrganization } from './RequireOrganization'
 import { paths } from './paths'
 
 /**
@@ -26,47 +27,49 @@ export function AppRoutes() {
 
       <Route element={<RequireAuth />}>
         <Route element={<AppLayout />}>
-          <Route path={paths.home} element={<HomePage />} />
           <Route
             path={paths.createOrganization}
             element={<CreateOrganizationPage />}
           />
-          <Route
-            path={paths.projects}
-            element={
-              <PlaceholderPage
-                title="Projects"
-                description="Project list and CRUD UI land in Phase 4."
-              />
-            }
-          />
-          <Route
-            path={paths.boards}
-            element={
-              <PlaceholderPage
-                title="Boards"
-                description="Board views land in Phase 5."
-              />
-            }
-          />
-          <Route
-            path={paths.members}
-            element={
-              <PlaceholderPage
-                title="Members"
-                description="Members directory lands in Phase 3."
-              />
-            }
-          />
-          <Route
-            path={paths.settings}
-            element={
-              <PlaceholderPage
-                title="Settings"
-                description="Organization and profile settings land in Phases 2–3."
-              />
-            }
-          />
+          <Route element={<RequireOrganization />}>
+            <Route path={paths.home} element={<HomePage />} />
+            <Route
+              path={paths.projects}
+              element={
+                <PlaceholderPage
+                  title="Projects"
+                  description="Project list and CRUD UI land in Phase 4."
+                />
+              }
+            />
+            <Route
+              path={paths.boards}
+              element={
+                <PlaceholderPage
+                  title="Boards"
+                  description="Board views land in Phase 5."
+                />
+              }
+            />
+            <Route
+              path={paths.members}
+              element={
+                <PlaceholderPage
+                  title="Members"
+                  description="Members directory lands in Phase 3."
+                />
+              }
+            />
+            <Route
+              path={paths.settings}
+              element={
+                <PlaceholderPage
+                  title="Settings"
+                  description="Organization and profile settings land in Phases 2–3."
+                />
+              }
+            />
+          </Route>
           <Route path="*" element={<NotFoundPage />} />
         </Route>
       </Route>
