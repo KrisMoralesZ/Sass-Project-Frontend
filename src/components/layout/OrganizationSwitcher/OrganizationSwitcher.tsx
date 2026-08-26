@@ -1,3 +1,4 @@
+import { useQueryClient } from '@tanstack/react-query'
 import { type ChangeEvent, type FC } from 'react'
 import { useListOrganizations } from '@/features/organizations'
 import {
@@ -18,14 +19,19 @@ import {
  * Task 2.2.1.
  */
 export const OrganizationSwitcher: FC = () => {
+  const queryClient = useQueryClient()
   const organizationsQuery = useListOrganizations()
   const activeOrgId = getActiveOrganizationId()
 
   const handleChange = (event: ChangeEvent<HTMLSelectElement>) => {
     const nextOrgId = event.target.value
-    if (nextOrgId) {
+    if (nextOrgId && nextOrgId !== activeOrgId) {
       setActiveOrganizationId(nextOrgId)
-      // TODO: task 2.2.5 - invalidate org-scoped queries on switch
+      void queryClient.invalidateQueries({
+        predicate: (query) =>
+          query.queryKey[0] === 'organizations' &&
+          typeof query.queryKey[1] === 'string',
+      })
     }
   }
 

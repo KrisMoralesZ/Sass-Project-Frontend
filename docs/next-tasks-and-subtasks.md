@@ -294,10 +294,9 @@ Subtasks:
 
 - [x] **2.2.1** Wire `GET /organizations` into an organization picker/switcher in the authenticated shell
 - [x] **2.2.2** Persist the active organization id through one client-side active-organization storage API
-- [ ] **2.2.3** Restore a valid active organization after authentication and hard refresh; fall back to the first available organization when needed
 - [x] **2.2.3** Restore a valid active organization after authentication and hard refresh; fall back to the first available organization when needed
-- [ ] **2.2.4** Send `X-Organization-Id` on all tenant-scoped API calls after an organization is active
-- [ ] **2.2.5** Invalidate organization-scoped Query data when switching workspaces
+- [x] **2.2.4** Send `X-Organization-Id` on all tenant-scoped API calls after an organization is active
+- [x] **2.2.5** Invalidate organization-scoped Query data when switching workspaces
 - [ ] **2.2.6** Handle missing, archived, forbidden, and unavailable organization context without rendering stale workspace data
 - [ ] **2.2.7** Optionally probe `GET /tenant/context` after switching when the endpoint is available
 
