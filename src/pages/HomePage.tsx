@@ -1,4 +1,6 @@
-export function HomePage() {
+import type { FC } from 'react'
+
+const HomePage: FC = () => {
   return (
     <main>
       <h1>Workspace home</h1>
@@ -9,3 +11,5 @@ export function HomePage() {
     </main>
   )
 }
+
+export default HomePage

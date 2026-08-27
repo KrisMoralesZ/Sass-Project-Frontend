@@ -1,7 +1,8 @@
+import type { FC } from 'react'
 import { Link } from 'react-router-dom'
 import { paths } from '@/routes/paths'
 
-export function NotFoundPage() {
+const NotFoundPage: FC = () => {
   return (
     <main>
       <h1>Page not found</h1>
@@ -12,3 +13,5 @@ export function NotFoundPage() {
     </main>
   )
 }
+
+export default NotFoundPage
