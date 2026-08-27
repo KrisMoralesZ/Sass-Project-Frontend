@@ -1,7 +1,7 @@
 import { type FC, type ReactNode } from 'react'
 import { Outlet } from 'react-router-dom'
 import Button from '@/components/ui/Button'
-import { useAuthSession } from '@/features/auth'
+import { useAuthSession } from '@/features/auth/useAuthSession'
 import { paths } from '@/routes/paths'
 import {
   $BrandLink,

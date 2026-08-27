@@ -1,5 +1,8 @@
+import type { FC } from 'react'
 import { AppRoutes } from '@/routes'
 
-export default function App() {
+const App: FC = () => {
   return <AppRoutes />
 }
+
+export default App
