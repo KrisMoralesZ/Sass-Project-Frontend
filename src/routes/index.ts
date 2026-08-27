@@ -1,6 +1,4 @@
 export { default as AppRoutes } from './AppRoutes'
-export { paths } from './paths'
 export { default as RequireAuth } from './RequireAuth'
 export { default as RequireGuest } from './RequireGuest'
-export { default as RequireOrganization } from './RequireOrganization'
-export type { IRequireOrganization } from './RequireOrganization'
+export { paths } from './paths'
