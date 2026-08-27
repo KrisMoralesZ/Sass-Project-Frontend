@@ -1,4 +1,5 @@
-export { AppThemeProvider } from './AppThemeProvider'
+export { default as AppThemeProvider } from './AppThemeProvider'
+export type { IAppThemeProvider } from './AppThemeProvider'
 export { GlobalStyle } from './GlobalStyle'
 export { mediaDown, mediaUp } from './media'
 export type { AppTheme } from './theme'
