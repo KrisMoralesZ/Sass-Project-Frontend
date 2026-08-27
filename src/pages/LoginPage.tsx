@@ -1,8 +1,9 @@
+import type { FC } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { useAuthSession } from '@/features/auth'
 import { paths } from '@/routes/paths'
 
-export function LoginPage() {
+const LoginPage: FC = () => {
   const navigate = useNavigate()
   const location = useLocation()
   const { enterDevPreviewSession } = useAuthSession()
@@ -32,3 +33,5 @@ export function LoginPage() {
     </main>
   )
 }
+
+export default LoginPage

@@ -1,3 +1,4 @@
+import type { FC } from 'react'
 import { Link, Outlet } from 'react-router-dom'
 import styled from 'styled-components'
 import { paths } from '@/routes/paths'
@@ -49,7 +50,7 @@ const Content = styled.div`
  * Guest shell for login/register and other unauthenticated screens.
  * First layout converted to styled-components (task 0.1.4.4 smoke test).
  */
-export function PublicLayout() {
+const PublicLayout: FC = () => {
   return (
     <Shell>
       <Header>
@@ -65,3 +66,5 @@ export function PublicLayout() {
     </Shell>
   )
 }
+
+export default PublicLayout
