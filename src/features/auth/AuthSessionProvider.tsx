@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState, type ReactNode } from 'react'
+import { useCallback, useMemo, useState, type FC, type ReactNode } from 'react'
 import { AuthSessionContext } from './auth-session-context'
 import {
   clearSessionTokens,
@@ -6,7 +6,7 @@ import {
   setDevPreviewSession,
 } from './session-storage'
 
-export function AuthSessionProvider({ children }: { children: ReactNode }) {
+const AuthSessionProvider: FC<{ children: ReactNode }> = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(() => hasSession())
 
   const enterDevPreviewSession = useCallback(() => {
@@ -34,3 +34,5 @@ export function AuthSessionProvider({ children }: { children: ReactNode }) {
     </AuthSessionContext.Provider>
   )
 }
+
+export default AuthSessionProvider

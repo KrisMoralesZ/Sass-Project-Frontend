@@ -15,6 +15,32 @@ src/
   types/           Shared TypeScript types (API envelope, etc.)
 ```
 
+## Component conventions
+
+Every page and component is an explicitly typed `FC` with a single default
+export at the **end** of the file:
+
+```tsx
+import type { FC } from 'react'
+
+export interface IExamplePage {
+  title: string
+}
+
+const ExamplePage: FC<IExamplePage> = ({ title }) => {
+  return <main>{title}</main>
+}
+
+export default ExamplePage
+```
+
+- Props interfaces are named `I<ComponentName>` and exported from the same file.
+- Barrels re-export with `export { default as ExamplePage } from './ExamplePage'`,
+  so call sites keep importing by name.
+- Styles live beside the component in `<ComponentName>.sc.tsx` (`$`-prefixed).
+- Exception: compound components (e.g. `Table` and its `TableRow` / `TableCell`
+  parts) keep named `FC` exports since a file has only one default export.
+
 ## Routing (task 0.1.3)
 
 | Area  | Paths                                     | Shell / guard                   |
