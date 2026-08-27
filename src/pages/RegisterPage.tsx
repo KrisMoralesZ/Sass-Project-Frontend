@@ -1,7 +1,8 @@
 import { Link } from 'react-router-dom'
 import { paths } from '@/routes/paths'
+import type { FC } from 'react'
 
-export function RegisterPage() {
+const RegisterPage: FC = () => {
   return (
     <main>
       <h1>Create account</h1>
@@ -14,3 +15,5 @@ export function RegisterPage() {
     </main>
   )
 }
+
+export default RegisterPage
