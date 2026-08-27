@@ -1,6 +1,6 @@
 import type { FC } from 'react'
 import { Navigate, Outlet } from 'react-router-dom'
-import { useAuthSession } from '@/features/auth'
+import { useAuthSession } from '@/features/auth/useAuthSession'
 import { paths } from './paths'
 
 /**

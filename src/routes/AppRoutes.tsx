@@ -1,13 +1,13 @@
 import type { FC } from 'react'
 import { Route, Routes } from 'react-router-dom'
-import { AppLayout, PublicLayout } from '@/components/layout'
+import AppLayout from '@/components/layout/AppLayout'
+import PublicLayout from '@/components/layout/PublicLayout'
 import HomePage from '@/pages/HomePage'
 import LoginPage from '@/pages/LoginPage'
 import NotFoundPage from '@/pages/NotFoundPage'
 import PlaceholderPage from '@/pages/PlaceholderPage'
-import RegisterPage from '@/pages/RegisterPage'
-import { RequireAuth } from './RequireAuth'
-import { RequireGuest } from './RequireGuest'
+import RequireAuth from './RequireAuth'
+import RequireGuest from './RequireGuest'
 import { paths } from './paths'
 
 /**
@@ -19,7 +19,6 @@ const AppRoutes: FC = () => {
       <Route element={<RequireGuest />}>
         <Route element={<PublicLayout />}>
           <Route path={paths.login} element={<LoginPage />} />
-          <Route path={paths.register} element={<RegisterPage />} />
         </Route>
       </Route>
 
