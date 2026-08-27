@@ -1,6 +1,7 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import { BrowserRouter } from 'react-router-dom'
+import AppQueryProvider from '@/lib/AppQueryProvider'
 import AuthSessionProvider from '@/features/auth/AuthSessionProvider'
 import AppThemeProvider from '@/styles/AppThemeProvider'
 import App from './App'
