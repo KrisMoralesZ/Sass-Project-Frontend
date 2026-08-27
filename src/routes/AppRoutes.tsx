@@ -35,6 +35,15 @@ const AppRoutes: FC = () => {
             }
           />
           <Route
+            path={paths.boards}
+            element={
+              <PlaceholderPage
+                title="Boards"
+                description="Board views land in Phase 5."
+              />
+            }
+          />
+          <Route
             path={paths.members}
             element={
               <PlaceholderPage

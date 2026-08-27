@@ -5,6 +5,7 @@ export const paths = {
   members: '/members',
   settings: '/settings',
   projects: '/projects',
+  boards: '/boards',
 } as const
 
 export type AppPath = (typeof paths)[keyof typeof paths]
