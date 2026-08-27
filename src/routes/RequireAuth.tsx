@@ -1,12 +1,13 @@
+import type { FC } from 'react'
 import { Navigate, Outlet, useLocation } from 'react-router-dom'
-import { useAuthSession } from '@/features/auth'
+import { useAuthSession } from '@/features/auth/useAuthSession'
 import { paths } from './paths'
 
 /**
  * Blocks unauthenticated access to the app shell.
  * Redirects to login and preserves the intended destination.
  */
-export function RequireAuth() {
+const RequireAuth: FC = () => {
   const { isAuthenticated } = useAuthSession()
   const location = useLocation()
 
@@ -16,3 +17,5 @@ export function RequireAuth() {
 
   return <Outlet />
 }
+
+export default RequireAuth
