@@ -1,4 +1,4 @@
-import { type FormEvent, useState } from 'react'
+import { type FC, type FormEvent, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import Button from '@/components/ui/Button'
 import FormField from '@/components/ui/FormField'
@@ -55,7 +55,7 @@ function getSlugApiError(error: unknown): string | undefined {
   return undefined
 }
 
-export function CreateOrganizationPage() {
+const CreateOrganizationPage: FC = () => {
   const navigate = useNavigate()
   const createOrganizationMutation = useCreateOrganization()
   const [form, setForm] = useState<CreateOrganizationRequest>({
@@ -185,3 +185,5 @@ export function CreateOrganizationPage() {
     </$Page>
   )
 }
+
+export default CreateOrganizationPage

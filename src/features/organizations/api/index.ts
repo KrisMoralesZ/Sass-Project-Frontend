@@ -1,6 +1,11 @@
 export { archiveOrganization } from './archive-organization'
 export { createOrganization } from './create-organization'
 export {
+  getTenantContext,
+  tenantContextQueryKey,
+  tenantContextQueryOptions,
+} from './get-tenant-context'
+export {
   getOrganization,
   organizationQueryKey,
   organizationQueryOptions,
@@ -11,15 +16,23 @@ export {
   organizationsQueryOptions,
 } from './list-organizations'
 export { updateOrganization } from './update-organization'
-export { ORGANIZATION_PLANS } from './organization-api.types'
+export {
+  ORGANIZATION_FEATURE_FLAGS,
+  ORGANIZATION_PLANS,
+} from './organization-api.types'
+export type { TenantContext } from './get-tenant-context'
 export type {
   CreateOrganizationRequest,
   CreateOrganizationResponse,
   ListOrganizationsQuery,
   ListOrganizationsResponse,
   Organization,
+  OrganizationBrandingSettings,
+  OrganizationFeatureFlag,
+  OrganizationFeatureFlags,
   OrganizationPlan,
   OrganizationSettings,
+  OrganizationSettingsPatch,
   UpdateOrganizationRequest,
   UpdateOrganizationResponse,
 } from './organization-api.types'
