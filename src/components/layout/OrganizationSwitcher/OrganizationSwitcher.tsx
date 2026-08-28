@@ -1,8 +1,8 @@
 import { useQueryClient } from '@tanstack/react-query'
-import { type ChangeEvent, type FC, useState } from 'react'
+import { type ChangeEvent, type FC } from 'react'
 import {
-  getActiveOrganizationId,
   setActiveOrganizationId,
+  useActiveOrganizationId,
   useListOrganizations,
   useTenantContext,
 } from '@/features/organizations'
@@ -19,17 +19,16 @@ import {
  * Shows the list of organizations the user belongs to and allows switching.
  * Task 2.2.1.
  */
-export const OrganizationSwitcher: FC = () => {
+const OrganizationSwitcher: FC = () => {
   const queryClient = useQueryClient()
   const organizationsQuery = useListOrganizations()
-  const [activeOrgId, setActiveOrgId] = useState(getActiveOrganizationId)
+  const activeOrgId = useActiveOrganizationId()
   const tenantContextQuery = useTenantContext(activeOrgId)
 
   const handleChange = (event: ChangeEvent<HTMLSelectElement>) => {
     const nextOrgId = event.target.value
     if (nextOrgId && nextOrgId !== activeOrgId) {
       setActiveOrganizationId(nextOrgId)
-      setActiveOrgId(nextOrgId)
       void queryClient.invalidateQueries({
         predicate: (query) =>
           query.queryKey[0] === 'organizations' &&
@@ -78,3 +77,5 @@ export const OrganizationSwitcher: FC = () => {
     </$SelectWrapper>
   )
 }
+
+export default OrganizationSwitcher
