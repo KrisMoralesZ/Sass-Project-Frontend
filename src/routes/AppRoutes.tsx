@@ -1,25 +1,24 @@
+import type { FC } from 'react'
 import { Route, Routes } from 'react-router-dom'
 import AppLayout from '@/components/layout/AppLayout'
 import PublicLayout from '@/components/layout/PublicLayout'
-import { HomePage } from '@/pages/HomePage'
-import { LoginPage } from '@/pages/LoginPage'
-import { NotFoundPage } from '@/pages/NotFoundPage'
-import { PlaceholderPage } from '@/pages/PlaceholderPage'
-import { RegisterPage } from '@/pages/RegisterPage'
-import { RequireAuth } from './RequireAuth'
-import { RequireGuest } from './RequireGuest'
+import HomePage from '@/pages/HomePage'
+import LoginPage from '@/pages/LoginPage'
+import NotFoundPage from '@/pages/NotFoundPage'
+import PlaceholderPage from '@/pages/PlaceholderPage'
+import RequireAuth from './RequireAuth'
+import RequireGuest from './RequireGuest'
 import { paths } from './paths'
 
 /**
  * Top-level route tree: guest shell vs authenticated workspace shell.
  */
-export function AppRoutes() {
+const AppRoutes: FC = () => {
   return (
     <Routes>
       <Route element={<RequireGuest />}>
         <Route element={<PublicLayout />}>
           <Route path={paths.login} element={<LoginPage />} />
-          <Route path={paths.register} element={<RegisterPage />} />
         </Route>
       </Route>
 
@@ -68,3 +67,5 @@ export function AppRoutes() {
     </Routes>
   )
 }
+
+export default AppRoutes

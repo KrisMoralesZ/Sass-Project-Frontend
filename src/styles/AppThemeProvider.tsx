@@ -1,9 +1,13 @@
-import type { ReactNode } from 'react'
+import type { FC, ReactNode } from 'react'
 import { ThemeProvider } from 'styled-components'
 import { GlobalStyle } from './GlobalStyle'
 import { defaultTheme } from './theme'
 
-export function AppThemeProvider({ children }: { children: ReactNode }) {
+export interface IAppThemeProvider {
+  children: ReactNode
+}
+
+const AppThemeProvider: FC<IAppThemeProvider> = ({ children }) => {
   return (
     <ThemeProvider theme={defaultTheme}>
       <GlobalStyle />
@@ -11,3 +15,5 @@ export function AppThemeProvider({ children }: { children: ReactNode }) {
     </ThemeProvider>
   )
 }
+
+export default AppThemeProvider

@@ -1,5 +1,6 @@
+import type { FC } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
-import { useAuthSession } from '@/features/auth'
+import { useAuthSession } from '@/features/auth/useAuthSession'
 import { paths } from '@/routes/paths'
 
 /** Local-only shell preview until login UI (1.2) ships. Not a real API session. */
@@ -8,8 +9,7 @@ const DEV_PREVIEW_TOKENS = {
   refreshToken: 'dev-refresh-token',
 } as const
 
-// TODO: Refactor this page to use FC instead of function component
-export function LoginPage() {
+const LoginPage: FC = () => {
   const navigate = useNavigate()
   const location = useLocation()
   const { establishSession } = useAuthSession()
@@ -42,3 +42,5 @@ export function LoginPage() {
     </main>
   )
 }
+
+export default LoginPage
