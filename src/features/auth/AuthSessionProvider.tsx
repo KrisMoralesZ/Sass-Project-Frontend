@@ -1,11 +1,4 @@
-import {
-  useCallback,
-  useEffect,
-  useMemo,
-  useState,
-  type ReactNode,
-} from 'react'
-import { clearActiveOrganizationId } from '@/features/organizations'
+import { useCallback, useMemo, useState, type FC, type ReactNode } from 'react'
 import { AuthSessionContext } from './auth-session-context'
 import { subscribeSessionCleared } from './session-events'
 import {
@@ -14,7 +7,7 @@ import {
   setDevPreviewSession,
 } from './session-storage'
 
-export function AuthSessionProvider({ children }: { children: ReactNode }) {
+const AuthSessionProvider: FC<{ children: ReactNode }> = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(() => hasSession())
 
   useEffect(() => {
@@ -49,3 +42,5 @@ export function AuthSessionProvider({ children }: { children: ReactNode }) {
     </AuthSessionContext.Provider>
   )
 }
+
+export default AuthSessionProvider
