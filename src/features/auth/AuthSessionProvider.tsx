@@ -13,7 +13,7 @@ import {
   hasSession,
   setDevPreviewSession,
 } from './session-storage'
-import { clearActiveOrganizationId } from '../organizations'
+import { clearActiveOrganizationId } from '../organizations/active-organization-storage'
 
 const AuthSessionProvider: FC<{ children: ReactNode }> = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(() => hasSession())

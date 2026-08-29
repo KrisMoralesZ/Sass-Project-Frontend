@@ -4,13 +4,13 @@ import axios, {
   type Method,
 } from 'axios'
 import { getAccessToken } from '@/features/auth/session-storage'
-import { getActiveOrganizationId } from '@/features/organizations'
+import { getActiveOrganizationId } from '@/features/organizations/active-organization-storage'
 import { getApiUrl } from '@/lib/env'
 import {
   isApiErrorResponse,
   isApiSuccessResponse,
   type ApiResponse,
-} from '@/types'
+} from '@/types/api-response'
 import { ApiError } from './api-error'
 import { ORGANIZATION_ID_HEADER } from './constants'
 import { attachRefreshInterceptor } from './refresh-interceptor'
