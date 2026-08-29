@@ -1,4 +1,4 @@
-import { ErrorCode, isErrorCode } from '@/types'
+import { ErrorCode, isErrorCode } from '@/types/error-code'
 import { isApiError } from './api-error'
 
 const ERROR_CODE_MESSAGES: Record<ErrorCode, string> = {

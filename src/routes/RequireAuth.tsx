@@ -1,5 +1,6 @@
+import type { FC } from 'react'
 import { Navigate, Outlet, useLocation } from 'react-router-dom'
-import { useAuthSession } from '@/features/auth'
+import { useAuthSession } from '@/features/auth/useAuthSession'
 import { paths } from './paths'
 
 /**
@@ -7,8 +8,8 @@ import { paths } from './paths'
  * Redirects to login and preserves the intended destination.
  * Waits on session hydrate so a hard refresh does not flash to login.
  */
-export function RequireAuth() {
-  const { status, isAuthenticated } = useAuthSession()
+const RequireAuth: FC = () => {
+  const { isAuthenticated } = useAuthSession()
   const location = useLocation()
 
   if (status === 'loading') {
@@ -21,3 +22,5 @@ export function RequireAuth() {
 
   return <Outlet />
 }
+
+export default RequireAuth
