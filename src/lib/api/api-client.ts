@@ -3,7 +3,7 @@ import axios, {
   type AxiosRequestConfig,
   type Method,
 } from 'axios'
-import { getAccessToken } from '@/features/auth'
+import { getAccessToken } from '@/features/auth/session-storage'
 import { getActiveOrganizationId } from '@/features/organizations'
 import { getApiUrl } from '@/lib/env'
 import {
