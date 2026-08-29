@@ -9,7 +9,7 @@ import { paths } from './paths'
  * Waits on session hydrate so a hard refresh does not flash to login.
  */
 const RequireAuth: FC = () => {
-  const { isAuthenticated } = useAuthSession()
+  const { status, isAuthenticated } = useAuthSession()
   const location = useLocation()
 
   if (status === 'loading') {

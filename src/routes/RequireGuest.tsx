@@ -8,7 +8,11 @@ import { paths } from './paths'
  * Waits on session hydrate so a hard refresh does not bounce through login.
  */
 const RequireGuest: FC = () => {
-  const { isAuthenticated } = useAuthSession()
+  const { status, isAuthenticated } = useAuthSession()
+
+  if (status === 'loading') {
+    return null
+  }
 
   if (isAuthenticated) {
     return <Navigate to={paths.home} replace />

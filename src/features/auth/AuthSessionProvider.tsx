@@ -8,17 +8,40 @@ import {
   type FC,
   type ReactNode,
 } from 'react'
-import { AuthSessionContext } from './auth-session-context'
+import { clearActiveOrganizationId } from '../organizations/active-organization-storage'
+import {
+  currentUserQueryKey,
+  currentUserQueryOptions,
+} from './api/get-current-user'
+import type { AuthUserProfile } from './auth-api.types'
+import {
+  AuthSessionContext,
+  type AuthSessionStatus,
+  type EstablishSessionTokens,
+} from './auth-session-context'
 import { subscribeSessionCleared } from './session-events'
 import {
   clearSessionTokens,
   hasSession,
   setSessionTokens,
 } from './session-storage'
-import { clearActiveOrganizationId } from '../organizations/active-organization-storage'
+
+function initialStatus(): AuthSessionStatus {
+  return hasSession() ? 'loading' : 'anonymous'
+}
 
 const AuthSessionProvider: FC<{ children: ReactNode }> = ({ children }) => {
-  const [isAuthenticated, setIsAuthenticated] = useState(() => hasSession())
+  const queryClient = useQueryClient()
+  const [status, setStatus] = useState<AuthSessionStatus>(initialStatus)
+  const [user, setUser] = useState<AuthUserProfile | null>(null)
+  /** Bumped to ignore in-flight hydrate after establish/clear. */
+  const sessionEpochRef = useRef(0)
+
+  const resetToAnonymous = useCallback(() => {
+    sessionEpochRef.current += 1
+    setUser(null)
+    setStatus('anonymous')
+  }, [])
 
   useEffect(() => {
     return subscribeSessionCleared(() => {
