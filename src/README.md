@@ -48,6 +48,9 @@ export default ExamplePage
 | Guest | `/login`, `/register`                     | `RequireGuest` → `PublicLayout` |
 | App   | `/`, `/projects`, `/members`, `/settings` | `RequireAuth` → `AppLayout`     |
 
-Unauthenticated visits to app routes redirect to `/login`. Until Phase 1 auth is wired, use **Preview app shell** on the login page to enter a temporary session.
+Unauthenticated visits to app routes redirect to `/login`. In **development**
+only, the login page offers **Preview app shell** to exercise authenticated
+layouts without a real API session (cleared on hard refresh / failed `/auth/me`
+hydrate). Production builds omit that escape hatch; real sign-in is task **1.2**.
 
 Import with the `@/` alias (e.g. `@/features/auth`, `@/components/ui`).

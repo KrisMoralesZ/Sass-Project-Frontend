@@ -5,9 +5,14 @@ import { paths } from './paths'
 
 /**
  * Keeps signed-in users out of guest-only screens (login/register).
+ * Waits on session hydrate so a hard refresh does not bounce through login.
  */
 const RequireGuest: FC = () => {
-  const { isAuthenticated } = useAuthSession()
+  const { status, isAuthenticated } = useAuthSession()
+
+  if (status === 'loading') {
+    return null
+  }
 
   if (isAuthenticated) {
     return <Navigate to={paths.home} replace />
