@@ -18,30 +18,31 @@
     "test:storybook:run": "vitest run --project=storybook"
   },
   "dependencies": {
+    "@tanstack/react-query": "^5.101.4",
     "react": "^19.2.7",
     "react-dom": "^19.2.7",
     "react-router-dom": "^7.9.4",
     "styled-components": "^6.4.4"
   },
   "devDependencies": {
+    "@chromatic-com/storybook": "^5.2.1",
+    "@storybook/addon-a11y": "^10.5.5",
+    "@storybook/addon-docs": "^10.5.5",
+    "@storybook/addon-mcp": "^0.7.0",
+    "@storybook/addon-vitest": "^10.5.5",
+    "@storybook/react-vite": "^10.5.5",
     "@types/node": "^24.13.2",
     "@types/react": "^19.2.17",
     "@types/react-dom": "^19.2.3",
     "@vitejs/plugin-react": "^6.0.3",
+    "@vitest/browser-playwright": "^4.1.10",
+    "@vitest/coverage-v8": "^4.1.10",
     "oxlint": "^1.71.0",
+    "playwright": "^1.62.1",
     "prettier": "^3.9.6",
+    "storybook": "^10.5.5",
     "typescript": "~5.9.3",
     "vite": "^8.1.1",
-    "storybook": "^10.5.5",
-    "@storybook/react-vite": "^10.5.5",
-    "@chromatic-com/storybook": "^5.2.1",
-    "@storybook/addon-vitest": "^10.5.5",
-    "@storybook/addon-a11y": "^10.5.5",
-    "@storybook/addon-docs": "^10.5.5",
-    "@storybook/addon-mcp": "^0.7.0",
-    "vitest": "^4.1.10",
-    "playwright": "^1.62.1",
-    "@vitest/browser-playwright": "^4.1.10",
-    "@vitest/coverage-v8": "^4.1.10"
+    "vitest": "^4.1.10"
   }
 }

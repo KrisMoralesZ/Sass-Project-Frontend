@@ -151,19 +151,30 @@ Acceptance criteria:
 
 ### Task 0.3 — API client and query layer
 
+Foundation for all feature API calls. Builds on existing `getApiUrl()`, envelope
+types, and the auth session stub. Real login/register UI stays in Phase 1.
+
 Subtasks:
 
-- Create a typed browser API client that unwraps the backend envelope (client-side fetches only)
-- Map backend `error.code` values into user-facing handling
-- Attach Bearer token and `X-Organization-Id` when present
-- Add refresh-token retry behavior for expired access tokens
-- Introduce a client data-fetching approach (e.g. React Query / SWR) for cache and mutations
+- [x] **0.3.1** Add **TanStack Query** (`@tanstack/react-query`) and wrap the app with `QueryClientProvider` (sensible defaults)
+- [ ] **0.3.2** Create a typed browser `apiClient` (native `fetch`) that unwraps the backend envelope and throws a typed `ApiError`
+- [ ] **0.3.3** Attach `Authorization: Bearer` when an access token exists, and `X-Organization-Id` when an active org id is present (stub getter ok until Phase 2)
+- [ ] **0.3.4** Add single-flight **401 → refresh → retry once** behavior; clear session tokens if refresh fails (client plumbing only)
+- [ ] **0.3.5** Map backend `error.code` values to user-facing messages (incl. tenant missing/forbidden)
+- [ ] **0.3.6** Document the convention that features call the API only via the client + Query hooks; optional thin smoke usage
+
+**0.3 out of scope** (land in Phase 1+ instead):
+
+- Login/register screens and real auth form wiring (**1.2**)
+- Logout UI and “session expired” recovery UX (**1.3**)
+- Organization switcher / active-org persistence (**2.x**)
 
 Acceptance criteria:
 
 - All feature modules call the API through one client
 - 401 refresh + retry works without forcing a full re-login on every expiry
 - Missing tenant context surfaces clear UI errors for tenant-scoped routes
+- TanStack Query is available app-wide for queries and mutations
 
 ---
 
@@ -203,9 +214,9 @@ Acceptance criteria:
 
 Subtasks:
 
-- Wire `POST /auth/refresh` into the API client
-- Wire `POST /auth/logout`
+- Wire `POST /auth/logout` (refresh retry path lands in **0.3.4**)
 - Add “session expired” recovery UX when refresh fails
+- Confirm short-lived access tokens refresh transparently during normal use
 
 Acceptance criteria:
 
