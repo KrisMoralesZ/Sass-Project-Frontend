@@ -10,12 +10,9 @@ import {
   setSessionTokens,
 } from '@/features/auth/session-storage'
 import { getApiUrl } from '@/lib/env'
-import {
-  isApiErrorResponse,
-  isApiSuccessResponse,
-  type ApiResponse,
-  ErrorCode,
-} from '@/types'
+import { ErrorCode } from '@/types/error-code'
+import { isApiErrorResponse, isApiSuccessResponse } from '@/types/api-response'
+import type { ApiResponse } from '@/types/api-response'
 import { ApiError } from './api-error'
 
 const REFRESH_PATH = '/auth/refresh'

@@ -1,5 +1,7 @@
 const ACTIVE_ORGANIZATION_ID_KEY = 'sass.org.activeOrganizationId'
 
+const listeners = new Set<() => void>()
+
 /**
  * Client-side active organization persistence API (task 2.2.2).
  * Stores the currently selected workspace id in sessionStorage.
@@ -26,6 +28,7 @@ export function getActiveOrganizationId(): string | null {
  */
 export function setActiveOrganizationId(organizationId: string): void {
   window.sessionStorage.setItem(ACTIVE_ORGANIZATION_ID_KEY, organizationId)
+  notifyActiveOrganizationChanged()
 }
 
 /**
@@ -34,4 +37,24 @@ export function setActiveOrganizationId(organizationId: string): void {
  */
 export function clearActiveOrganizationId(): void {
   window.sessionStorage.removeItem(ACTIVE_ORGANIZATION_ID_KEY)
+  notifyActiveOrganizationChanged()
+}
+
+/**
+ * Subscribe to active organization changes so workspace-scoped screens re-render
+ * instead of rendering data for the previously selected organization.
+ */
+export function subscribeActiveOrganizationId(
+  listener: () => void,
+): () => void {
+  listeners.add(listener)
+  return () => {
+    listeners.delete(listener)
+  }
+}
+
+function notifyActiveOrganizationChanged(): void {
+  for (const listener of listeners) {
+    listener()
+  }
 }

@@ -1,11 +1,10 @@
-import { type ReactNode } from 'react'
+import { type FC, type ReactNode } from 'react'
 import { useNavigate, Outlet } from 'react-router-dom'
 import Button from '@/components/ui/Button'
-import { getApiErrorMessage, isApiError } from '@/lib'
-import {
-  useListOrganizations,
-  useRestoreActiveOrganization,
-} from '@/features/organizations'
+import { useListOrganizations } from '@/features/organizations/hooks/use-list-organizations'
+import { useRestoreActiveOrganization } from '@/features/organizations/hooks/use-restore-active-organization'
+import { isApiError } from '@/lib/api/api-error'
+import { getApiErrorMessage } from '@/lib/api/get-api-error-message'
 import { paths } from './paths'
 import {
   $Actions,
@@ -18,7 +17,7 @@ export interface IRequireOrganization {
   children?: ReactNode
 }
 
-export function RequireOrganization({ children }: IRequireOrganization) {
+const RequireOrganization: FC<IRequireOrganization> = ({ children }) => {
   const navigate = useNavigate()
   const organizationsQuery = useListOrganizations()
   const { isRestored } = useRestoreActiveOrganization()
@@ -74,3 +73,5 @@ export function RequireOrganization({ children }: IRequireOrganization) {
 
   return children ?? <Outlet />
 }
+
+export default RequireOrganization

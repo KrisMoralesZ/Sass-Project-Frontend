@@ -1,5 +1,5 @@
 import { queryOptions } from '@tanstack/react-query'
-import { apiClient } from '@/lib'
+import { apiClient } from '@/lib/api/api-client'
 
 export interface TenantContext {
   organizationId: string

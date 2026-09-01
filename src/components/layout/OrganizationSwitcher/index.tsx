@@ -1,12 +1,13 @@
+import { useState, type ChangeEvent, type FC } from 'react'
 import { useQueryClient } from '@tanstack/react-query'
-import { type ChangeEvent, type FC, useState } from 'react'
+import { useListOrganizations } from '@/features/organizations/hooks/use-list-organizations'
 import {
   getActiveOrganizationId,
   setActiveOrganizationId,
-  useListOrganizations,
-  useTenantContext,
-} from '@/features/organizations'
-import { getApiErrorMessage, isApiError } from '@/lib'
+} from '@/features/organizations/active-organization-storage'
+import { useTenantContext } from '@/features/organizations/hooks/use-tenant-context'
+import { isApiError } from '@/lib/api/api-error'
+import { getApiErrorMessage } from '@/lib/api/get-api-error-message'
 import {
   $Select,
   $SelectError,
@@ -19,7 +20,8 @@ import {
  * Shows the list of organizations the user belongs to and allows switching.
  * Task 2.2.1.
  */
-export const OrganizationSwitcher: FC = () => {
+
+const OrganizationSwitcher: FC = () => {
   const queryClient = useQueryClient()
   const organizationsQuery = useListOrganizations()
   const [activeOrgId, setActiveOrgId] = useState(getActiveOrganizationId)
@@ -78,3 +80,5 @@ export const OrganizationSwitcher: FC = () => {
     </$SelectWrapper>
   )
 }
+
+export default OrganizationSwitcher

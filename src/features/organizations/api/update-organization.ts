@@ -1,4 +1,4 @@
-import { apiClient } from '@/lib'
+import { apiClient } from '@/lib/api/api-client'
 import type {
   UpdateOrganizationRequest,
   UpdateOrganizationResponse,
