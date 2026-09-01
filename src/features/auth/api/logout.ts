@@ -1,4 +1,4 @@
-import { apiClient } from '@/lib'
+import { apiClient } from '@/lib/api/api-client'
 import type { LogoutResponse } from '../auth-api.types'
 import { clearClientSession } from '../clear-client-session'
 import { getRefreshToken } from '../session-storage'
