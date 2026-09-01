@@ -10,7 +10,7 @@ import Table, {
   TableHeader,
   TableRow,
 } from '@/components/ui/Table'
-import { AuthSessionProvider } from '@/features/auth'
+import AuthSessionProvider from '@/features/auth/AuthSessionProvider'
 import { paths } from '@/routes/paths'
 import AppLayout from '.'
 

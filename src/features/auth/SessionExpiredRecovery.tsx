@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { type FC, useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import Toast from '@/components/ui/Toast'
 import { paths } from '@/routes/paths'
@@ -13,7 +13,7 @@ import { subscribeSessionCleared } from './session-events'
  * Successful 401 → refresh → retry must not reach this path (task 1.3.4).
  * Explicit logout (`reason: 'logout'`) is handled separately in `useLogout`.
  */
-export function SessionExpiredRecovery() {
+const SessionExpiredRecovery: FC = () => {
   const navigate = useNavigate()
   const [toastOpen, setToastOpen] = useState(false)
 
@@ -44,3 +44,5 @@ export function SessionExpiredRecovery() {
     </Toast>
   )
 }
+
+export default SessionExpiredRecovery
