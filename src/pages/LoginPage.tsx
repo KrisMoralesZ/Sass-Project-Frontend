@@ -2,12 +2,9 @@ import { type FC, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import LoginForm from '@/features/auth/components/LoginForm'
 import { useLoginMutation } from '@/features/auth/hooks/use-login-mutation'
-import {
-  consumeSessionExpiredNotice,
-  SESSION_EXPIRED_MESSAGE,
-} from '@/features/auth/session-expired-notice'
-import { getApiErrorMessage } from '@/lib'
+import { getApiErrorMessage } from '@/lib/api/get-api-error-message'
 import { paths } from '@/routes/paths'
+import { consumeSessionExpiredNotice, SESSION_EXPIRED_MESSAGE } from '@/features/auth/session-expired-notice'
 
 function getPostLoginPath(state: unknown): string {
   const from = (state as { from?: { pathname?: string } } | null)?.from
@@ -48,4 +45,3 @@ const LoginPage: FC = () => {
 }
 
 export default LoginPage
-export { LoginPage }

@@ -1,9 +1,13 @@
 import { QueryClientProvider } from '@tanstack/react-query'
-import { type ReactNode, useEffect, useState } from 'react'
+import { type FC, type ReactNode, useEffect, useState } from 'react'
 import { subscribeSessionCleared } from '@/features/auth/session-events'
 import { createQueryClient } from './query-client'
 
-export function AppQueryProvider({ children }: { children: ReactNode }) {
+export interface IAppQueryProvider {
+  children: ReactNode
+}
+
+const AppQueryProvider: FC<IAppQueryProvider> = ({ children }) => {
   const [queryClient] = useState(() => createQueryClient())
 
   useEffect(() => {
@@ -19,3 +23,5 @@ export function AppQueryProvider({ children }: { children: ReactNode }) {
     <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
   )
 }
+
+export default AppQueryProvider

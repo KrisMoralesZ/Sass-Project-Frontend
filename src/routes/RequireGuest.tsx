@@ -1,12 +1,13 @@
+import type { FC } from 'react'
 import { Navigate, Outlet } from 'react-router-dom'
-import { useAuthSession } from '@/features/auth'
+import { useAuthSession } from '@/features/auth/useAuthSession'
 import { paths } from './paths'
 
 /**
  * Keeps signed-in users out of guest-only screens (login/register).
  * Waits on session hydrate so a hard refresh does not bounce through login.
  */
-export function RequireGuest() {
+const RequireGuest: FC = () => {
   const { status, isAuthenticated } = useAuthSession()
 
   if (status === 'loading') {
@@ -19,3 +20,5 @@ export function RequireGuest() {
 
   return <Outlet />
 }
+
+export default RequireGuest

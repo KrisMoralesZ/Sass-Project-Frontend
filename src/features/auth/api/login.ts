@@ -1,4 +1,4 @@
-import { apiClient } from '@/lib'
+import { apiClient } from '@/lib/api/api-client'
 import type { LoginRequest, LoginResponse } from '../auth-api.types'
 
 /** `POST /auth/login` — returns user + tokens. */

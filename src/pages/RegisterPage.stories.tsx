@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from '@storybook/react-vite'
 import { MemoryRouter } from 'react-router-dom'
 import { expect, userEvent, within } from 'storybook/test'
 import PublicLayout from '@/components/layout/PublicLayout'
-import { AuthSessionProvider } from '@/features/auth'
+import AuthSessionProvider from '@/features/auth/AuthSessionProvider'
 import { paths } from '@/routes/paths'
 import RegisterPage from './RegisterPage'
 
