@@ -6,7 +6,12 @@ import { useRestoreActiveOrganization } from '@/features/organizations/hooks/use
 import { isApiError } from '@/lib/api/api-error'
 import { getApiErrorMessage } from '@/lib/api/get-api-error-message'
 import { paths } from './paths'
-import { $Actions, $EmptyState, $Message, $Title } from './RequireOrganization.sc'
+import {
+  $Actions,
+  $EmptyState,
+  $Message,
+  $Title,
+} from './RequireOrganization.sc'
 
 export interface IRequireOrganization {
   children?: ReactNode

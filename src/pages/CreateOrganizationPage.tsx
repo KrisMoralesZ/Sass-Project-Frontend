@@ -3,14 +3,15 @@ import { useNavigate } from 'react-router-dom'
 import Button from '@/components/ui/Button'
 import FormField from '@/components/ui/FormField'
 import Input from '@/components/ui/Input'
-import { getApiErrorMessage, isApiError } from '@/lib'
-import { ErrorCode } from '@/types'
+import { getApiErrorMessage } from '@/lib/api/get-api-error-message'
+import { isApiError } from '@/lib/api/api-error'
+import { ErrorCode } from '@/types/error-code'
 import {
   ORGANIZATION_PLANS,
-  setActiveOrganizationId,
-  useCreateOrganization,
   type CreateOrganizationRequest,
-} from '@/features/organizations'
+} from '@/features/organizations/api/organization-api.types'
+import { setActiveOrganizationId } from '@/features/organizations/active-organization-storage'
+import { useCreateOrganization } from '@/features/organizations/hooks/use-create-organization'
 import {
   $Actions,
   $Form,

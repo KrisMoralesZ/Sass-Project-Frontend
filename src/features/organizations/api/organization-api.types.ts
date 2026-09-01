@@ -1,4 +1,4 @@
-import type { ListQuery, PaginatedResult } from '@/types'
+import type { ListQuery, PaginatedResult } from '@/types/pagination'
 
 export const ORGANIZATION_PLANS = ['FREE', 'PRO', 'ENTERPRISE'] as const
 
