@@ -2,7 +2,7 @@ import { type FC } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import LoginForm from '@/features/auth/components/LoginForm'
 import { useLoginMutation } from '@/features/auth/hooks/use-login-mutation'
-import { getApiErrorMessage } from '@/lib'
+import { getApiErrorMessage } from '@/lib/api/get-api-error-message'
 import { paths } from '@/routes/paths'
 
 function getPostLoginPath(state: unknown): string {
@@ -42,4 +42,3 @@ const LoginPage: FC = () => {
 }
 
 export default LoginPage
-export { LoginPage }

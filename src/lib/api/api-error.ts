@@ -1,5 +1,5 @@
-import type { ApiErrorBody, ApiResponseMeta } from '@/types'
-import { ErrorCode } from '@/types'
+import type { ApiErrorBody, ApiResponseMeta } from '@/types/api-response'
+import { ErrorCode } from '@/types/error-code'
 
 /**
  * Typed API failure from the Nest envelope or a transport-level problem.
