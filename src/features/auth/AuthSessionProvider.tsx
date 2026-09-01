@@ -5,9 +5,10 @@ import {
   useMemo,
   useRef,
   useState,
+  type FC,
   type ReactNode,
 } from 'react'
-import { clearActiveOrganizationId } from '@/features/organizations'
+import { clearActiveOrganizationId } from '../organizations/active-organization-storage'
 import {
   currentUserQueryKey,
   currentUserQueryOptions,
@@ -29,7 +30,7 @@ function initialStatus(): AuthSessionStatus {
   return hasSession() ? 'loading' : 'anonymous'
 }
 
-export function AuthSessionProvider({ children }: { children: ReactNode }) {
+const AuthSessionProvider: FC<{ children: ReactNode }> = ({ children }) => {
   const queryClient = useQueryClient()
   const [status, setStatus] = useState<AuthSessionStatus>(initialStatus)
   const [user, setUser] = useState<AuthUserProfile | null>(null)
@@ -124,3 +125,5 @@ export function AuthSessionProvider({ children }: { children: ReactNode }) {
     </AuthSessionContext.Provider>
   )
 }
+
+export default AuthSessionProvider

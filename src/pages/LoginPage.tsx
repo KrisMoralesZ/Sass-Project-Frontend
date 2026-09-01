@@ -53,4 +53,3 @@ const LoginPage: FC = () => {
 }
 
 export default LoginPage
-export { LoginPage }

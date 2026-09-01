@@ -1,5 +1,5 @@
 import type { Preview } from '@storybook/react-vite'
-import { AppQueryProvider } from '../src/lib'
+import AppQueryProvider from '../src/lib/AppQueryProvider'
 import { AppThemeProvider } from '../src/styles'
 
 const preview: Preview = {

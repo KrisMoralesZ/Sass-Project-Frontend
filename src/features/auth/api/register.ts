@@ -1,4 +1,4 @@
-import { apiClient } from '@/lib'
+import { apiClient } from '@/lib/api/api-client'
 import type { RegisterRequest, RegisterResponse } from '../auth-api.types'
 
 /** `POST /auth/register` — returns user + tokens. */

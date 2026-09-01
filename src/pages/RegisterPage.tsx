@@ -10,4 +10,3 @@ const RegisterPage: FC = () => {
 }
 
 export default RegisterPage
-export { RegisterPage }
