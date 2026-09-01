@@ -1,14 +1,12 @@
 import { type FC, useState } from 'react'
 import Button from '@/components/ui/Button'
 import Toast from '@/components/ui/Toast'
-import {
-  OrganizationSettingsForm,
-  useActiveOrganizationId,
-  useOrganization,
-  useUpdateOrganization,
-  type OrganizationSettingsPatch,
-} from '@/features/organizations'
-import { getApiErrorMessage } from '@/lib'
+import { useActiveOrganizationId } from '@/features/organizations/hooks/use-active-organization-id'
+import { useOrganization } from '@/features/organizations/hooks/use-organization'
+import { useUpdateOrganization } from '@/features/organizations/hooks/use-update-organization'
+import type { OrganizationSettingsPatch } from '@/features/organizations/api/organization-api.types'
+import { getApiErrorMessage } from '@/lib/api/get-api-error-message'
+import OrganizationSettingsForm from '@/features/organizations/components/OrganizationSettingsForm'
 import {
   $ErrorPanel,
   $Eyebrow,
