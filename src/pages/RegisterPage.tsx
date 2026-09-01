@@ -2,7 +2,7 @@ import { type FC } from 'react'
 import { useNavigate } from 'react-router-dom'
 import RegisterForm from '@/features/auth/components/RegisterForm'
 import { useRegisterMutation } from '@/features/auth/hooks/use-register-mutation'
-import { getApiErrorMessage } from '@/lib'
+import { getApiErrorMessage } from '@/lib/api/get-api-error-message'
 import { paths } from '@/routes/paths'
 
 const RegisterPage: FC = () => {
