@@ -1,6 +1,6 @@
 import { type FC } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
-import { useAuthSession } from '@/features/auth'
+import { useAuthSession } from '@/features/auth/useAuthSession'
 import LoginForm from '@/features/auth/components/LoginForm'
 import {
   $DevPreview,
