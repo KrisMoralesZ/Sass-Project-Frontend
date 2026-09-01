@@ -9,8 +9,6 @@ import {
   getRefreshToken,
   setSessionTokens,
 } from '@/features/auth/session-storage'
-import { notifySessionCleared } from '@/features/auth/session-events'
-import { clearActiveOrganizationId } from '@/features/organizations/active-organization-storage'
 import { getApiUrl } from '@/lib/env'
 import { ErrorCode } from '@/types/error-code'
 import { isApiErrorResponse, isApiSuccessResponse } from '@/types/api-response'

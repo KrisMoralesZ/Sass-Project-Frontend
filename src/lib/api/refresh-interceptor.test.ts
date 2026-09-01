@@ -6,15 +6,18 @@ import axios, {
   type InternalAxiosRequestConfig,
 } from 'axios'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+import type { ApiResponseMeta } from '@/types/api-response'
+import { ErrorCode } from '@/types/error-code'
 import {
-  consumeSessionExpiredNotice,
+  subscribeSessionCleared,
+  type SessionClearedListener,
+} from '@/features/auth/session-events'
+import {
   getAccessToken,
   getRefreshToken,
   setSessionTokens,
-  subscribeSessionCleared,
-  type SessionClearedListener,
-} from '@/features/auth'
-import { ErrorCode, type ApiResponseMeta } from '@/types'
+} from '@/features/auth/session-storage'
+import { consumeSessionExpiredNotice } from '@/features/auth/session-expired-notice'
 import {
   attachRefreshInterceptor,
   resetRefreshSingleFlight,

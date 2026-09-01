@@ -4,7 +4,10 @@ import LoginForm from '@/features/auth/components/LoginForm'
 import { useLoginMutation } from '@/features/auth/hooks/use-login-mutation'
 import { getApiErrorMessage } from '@/lib/api/get-api-error-message'
 import { paths } from '@/routes/paths'
-import { consumeSessionExpiredNotice, SESSION_EXPIRED_MESSAGE } from '@/features/auth/session-expired-notice'
+import {
+  consumeSessionExpiredNotice,
+  SESSION_EXPIRED_MESSAGE,
+} from '@/features/auth/session-expired-notice'
 
 function getPostLoginPath(state: unknown): string {
   const from = (state as { from?: { pathname?: string } } | null)?.from

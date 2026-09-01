@@ -1,4 +1,4 @@
-import { clearActiveOrganizationId } from '@/features/organizations'
+import { clearActiveOrganizationId } from '../organizations/active-organization-storage'
 import { notifySessionCleared, type SessionClearReason } from './session-events'
 import { setSessionExpiredNotice } from './session-expired-notice'
 import { clearSessionTokens } from './session-storage'
