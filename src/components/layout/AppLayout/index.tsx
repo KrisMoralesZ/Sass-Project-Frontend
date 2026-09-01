@@ -2,7 +2,7 @@ import { type FC, type ReactNode } from 'react'
 import { Outlet } from 'react-router-dom'
 import Button from '@/components/ui/Button'
 import { useLogout } from '@/features/auth/hooks/use-logout'
-import { OrganizationSwitcher } from '@/components/layout/OrganizationSwitcher'
+import OrganizationSwitcher from '../OrganizationSwitcher'
 import { paths } from '@/routes/paths'
 import {
   $BrandLink,

@@ -1,12 +1,13 @@
+import { useState, type ChangeEvent, type FC } from 'react'
 import { useQueryClient } from '@tanstack/react-query'
-import { type ChangeEvent, type FC } from 'react'
+import { useListOrganizations } from '@/features/organizations/hooks/use-list-organizations'
 import {
+  getActiveOrganizationId,
   setActiveOrganizationId,
-  useActiveOrganizationId,
-  useListOrganizations,
-  useTenantContext,
-} from '@/features/organizations'
-import { getApiErrorMessage, isApiError } from '@/lib'
+} from '@/features/organizations/active-organization-storage'
+import { useTenantContext } from '@/features/organizations/hooks/use-tenant-context'
+import { isApiError } from '@/lib/api/api-error'
+import { getApiErrorMessage } from '@/lib/api/get-api-error-message'
 import {
   $Select,
   $SelectError,
@@ -19,16 +20,18 @@ import {
  * Shows the list of organizations the user belongs to and allows switching.
  * Task 2.2.1.
  */
+
 const OrganizationSwitcher: FC = () => {
   const queryClient = useQueryClient()
   const organizationsQuery = useListOrganizations()
-  const activeOrgId = useActiveOrganizationId()
+  const [activeOrgId, setActiveOrgId] = useState(getActiveOrganizationId)
   const tenantContextQuery = useTenantContext(activeOrgId)
 
   const handleChange = (event: ChangeEvent<HTMLSelectElement>) => {
     const nextOrgId = event.target.value
     if (nextOrgId && nextOrgId !== activeOrgId) {
       setActiveOrganizationId(nextOrgId)
+      setActiveOrgId(nextOrgId)
       void queryClient.invalidateQueries({
         predicate: (query) =>
           query.queryKey[0] === 'organizations' &&
