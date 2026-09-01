@@ -2,6 +2,7 @@ import { type FC, type ReactNode } from 'react'
 import { useNavigate, Outlet } from 'react-router-dom'
 import Button from '@/components/ui/Button'
 import { useListOrganizations } from '@/features/organizations/hooks/use-list-organizations'
+import { useRestoreActiveOrganization } from '@/features/organizations/hooks/use-restore-active-organization'
 import { isApiError } from '@/lib/api/api-error'
 import { getApiErrorMessage } from '@/lib/api/get-api-error-message'
 import { paths } from './paths'
@@ -19,9 +20,14 @@ export interface IRequireOrganization {
 const RequireOrganization: FC<IRequireOrganization> = ({ children }) => {
   const navigate = useNavigate()
   const organizationsQuery = useListOrganizations()
+  const { isRestored } = useRestoreActiveOrganization()
 
   if (organizationsQuery.isPending) {
     return <$Message>Loading your workspaces...</$Message>
+  }
+
+  if (!isRestored) {
+    return <$Message>Restoring your workspace...</$Message>
   }
 
   if (organizationsQuery.isError) {
