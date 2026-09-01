@@ -36,6 +36,15 @@ export default defineConfig({
     projects: [
       {
         extends: true,
+        test: {
+          name: 'unit',
+          environment: 'node',
+          include: ['src/**/*.test.ts'],
+          setupFiles: [path.join(__dirname, 'src/test/setup-unit.ts')],
+        },
+      },
+      {
+        extends: true,
         plugins: [
           // https://storybook.js.org/docs/writing-tests/integrations/vitest-addon
           storybookTest({

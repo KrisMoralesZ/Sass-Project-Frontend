@@ -4,13 +4,11 @@ import axios, {
   type InternalAxiosRequestConfig,
 } from 'axios'
 import type { RefreshResponse } from '@/features/auth/auth-api.types'
+import { clearClientSession } from '@/features/auth/clear-client-session'
 import {
-  clearSessionTokens,
   getRefreshToken,
   setSessionTokens,
 } from '@/features/auth/session-storage'
-import { notifySessionCleared } from '@/features/auth/session-events'
-import { clearActiveOrganizationId } from '@/features/organizations/active-organization-storage'
 import { getApiUrl } from '@/lib/env'
 import { ErrorCode } from '@/types/error-code'
 import { isApiErrorResponse, isApiSuccessResponse } from '@/types/api-response'
@@ -32,15 +30,14 @@ type RetriableConfig = InternalAxiosRequestConfig & {
 
 let refreshInFlight: Promise<string> | null = null
 
+/** Test-only: drop a stuck in-flight refresh between cases. */
+export function resetRefreshSingleFlight(): void {
+  refreshInFlight = null
+}
+
 function shouldSkipRefresh(config?: InternalAxiosRequestConfig): boolean {
   const url = config?.url ?? ''
   return SKIP_REFRESH_PATHS.some((path) => url === path || url.endsWith(path))
-}
-
-function clearClientSession(): void {
-  clearSessionTokens()
-  clearActiveOrganizationId()
-  notifySessionCleared()
 }
 
 async function refreshAccessToken(): Promise<string> {
@@ -117,7 +114,8 @@ function refreshAccessTokenSingleFlight(): Promise<string> {
 
 /**
  * On 401: refresh once (shared in-flight promise), retry the request.
- * Clears tokens + active org when refresh fails.
+ * Success stays silent (task 1.3.4): new tokens in sessionStorage, no toast,
+ * no redirect, no `notifySessionCleared`. Failed refresh still clears the session.
  */
 export function attachRefreshInterceptor(instance: AxiosInstance): void {
   instance.interceptors.response.use(

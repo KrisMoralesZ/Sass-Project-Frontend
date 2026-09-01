@@ -14,6 +14,7 @@
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build",
     "test": "vitest",
+    "test:unit": "vitest run --project=unit",
     "test:storybook": "vitest --project=storybook",
     "test:storybook:run": "vitest run --project=storybook"
   },

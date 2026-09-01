@@ -25,6 +25,7 @@ import {
   hasSession,
   setSessionTokens,
 } from './session-storage'
+import { notifySessionCleared } from './session-events'
 
 function initialStatus(): AuthSessionStatus {
   return hasSession() ? 'loading' : 'anonymous'
@@ -77,6 +78,10 @@ const AuthSessionProvider: FC<{ children: ReactNode }> = ({ children }) => {
 
         clearSessionTokens()
         clearActiveOrganizationId()
+        await queryClient.invalidateQueries({
+          queryKey: ['auth'],
+          refetchType: 'none',
+        })
         queryClient.removeQueries({ queryKey: currentUserQueryKey })
         setUser(null)
         setStatus('anonymous')
@@ -105,6 +110,7 @@ const AuthSessionProvider: FC<{ children: ReactNode }> = ({ children }) => {
     clearSessionTokens()
     clearActiveOrganizationId()
     queryClient.removeQueries({ queryKey: currentUserQueryKey })
+    notifySessionCleared('logout')
     resetToAnonymous()
   }, [queryClient, resetToAnonymous])
 
