@@ -116,6 +116,16 @@ export const $FormNotice = styled.p`
   line-height: ${({ theme }) => theme.font.lineHeight.relaxed};
 `
 
+export const $ReadOnlyNotice = styled.p`
+  margin: 0;
+  padding: ${({ theme }) => theme.space.sm} ${({ theme }) => theme.space.md};
+  border-radius: ${({ theme }) => theme.radii.md};
+  background: ${({ theme }) => theme.colors.infoMuted};
+  color: ${({ theme }) => theme.colors.text};
+  font-size: ${({ theme }) => theme.font.size.sm};
+  line-height: ${({ theme }) => theme.font.lineHeight.relaxed};
+`
+
 export const $Actions = styled.div`
   display: flex;
   justify-content: flex-end;

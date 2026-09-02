@@ -32,6 +32,7 @@ import {
   $FormError,
   $FormNotice,
   $Grid,
+  $ReadOnlyNotice,
   $Section,
   $SectionHeader,
   $SectionLead,
@@ -50,6 +51,13 @@ export interface IOrganizationSettingsForm {
   formError?: ReactNode
   /** Confirmation shown after a successful save. */
   notice?: ReactNode
+  /**
+   * View-only mode when the caller lacks `settings:update` (task 2.3.2).
+   * Backend PATCH still enforces the same permission.
+   */
+  readOnly?: boolean
+  /** Shown above the form when `readOnly` is true. */
+  readOnlyMessage?: ReactNode
 }
 
 const HEX_COLOR_PATTERN = /^#(?:[0-9a-f]{3}|[0-9a-f]{6})$/i
@@ -69,6 +77,8 @@ const OrganizationSettingsForm: FC<IOrganizationSettingsForm> = ({
   isSubmitting = false,
   formError,
   notice,
+  readOnly = false,
+  readOnlyMessage = 'You can view these settings, but only admins and owners can change them.',
 }) => {
   const savedValues = useMemo(
     () => toOrganizationSettingsFormValues(settings),
@@ -98,6 +108,7 @@ const OrganizationSettingsForm: FC<IOrganizationSettingsForm> = ({
 
   const patch = buildOrganizationSettingsPatch(values, settings)
   const isDirty = patch !== null
+  const fieldsDisabled = isSubmitting || readOnly
 
   const updateField =
     (field: OrganizationSettingsField) =>
@@ -121,6 +132,10 @@ const OrganizationSettingsForm: FC<IOrganizationSettingsForm> = ({
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault()
+
+    if (readOnly) {
+      return
+    }
 
     const nextErrors = validateOrganizationSettingsForm(values)
     setErrors(nextErrors)
@@ -153,7 +168,7 @@ const OrganizationSettingsForm: FC<IOrganizationSettingsForm> = ({
               id="organization-timezone"
               value={values.timezone}
               onChange={updateField('timezone')}
-              disabled={isSubmitting}
+              disabled={fieldsDisabled}
             >
               {timezoneOptions.map((timezone) => (
                 <option key={timezone} value={timezone}>
@@ -172,7 +187,7 @@ const OrganizationSettingsForm: FC<IOrganizationSettingsForm> = ({
               id="organization-locale"
               value={values.locale}
               onChange={updateField('locale')}
-              disabled={isSubmitting}
+              disabled={fieldsDisabled}
             >
               {localeOptions.map((option) => (
                 <option key={option.value} value={option.value}>
@@ -203,7 +218,7 @@ const OrganizationSettingsForm: FC<IOrganizationSettingsForm> = ({
             onChange={updateField('appName')}
             placeholder="Acme Workspace"
             maxLength={APP_NAME_MAX_LENGTH}
-            disabled={isSubmitting}
+            disabled={fieldsDisabled}
             fullWidth
           />
         </FormField>
@@ -219,7 +234,7 @@ const OrganizationSettingsForm: FC<IOrganizationSettingsForm> = ({
             onChange={updateField('logoUrl')}
             placeholder="https://cdn.example.com/logo.png"
             maxLength={LOGO_URL_MAX_LENGTH}
-            disabled={isSubmitting}
+            disabled={fieldsDisabled}
             fullWidth
           />
         </FormField>
@@ -237,7 +252,7 @@ const OrganizationSettingsForm: FC<IOrganizationSettingsForm> = ({
                 onChange={updateField('primaryColor')}
                 placeholder="#1a5c40"
                 maxLength={COLOR_MAX_LENGTH}
-                disabled={isSubmitting}
+                disabled={fieldsDisabled}
                 fullWidth
               />
             </FormField>
@@ -255,7 +270,7 @@ const OrganizationSettingsForm: FC<IOrganizationSettingsForm> = ({
                 onChange={updateField('accentColor')}
                 placeholder="#2a8f66"
                 maxLength={COLOR_MAX_LENGTH}
-                disabled={isSubmitting}
+                disabled={fieldsDisabled}
                 fullWidth
               />
             </FormField>
@@ -263,22 +278,27 @@ const OrganizationSettingsForm: FC<IOrganizationSettingsForm> = ({
         </$Grid>
       </$Section>
 
+      {readOnly && readOnlyMessage ? (
+        <$ReadOnlyNotice role="status">{readOnlyMessage}</$ReadOnlyNotice>
+      ) : null}
       {notice ? <$FormNotice role="status">{notice}</$FormNotice> : null}
       {formError ? <$FormError role="alert">{formError}</$FormError> : null}
 
-      <$Actions>
-        <Button
-          type="button"
-          variant="ghost"
-          onClick={handleReset}
-          disabled={!isDirty || isSubmitting}
-        >
-          Discard changes
-        </Button>
-        <Button type="submit" loading={isSubmitting} disabled={!isDirty}>
-          Save settings
-        </Button>
-      </$Actions>
+      {readOnly ? null : (
+        <$Actions>
+          <Button
+            type="button"
+            variant="ghost"
+            onClick={handleReset}
+            disabled={!isDirty || isSubmitting}
+          >
+            Discard changes
+          </Button>
+          <Button type="submit" loading={isSubmitting} disabled={!isDirty}>
+            Save settings
+          </Button>
+        </$Actions>
+      )}
     </$Form>
   )
 }

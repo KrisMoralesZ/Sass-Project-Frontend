@@ -6,6 +6,7 @@ import HomePage from '@/pages/HomePage'
 import CreateOrganizationPage from '@/pages/CreateOrganizationPage'
 import LoginPage from '@/pages/LoginPage'
 import NotFoundPage from '@/pages/NotFoundPage'
+import OrganizationSettingsPage from '@/pages/OrganizationSettingsPage'
 import PlaceholderPage from '@/pages/PlaceholderPage'
 import RequireAuth from './RequireAuth'
 import RequireGuest from './RequireGuest'
@@ -63,12 +64,7 @@ const AppRoutes: FC = () => {
             />
             <Route
               path={paths.settings}
-              element={
-                <PlaceholderPage
-                  title="Settings"
-                  description="Organization and profile settings land in Phases 2–3."
-                />
-              }
+              element={<OrganizationSettingsPage />}
             />
           </Route>
           <Route path="*" element={<NotFoundPage />} />

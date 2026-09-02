@@ -312,7 +312,7 @@ Acceptance criteria:
 Subtasks:
 
 - [x] **2.3.1** Build organization settings UI for timezone, locale, and branding placeholders (`PATCH /organizations/:id`)
-- [ ] **2.3.2** Gate settings edits behind the client permission check for `settings:update`, while retaining backend enforcement
+- [x] **2.3.2** Gate settings edits behind the client permission check for `settings:update`, while retaining backend enforcement
 - [ ] **2.3.3** Surface forbidden, validation, and tenant-context errors with clear field or page feedback
 - [ ] **2.3.4** Add archive/delete confirmation for organization owners (`DELETE /organizations/:id`)
 - [ ] **2.3.5** Clear or replace the active organization after archive and hide archived organizations from the switcher after refresh
@@ -535,7 +535,8 @@ Subtasks:
 - [x] **1.3.5** Invalidate auth Query cache on logout / session clear
 - [x] **2.1–2.2** Create-organization flow + active-organization switcher
 - [x] **2.3.1** Organization settings UI (timezone, locale, branding placeholders)
-- [ ] **2.3.2–2.3.5** Settings permission gating, error surfacing, and archive flow
+- [x] **2.3.2** Settings edits gated on client `settings:update` (backend still enforces)
+- [ ] **2.3.3–2.3.5** Settings error surfacing and archive flow
 - [ ] Wire profile settings and members directory (Phase 3)
 - [ ] Add frontend permission helpers from the backend matrix
 - [ ] Defer invites/member mutations/projects/boards/issues until matching backend APIs ship
