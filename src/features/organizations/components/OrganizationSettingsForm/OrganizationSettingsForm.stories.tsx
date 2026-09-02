@@ -41,6 +41,8 @@ const meta = {
     onSubmit: { control: false },
     formError: { control: 'text' },
     notice: { control: 'text' },
+    readOnly: { control: 'boolean' },
+    readOnlyMessage: { control: 'text' },
   },
   decorators: [
     (Story) => (
@@ -166,5 +168,26 @@ export const Saved: Story = {
     await expect(canvas.getByRole('status')).toHaveTextContent(
       'Settings saved.',
     )
+  },
+}
+
+export const ReadOnly: Story = {
+  args: {
+    readOnly: true,
+  },
+  play: async ({ canvas, args }) => {
+    await expect(canvas.getByLabelText(/Timezone/i)).toBeDisabled()
+    await expect(canvas.getByLabelText(/App name/i)).toBeDisabled()
+    await expect(canvas.getByLabelText(/Logo URL/i)).toBeDisabled()
+    await expect(canvas.getByRole('status')).toHaveTextContent(
+      /only admins and owners/i,
+    )
+    await expect(
+      canvas.queryByRole('button', { name: 'Save settings' }),
+    ).toBeNull()
+    await expect(
+      canvas.queryByRole('button', { name: 'Discard changes' }),
+    ).toBeNull()
+    await expect(args.onSubmit).not.toHaveBeenCalled()
   },
 }

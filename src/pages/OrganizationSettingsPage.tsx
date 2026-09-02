@@ -7,6 +7,8 @@ import { useUpdateOrganization } from '@/features/organizations/hooks/use-update
 import type { OrganizationSettingsPatch } from '@/features/organizations/api/organization-api.types'
 import { getApiErrorMessage } from '@/lib/api/get-api-error-message'
 import OrganizationSettingsForm from '@/features/organizations/components/OrganizationSettingsForm'
+import { OrganizationPermission } from '@/features/organizations/permissions/organization-permission'
+import { usePermission } from '@/features/organizations/hooks/use-permission'
 import {
   $ErrorPanel,
   $Eyebrow,
@@ -21,7 +23,7 @@ import {
 
 /**
  * Organization settings screen for the active workspace (task 2.3.1).
- * Permission gating (2.3.2) and archive (2.3.4) land in follow-up subtasks.
+ * Edits require `settings:update`; PATCH remains backend-enforced (task 2.3.2).
  */
 const OrganizationSettingsPage: FC = () => {
   const activeOrganizationId = useActiveOrganizationId()
@@ -29,9 +31,15 @@ const OrganizationSettingsPage: FC = () => {
   const updateOrganizationMutation = useUpdateOrganization(
     activeOrganizationId ?? '',
   )
+  const settingsUpdate = usePermission(OrganizationPermission.SETTINGS_UPDATE)
   const [isSavedToastOpen, setIsSavedToastOpen] = useState(false)
+  const canUpdate = settingsUpdate.allowed
 
   const handleSubmit = (settings: OrganizationSettingsPatch) => {
+    if (!canUpdate) {
+      return
+    }
+
     updateOrganizationMutation.mutate(
       { settings },
       {
@@ -112,10 +120,20 @@ const OrganizationSettingsPage: FC = () => {
         settings={organization.settings}
         onSubmit={handleSubmit}
         isSubmitting={updateOrganizationMutation.isPending}
+        readOnly={!canUpdate}
+        readOnlyMessage={
+          settingsUpdate.isError
+            ? undefined
+            : settingsUpdate.isPending
+              ? 'Checking whether you can edit these settings...'
+              : 'You can view these settings, but only admins and owners can change them.'
+        }
         formError={
-          updateOrganizationMutation.isError
-            ? getApiErrorMessage(updateOrganizationMutation.error)
-            : undefined
+          settingsUpdate.isError
+            ? getApiErrorMessage(settingsUpdate.error)
+            : updateOrganizationMutation.isError
+              ? getApiErrorMessage(updateOrganizationMutation.error)
+              : undefined
         }
       />
       <Toast
