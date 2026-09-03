@@ -1,10 +1,8 @@
-import { useState, type ChangeEvent, type FC } from 'react'
+import { type ChangeEvent, type FC } from 'react'
 import { useQueryClient } from '@tanstack/react-query'
 import { useListOrganizations } from '@/features/organizations/hooks/use-list-organizations'
-import {
-  getActiveOrganizationId,
-  setActiveOrganizationId,
-} from '@/features/organizations/active-organization-storage'
+import { useActiveOrganizationId } from '@/features/organizations/hooks/use-active-organization-id'
+import { setActiveOrganizationId } from '@/features/organizations/active-organization-storage'
 import { useTenantContext } from '@/features/organizations/hooks/use-tenant-context'
 import { isApiError } from '@/lib/api/api-error'
 import { getApiErrorMessage } from '@/lib/api/get-api-error-message'
@@ -17,21 +15,19 @@ import {
 
 /**
  * Organization picker in the authenticated shell sidebar.
- * Shows the list of organizations the user belongs to and allows switching.
- * Task 2.2.1.
+ * Tracks the active workspace through storage so archive and restore stay in
+ * sync with the list (tasks 2.2.1 / 2.3.5).
  */
-
 const OrganizationSwitcher: FC = () => {
   const queryClient = useQueryClient()
   const organizationsQuery = useListOrganizations()
-  const [activeOrgId, setActiveOrgId] = useState(getActiveOrganizationId)
+  const activeOrgId = useActiveOrganizationId()
   const tenantContextQuery = useTenantContext(activeOrgId)
 
   const handleChange = (event: ChangeEvent<HTMLSelectElement>) => {
     const nextOrgId = event.target.value
     if (nextOrgId && nextOrgId !== activeOrgId) {
       setActiveOrganizationId(nextOrgId)
-      setActiveOrgId(nextOrgId)
       void queryClient.invalidateQueries({
         predicate: (query) =>
           query.queryKey[0] === 'organizations' &&

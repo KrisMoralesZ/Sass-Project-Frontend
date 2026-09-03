@@ -315,7 +315,7 @@ Subtasks:
 - [x] **2.3.2** Gate settings edits behind the client permission check for `settings:update`, while retaining backend enforcement
 - [x] **2.3.3** Surface forbidden, validation, and tenant-context errors with clear field or page feedback
 - [x] **2.3.4** Add archive/delete confirmation for organization owners (`DELETE /organizations/:id`)
-- [ ] **2.3.5** Clear or replace the active organization after archive and hide archived organizations from the switcher after refresh
+- [x] **2.3.5** Clear or replace the active organization after archive and hide archived organizations from the switcher after refresh
 
 Acceptance criteria:
 
@@ -538,7 +538,7 @@ Subtasks:
 - [x] **2.3.2** Settings edits gated on client `settings:update` (backend still enforces)
 - [x] **2.3.3** Settings forbidden, validation, and tenant-context error surfacing
 - [x] **2.3.4** Owner archive confirmation (`DELETE /organizations/:id`)
-- [ ] **2.3.5** Active-organization cleanup after archive
+- [x] **2.3.5** Active-organization cleanup after archive
 - [ ] Wire profile settings and members directory (Phase 3)
 - [ ] Add frontend permission helpers from the backend matrix
 - [ ] Defer invites/member mutations/projects/boards/issues until matching backend APIs ship

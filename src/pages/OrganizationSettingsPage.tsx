@@ -1,6 +1,8 @@
 import { type FC, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import Button from '@/components/ui/Button'
 import Toast from '@/components/ui/Toast'
+import { paths } from '@/routes/paths'
 import { useActiveOrganizationId } from '@/features/organizations/hooks/use-active-organization-id'
 import { useOrganization } from '@/features/organizations/hooks/use-organization'
 import { useUpdateOrganization } from '@/features/organizations/hooks/use-update-organization'
@@ -36,8 +38,11 @@ import {
  * Edits require `settings:update`; PATCH remains backend-enforced (task 2.3.2).
  * Forbidden, validation, and tenant-context failures map to field or page copy
  * (task 2.3.3). Owners can archive the workspace after confirming (task 2.3.4).
+ * Archive replaces or clears the active workspace so it cannot stay selected
+ * (task 2.3.5).
  */
 const OrganizationSettingsPage: FC = () => {
+  const navigate = useNavigate()
   const activeOrganizationId = useActiveOrganizationId()
   const organizationQuery = useOrganization(activeOrganizationId)
   const updateOrganizationMutation = useUpdateOrganization(
@@ -171,7 +176,10 @@ const OrganizationSettingsPage: FC = () => {
             ? archiveOrganizationMutation.error
             : undefined
         }
-        onArchive={() => archiveOrganizationMutation.mutateAsync()}
+        onArchive={async () => {
+          await archiveOrganizationMutation.mutateAsync()
+          void navigate(paths.home, { replace: true })
+        }}
       />
       <Toast
         open={isSavedToastOpen}
