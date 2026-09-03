@@ -26,7 +26,7 @@ Config lives in `vite.config.ts` (`test.coverage`). Coverage HTML is written to 
 
 ## How the two gates work
 
-CI runs unit coverage and Storybook coverage as **separate steps**. Hits do not merge: a unit spec cannot satisfy the Storybook 80% bar, and a story cannot satisfy the unit 70% bar.
+CI runs unit coverage and Storybook coverage as **separate jobs**. Hits do not merge: a unit spec cannot satisfy the Storybook 80% bar, and a story cannot satisfy the unit 70% bar.
 
 Story `play` functions and renders count toward `Button/index.tsx`, `PublicLayout/index.tsx`, and other files under `src/components` and `src/styles`. `.stories.tsx` files themselves are excluded (decorators, mock panels, story args).
 
@@ -152,9 +152,9 @@ Stories exist. Mark done only after `npm run test:coverage` shows the `index.tsx
 
 ## Gate status
 
-| Check                                                                                                                                                     | Unit (Vitest)                          | Storybook                                   |
-| --------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------- | ------------------------------------------- |
-| Target                                                                                                                                                    | 70%                                    | 80%                                         |
-| Enforced in                                                                                                                                               | `vite.config.ts` when `--project=unit` | `vite.config.ts` when `--project=storybook` |
-| CI step                                                                                                                                                   | `npm run test:coverage:unit`           | `npm run test:coverage:storybook`           |
+| Check                                                                                                                                                     | Unit (Vitest)                          | Storybook                                                    |
+| --------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------- | ------------------------------------------------------------ |
+| Target                                                                                                                                                    | 70%                                    | 80%                                                          |
+| Enforced in                                                                                                                                               | `vite.config.ts` when `--project=unit` | `vite.config.ts` when `--project=storybook`                  |
+| CI step                                                                                                                                                   | job `quality` (`test:coverage:unit`)   | job `storybook` (`test:coverage:storybook`), after `quality` |
 | When both reports are stably above their bars, keep this file as a checklist for new modules (unit spec or story `play` function in the matching folder). |

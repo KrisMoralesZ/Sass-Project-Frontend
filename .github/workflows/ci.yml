@@ -6,29 +6,26 @@ on:
   pull_request:
     branches: ['*']
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
 jobs:
-  build:
+  quality:
+    name: Quality
     runs-on: ubuntu-latest
-
-    strategy:
-      matrix:
-        node-version: [26.x]
-
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Use Node.js ${{ matrix.node-version }}
+      - name: Use Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: ${{ matrix.node-version }}
+          node-version: 26
           cache: npm
 
       - name: Install dependencies
-        run: npm install
-
-      - name: Install Playwright Chromium
-        run: npx playwright install chromium --with-deps
+        run: npm ci
 
       - name: Check formatting
         run: npm run format:check
@@ -36,11 +33,43 @@ jobs:
       - name: Run lint
         run: npm run lint
 
+      - name: Build
+        run: npm run build
+
       - name: Run unit tests with coverage
         run: npm run test:coverage:unit
 
+  storybook:
+    name: Storybook tests
+    needs: [quality]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 26
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Cache Playwright browsers
+        id: playwright-cache
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
+
+      - name: Install Playwright Chromium
+        if: steps.playwright-cache.outputs.cache-hit != 'true'
+        run: npx playwright install chromium --with-deps
+
+      - name: Install Playwright OS dependencies
+        if: steps.playwright-cache.outputs.cache-hit == 'true'
+        run: npx playwright install-deps chromium
+
       - name: Run Storybook tests with coverage
         run: npm run test:coverage:storybook
-
-      - name: Build
-        run: npm run build
