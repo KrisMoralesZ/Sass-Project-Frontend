@@ -1,30 +1,52 @@
-# Frontend coverage effort (70% gate)
+# Frontend coverage effort
 
-Vitest enforces **70%** statements, branches, functions, and lines (same bar as the backend). CI runs `npm run test:coverage`, which executes the **unit** project plus **Storybook** tests and fails the GitHub check if the threshold is missed.
+Two independent gates (same metrics: statements, branches, functions, lines):
 
-Work this list **module by module**. Check an item off when its tests are in and `npm run test:coverage` still passes (or, until the first green run, when that module’s files are covered).
+| Suite         | Threshold | Measured files                                     | CI command                        |
+| ------------- | --------- | -------------------------------------------------- | --------------------------------- |
+| Unit (Vitest) | **70%**   | `src/lib`, `src/features`, `src/routes`, `App.tsx` | `npm run test:coverage:unit`      |
+| Storybook     | **80%**   | `src/components`, `src/styles`                     | `npm run test:coverage:storybook` |
+
+Storybook is higher because those files already have (or should have) interaction stories. Unit stays at 70% while auth/API specs are filled in. Add `src/pages/**` to the Storybook include in `vite.config.ts` when page stories exist.
+
+Work this list **module by module**. Check an item off when its tests are in and the matching coverage command still passes.
 
 ## Commands
 
-| Script                       | What it does                                              |
-| ---------------------------- | --------------------------------------------------------- |
-| `npm run test:unit`          | Watch unit tests (`src/**/*.{test,spec}.{ts,tsx}`)        |
-| `npm run test:unit:run`      | Single unit run (no Storybook / Playwright)               |
-| `npm run test:storybook:run` | Storybook interaction tests only                          |
-| `npm run test:coverage`      | All projects + V8 coverage + 70% threshold (what CI runs) |
+| Script                            | What it does                                        |
+| --------------------------------- | --------------------------------------------------- |
+| `npm run test:unit`               | Watch unit tests (`src/**/*.{test,spec}.{ts,tsx}`)  |
+| `npm run test:unit:run`           | Single unit run (no Storybook / Playwright)         |
+| `npm run test:storybook:run`      | Storybook interaction tests only (no coverage)      |
+| `npm run test:coverage:unit`      | Unit project + V8 coverage + **70%** threshold      |
+| `npm run test:coverage:storybook` | Storybook project + V8 coverage + **80%** threshold |
+| `npm run test:coverage`           | Unit gate then Storybook gate (local convenience)   |
 
 Config lives in `vite.config.ts` (`test.coverage`). Coverage HTML is written to `coverage/` (gitignored).
 
+## How the two gates work
+
+CI runs unit coverage and Storybook coverage as **separate steps**. Hits do not merge: a unit spec cannot satisfy the Storybook 80% bar, and a story cannot satisfy the unit 70% bar.
+
+Story `play` functions and renders count toward `Button/index.tsx`, `PublicLayout/index.tsx`, and other files under `src/components` and `src/styles`. `.stories.tsx` files themselves are excluded (decorators, mock panels, story args).
+
+| Command                           | Tests run                 | Coverage                         | Threshold |
+| --------------------------------- | ------------------------- | -------------------------------- | --------- |
+| `npm run test:coverage:unit`      | `*.test.ts` / `*.spec.ts` | lib, features, routes, `App.tsx` | 70%       |
+| `npm run test:coverage:storybook` | stories                   | components, styles               | 80%       |
+| `npm run test:storybook:run`      | stories                   | none                             | —         |
+
 ## What is excluded from the denominator
 
-These are not counted toward 70%:
+These are not counted toward either gate:
 
-- `*.stories.tsx`, `*.test.*`, `*.spec.*`
+- `*.stories.tsx`, `*.test.*`, `*.spec.*` (test/story wrappers, not product source)
 - `*.d.ts`, `src/types/**`
 - `*.sc.tsx` (styled-components style files)
 - `src/main.tsx` (bootstrap)
+- `src/pages/**` until page stories exist (then add them to the Storybook `include` in `vite.config.ts`)
 
-Logic, pages, layouts, hooks, and API helpers **are** counted.
+Unit logic (`src/lib`, `src/features`, `src/routes`) is counted only in the 70% gate. Component `index.tsx` files rendered by stories are counted only in the 80% gate.
 
 ## Suggested order
 
@@ -130,11 +152,9 @@ Stories exist. Mark done only after `npm run test:coverage` shows the `index.tsx
 
 ## Gate status
 
-| Check       | Value                                                                                                                 |
-| ----------- | --------------------------------------------------------------------------------------------------------------------- |
-| Target      | 70% statements / branches / functions / lines                                                                         |
-| Enforced in | `vite.config.ts` → `test.coverage.thresholds`                                                                         |
-| CI step     | `npm run test:coverage` in `.github/workflows/ci.yml`                                                                 |
-| Today       | No unit specs. Nine Storybook files. First `test:coverage` run on `main` will fail until sections 1–3 (at least) land |
-
-When the report is stably above 70%, keep this file as a checklist for new modules (same rule: new feature folder ships with a `*.test.ts` or a story `play` function).
+| Check                                                                                                                                                     | Unit (Vitest)                          | Storybook                                   |
+| --------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------- | ------------------------------------------- |
+| Target                                                                                                                                                    | 70%                                    | 80%                                         |
+| Enforced in                                                                                                                                               | `vite.config.ts` when `--project=unit` | `vite.config.ts` when `--project=storybook` |
+| CI step                                                                                                                                                   | `npm run test:coverage:unit`           | `npm run test:coverage:storybook`           |
+| When both reports are stably above their bars, keep this file as a checklist for new modules (unit spec or story `play` function in the matching folder). |
