@@ -14,8 +14,13 @@
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build",
     "test": "vitest",
+    "test:unit": "vitest --project=unit",
+    "test:unit:run": "vitest run --project=unit --passWithNoTests",
     "test:storybook": "vitest --project=storybook",
-    "test:storybook:run": "vitest run --project=storybook"
+    "test:storybook:run": "vitest run --project=storybook",
+    "test:coverage": "npm run test:coverage:unit && npm run test:coverage:storybook",
+    "test:coverage:unit": "vitest run --project=unit --coverage --passWithNoTests",
+    "test:coverage:storybook": "vitest run --project=storybook --coverage"
   },
   "dependencies": {
     "@tanstack/react-query": "^5.101.4",
