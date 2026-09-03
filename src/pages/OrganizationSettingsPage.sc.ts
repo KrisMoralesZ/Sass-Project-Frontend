@@ -80,3 +80,12 @@ export const $ErrorPanel = styled.section`
   border-radius: ${({ theme }) => theme.radii.lg};
   background: ${({ theme }) => theme.colors.surface};
 `
+
+export const $ErrorTitle = styled.h2`
+  margin: 0;
+  color: ${({ theme }) => theme.colors.danger};
+  font-size: ${({ theme }) => theme.font.size.lg};
+  font-weight: ${({ theme }) => theme.font.weight.semibold};
+  letter-spacing: ${({ theme }) => theme.font.letterSpacing.tight};
+  line-height: ${({ theme }) => theme.font.lineHeight.tight};
+`
