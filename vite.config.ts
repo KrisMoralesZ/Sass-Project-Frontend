@@ -33,7 +33,38 @@ export default defineConfig({
     },
   },
   test: {
+    passWithNoTests: true,
+    coverage: {
+      provider: 'v8',
+      reporter: ['text', 'json-summary', 'html'],
+      reportsDirectory: './coverage',
+      include: ['src/**/*.{ts,tsx}'],
+      exclude: [
+        'src/**/*.stories.tsx',
+        'src/**/*.test.{ts,tsx}',
+        'src/**/*.spec.{ts,tsx}',
+        'src/**/*.d.ts',
+        'src/**/*.sc.tsx',
+        'src/main.tsx',
+        'src/types/**',
+      ],
+      thresholds: {
+        statements: 70,
+        branches: 70,
+        functions: 70,
+        lines: 70,
+      },
+    },
     projects: [
+      {
+        extends: true,
+        test: {
+          name: 'unit',
+          include: ['src/**/*.{test,spec}.{ts,tsx}'],
+          environment: 'node',
+          passWithNoTests: true,
+        },
+      },
       {
         extends: true,
         plugins: [
