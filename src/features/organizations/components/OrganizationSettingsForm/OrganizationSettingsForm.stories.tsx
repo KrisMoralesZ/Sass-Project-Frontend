@@ -1,6 +1,8 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { expect, fn, userEvent } from 'storybook/test'
 import styled from 'styled-components'
+import { ApiError } from '@/lib/api/api-error'
+import { ErrorCode } from '@/types/error-code'
 import type { OrganizationSettings } from '../../api/organization-api.types'
 import OrganizationSettingsForm from '.'
 
@@ -39,6 +41,7 @@ const meta = {
   },
   argTypes: {
     onSubmit: { control: false },
+    apiError: { control: false },
     formError: { control: 'text' },
     notice: { control: 'text' },
     readOnly: { control: 'boolean' },
@@ -149,14 +152,65 @@ export const Submitting: Story = {
   },
 }
 
-export const ApiError: Story = {
+export const Forbidden: Story = {
   args: {
-    formError: 'You do not have permission to update these settings.',
+    apiError: new ApiError({
+      code: ErrorCode.FORBIDDEN,
+      statusCode: 403,
+      message: 'Missing required permission(s): settings:update.',
+    }),
   },
   play: async ({ canvas }) => {
     await expect(canvas.getByRole('alert')).toHaveTextContent(
-      /do not have permission/i,
+      /do not have permission to update these settings/i,
     )
+    await expect(canvas.queryByText(/Missing required permission/i)).toBeNull()
+  },
+}
+
+export const TenantContext: Story = {
+  args: {
+    apiError: new ApiError({
+      code: ErrorCode.TENANT_ORGANIZATION_FORBIDDEN,
+      statusCode: 403,
+      message: 'You do not have access to this organization.',
+    }),
+  },
+  play: async ({ canvas }) => {
+    await expect(canvas.getByRole('alert')).toHaveTextContent(
+      /Choose another workspace/i,
+    )
+  },
+}
+
+export const ApiValidation: Story = {
+  args: {
+    apiError: new ApiError({
+      code: ErrorCode.VALIDATION_FAILED,
+      statusCode: 400,
+      message: [
+        'settings.timezone must be shorter than or equal to 64 characters',
+        'settings.branding.primaryColor must be a string',
+      ],
+    }),
+  },
+  play: async ({ canvas }) => {
+    await expect(
+      canvas.getByText('Timezone must be 64 characters or fewer.'),
+    ).toBeVisible()
+    await expect(
+      canvas.getByText('Use a hex color such as #1a5c40.'),
+    ).toBeVisible()
+    await expect(canvas.queryByText(/settings\.timezone/i)).toBeNull()
+    await expect(canvas.queryByText(/must be a string/i)).toBeNull()
+
+    await userEvent.selectOptions(canvas.getByLabelText(/Timezone/i), 'UTC')
+    await expect(
+      canvas.queryByText('Timezone must be 64 characters or fewer.'),
+    ).toBeNull()
+    await expect(
+      canvas.getByText('Use a hex color such as #1a5c40.'),
+    ).toBeVisible()
   },
 }
 
