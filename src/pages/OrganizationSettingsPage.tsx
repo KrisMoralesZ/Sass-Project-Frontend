@@ -6,8 +6,14 @@ import { useOrganization } from '@/features/organizations/hooks/use-organization
 import { useUpdateOrganization } from '@/features/organizations/hooks/use-update-organization'
 import type { OrganizationSettingsPatch } from '@/features/organizations/api/organization-api.types'
 import OrganizationSettingsForm from '@/features/organizations/components/OrganizationSettingsForm'
+import ArchiveOrganizationPanel from '@/features/organizations/components/ArchiveOrganizationPanel'
 import { OrganizationPermission } from '@/features/organizations/permissions/organization-permission'
+import {
+  hasMinRole,
+  OrganizationRole,
+} from '@/features/organizations/permissions/organization-role'
 import { usePermission } from '@/features/organizations/hooks/use-permission'
+import { useArchiveOrganization } from '@/features/organizations/hooks/use-archive-organization'
 import {
   describeOrganizationWorkspaceLoadError,
   isOrganizationSettingsAccessError,
@@ -29,7 +35,7 @@ import {
  * Organization settings screen for the active workspace (task 2.3.1).
  * Edits require `settings:update`; PATCH remains backend-enforced (task 2.3.2).
  * Forbidden, validation, and tenant-context failures map to field or page copy
- * (task 2.3.3).
+ * (task 2.3.3). Owners can archive the workspace after confirming (task 2.3.4).
  */
 const OrganizationSettingsPage: FC = () => {
   const activeOrganizationId = useActiveOrganizationId()
@@ -38,8 +44,14 @@ const OrganizationSettingsPage: FC = () => {
     activeOrganizationId ?? '',
   )
   const settingsUpdate = usePermission(OrganizationPermission.SETTINGS_UPDATE)
+  const archiveOrganizationMutation = useArchiveOrganization(
+    activeOrganizationId ?? '',
+  )
   const [isSavedToastOpen, setIsSavedToastOpen] = useState(false)
   const canUpdate = settingsUpdate.allowed
+  const canArchive =
+    settingsUpdate.role !== null &&
+    hasMinRole(settingsUpdate.role, OrganizationRole.OWNER)
 
   const handleSubmit = (settings: OrganizationSettingsPatch) => {
     if (!canUpdate) {
@@ -149,6 +161,17 @@ const OrganizationSettingsPage: FC = () => {
               : 'You can view these settings, but only admins and owners can change them.'
         }
         apiError={saveApiError}
+      />
+      <ArchiveOrganizationPanel
+        organizationName={organization.name}
+        canArchive={canArchive}
+        isArchiving={archiveOrganizationMutation.isPending}
+        error={
+          archiveOrganizationMutation.isError
+            ? archiveOrganizationMutation.error
+            : undefined
+        }
+        onArchive={() => archiveOrganizationMutation.mutateAsync()}
       />
       <Toast
         open={isSavedToastOpen}
