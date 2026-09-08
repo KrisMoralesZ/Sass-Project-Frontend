@@ -1,7 +1,8 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import type { ReactNode } from 'react'
-import { MemoryRouter } from 'react-router-dom'
-import { expect, within } from 'storybook/test'
+import { MemoryRouter, Route, Routes } from 'react-router-dom'
+import { expect, fn, userEvent, within } from 'storybook/test'
+import { vi } from 'vitest'
 import styled from 'styled-components'
 import Table, {
   TableBody,
@@ -13,6 +14,15 @@ import Table, {
 import AuthSessionProvider from '@/features/auth/AuthSessionProvider'
 import { paths } from '@/routes/paths'
 import AppLayout from '.'
+
+const signOut = fn()
+
+vi.mock('@/features/auth/hooks/use-logout', () => ({
+  useLogout: () => ({
+    signOut,
+    isLoggingOut: false,
+  }),
+}))
 
 const Page = styled.section`
   display: flex;
@@ -250,6 +260,53 @@ export const Settings: Story = {
     ).toBeVisible()
     await expect(
       canvas.getByText('Organization and profile settings land in Phases 2–3.'),
+    ).toBeVisible()
+  },
+}
+
+export const SignOut: Story = {
+  args: {
+    children: (
+      <PageBlock
+        title="Home"
+        description="Click sign out to leave the workspace shell."
+      />
+    ),
+  },
+  play: async ({ canvas }) => {
+    signOut.mockClear()
+    await expectWorkspaceShell(canvas)
+
+    await userEvent.click(canvas.getByRole('button', { name: 'Sign out' }))
+    await expect(signOut).toHaveBeenCalledOnce()
+  },
+}
+
+export const RoutedOutlet: Story = {
+  render: () => (
+    <Routes>
+      <Route element={<AppLayout />}>
+        <Route
+          index
+          element={
+            <PageBlock
+              title="Outlet page"
+              description="Router pages render here when no children prop is passed."
+            />
+          }
+        />
+      </Route>
+    </Routes>
+  ),
+  play: async ({ canvas }) => {
+    await expectWorkspaceShell(canvas)
+    await expect(
+      canvas.getByRole('heading', { level: 1, name: 'Outlet page' }),
+    ).toBeVisible()
+    await expect(
+      canvas.getByText(
+        'Router pages render here when no children prop is passed.',
+      ),
     ).toBeVisible()
   },
 }
