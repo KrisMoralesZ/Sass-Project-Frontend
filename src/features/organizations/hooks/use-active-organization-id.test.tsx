@@ -1,8 +1,6 @@
 import { renderHook, act } from '@testing-library/react'
 import { beforeEach, describe, expect, it } from 'vitest'
-import {
-  setActiveOrganizationId,
-} from '../active-organization-storage'
+import { setActiveOrganizationId } from '../active-organization-storage'
 import { useActiveOrganizationId } from './use-active-organization-id'
 
 describe('useActiveOrganizationId', () => {

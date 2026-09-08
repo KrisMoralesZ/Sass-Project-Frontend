@@ -192,10 +192,10 @@ export const LoadError: Story = {
     settingsPageScenario: 'load-error',
   },
   play: async ({ canvas }) => {
+    await expect(canvas.getByText('Failed to load organization')).toBeVisible()
     await expect(
-      canvas.getByText('Failed to load organization'),
-    ).toBeVisible()
-    await expect(canvas.getByRole('button', { name: 'Try again' })).toBeEnabled()
+      canvas.getByRole('button', { name: 'Try again' }),
+    ).toBeEnabled()
   },
 }
 

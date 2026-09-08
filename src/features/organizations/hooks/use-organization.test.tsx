@@ -20,7 +20,9 @@ vi.mock('../api/get-organization', () => ({
 function wrapper({ children }: { children: ReactNode }) {
   return (
     <QueryClientProvider
-      client={new QueryClient({ defaultOptions: { queries: { retry: false } } })}
+      client={
+        new QueryClient({ defaultOptions: { queries: { retry: false } } })
+      }
     >
       {children}
     </QueryClientProvider>
