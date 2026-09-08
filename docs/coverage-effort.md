@@ -115,11 +115,11 @@ Do **lib + auth** first. They are high line-count, easy to unit-test, and the cu
 
 ### 5. Layouts — Storybook already started
 
-| Status | Area                     | Existing                            | Remaining                                                                                                                                                     |
-| ------ | ------------------------ | ----------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| [ ]    | `PublicLayout/` (folder) | `PublicLayout.stories.tsx`          | Confirm coverage of `index.tsx` in the report                                                                                                                 |
-| [ ]    | `AppLayout/` (folder)    | `AppLayout.stories.tsx`             | Same; exercise nav + sign out if not already in `play`                                                                                                        |
-| [ ]    | Duplicate shells         | `AppLayout.tsx`, `PublicLayout.tsx` | `AppRoutes` still imports these files. Either add stories/tests for **them**, or delete the duplicates and import the folder modules so coverage is not split |
+| Status | Area                     | Existing                     | Remaining                                                           |
+| ------ | ------------------------ | ---------------------------- | ------------------------------------------------------------------- |
+| [x]    | `PublicLayout/` (folder) | `PublicLayout.stories.tsx`   | Shell, outlet, and nav link interactions covered in `play`          |
+| [x]    | `AppLayout/` (folder)    | `AppLayout.stories.tsx`      | Nav, sign out click, and routed `<Outlet />` covered in `play`      |
+| [x]    | Duplicate shells         | n/a (already folder modules) | No duplicate `AppLayout.tsx` / `PublicLayout.tsx` files in the tree |
 
 **Effort:** ~0.5 day (mostly deciding what to do with the duplicate files).
 
@@ -129,22 +129,22 @@ Stories exist. Mark done only after `npm run test:coverage` shows the `index.tsx
 
 | Status | Component | Story                   |
 | ------ | --------- | ----------------------- |
-| [ ]    | Button    | `Button.stories.tsx`    |
-| [ ]    | Input     | `Input.stories.tsx`     |
-| [ ]    | FormField | `FormField.stories.tsx` |
-| [ ]    | Dialog    | `Dialog.stories.tsx`    |
-| [ ]    | Table     | `Table.stories.tsx`     |
-| [ ]    | Toast     | `Toast.stories.tsx`     |
-| [ ]    | Theme     | `Theme.stories.tsx`     |
+| [x]    | Button    | `Button.stories.tsx`    |
+| [x]    | Input     | `Input.stories.tsx`     |
+| [x]    | FormField | `FormField.stories.tsx` |
+| [x]    | Dialog    | `Dialog.stories.tsx`    |
+| [x]    | Table     | `Table.stories.tsx`     |
+| [x]    | Toast     | `Toast.stories.tsx`     |
+| [x]    | Theme     | `Theme.stories.tsx`     |
 
 **Effort:** ~0.5 day to fill missing `play` functions / states, if the report still shows holes.
 
 ### 7. App shell / styles leftover
 
-| Status | Area                                            | Notes                                                                       |
-| ------ | ----------------------------------------------- | --------------------------------------------------------------------------- |
-| [ ]    | `App.tsx`                                       | Thin; covered if a page story mounts the tree, or a one-liner unit test     |
-| [ ]    | `AppThemeProvider` / `GlobalStyle` / `media.ts` | Theme story may be enough; `media.ts` is a good tiny unit spec if uncovered |
+| Status | Area                                            | Notes                                                           |
+| ------ | ----------------------------------------------- | --------------------------------------------------------------- |
+| [x]    | `App.tsx`                                       | `src/App.test.tsx` — renders mocked `AppRoutes`                 |
+| [x]    | `AppThemeProvider` / `GlobalStyle` / `media.ts` | Theme story `play` exercises provider + `mediaUp` / `mediaDown` |
 
 **Effort:** ~1–2 hours.
 
