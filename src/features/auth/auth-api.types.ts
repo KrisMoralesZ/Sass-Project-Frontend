@@ -18,6 +18,11 @@ export interface RegisterRequest {
   displayName?: string
 }
 
+export interface LoginRequest {
+  email: string
+  password: string
+}
+
 /** Mirrors backend `RegisterResponse` / `LoginResponse`. */
 export interface AuthSessionResponse {
   user: AuthUserProfile
@@ -25,6 +30,8 @@ export interface AuthSessionResponse {
 }
 
 export type RegisterResponse = AuthSessionResponse
+
+export type LoginResponse = AuthSessionResponse
 
 export interface RefreshResponse {
   tokens: AuthTokens
