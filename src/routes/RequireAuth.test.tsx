@@ -1,5 +1,11 @@
 import { render, screen } from '@testing-library/react'
-import { MemoryRouter, Outlet, Route, Routes, useLocation } from 'react-router-dom'
+import {
+  MemoryRouter,
+  Outlet,
+  Route,
+  Routes,
+  useLocation,
+} from 'react-router-dom'
 import { describe, expect, it, vi } from 'vitest'
 import { useAuthSession } from '@/features/auth/useAuthSession'
 import { paths } from './paths'
