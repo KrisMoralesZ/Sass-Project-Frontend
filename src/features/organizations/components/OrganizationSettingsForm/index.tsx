@@ -25,6 +25,7 @@ import {
   type OrganizationSettingsField,
   type OrganizationSettingsFieldErrors,
 } from '../../organization-settings'
+import { mapOrganizationSettingsApiError } from '../../organization-settings-errors'
 import {
   $Actions,
   $ColorField,
@@ -47,7 +48,12 @@ export interface IOrganizationSettingsForm {
   /** Receives a patch with only the fields the user changed. */
   onSubmit?: (settings: OrganizationSettingsPatch) => void
   isSubmitting?: boolean
-  /** API failure shown above the actions (task 2.3.3 refines field mapping). */
+  /**
+   * PATCH or membership API failure. Validation messages map onto fields;
+   * forbidden and tenant-context failures stay at form level (task 2.3.3).
+   */
+  apiError?: unknown
+  /** Explicit form-level message; takes precedence over `apiError` copy. */
   formError?: ReactNode
   /** Confirmation shown after a successful save. */
   notice?: ReactNode
@@ -70,11 +76,14 @@ function toSwatchColor(value: string): string | null {
 /**
  * Organization settings form for timezone, locale, and branding placeholders
  * (task 2.3.1). Submits a `PATCH` payload holding only changed fields.
+ * API validation maps onto fields; forbidden and tenant failures stay at
+ * form level (task 2.3.3).
  */
 const OrganizationSettingsForm: FC<IOrganizationSettingsForm> = ({
   settings,
   onSubmit,
   isSubmitting = false,
+  apiError,
   formError,
   notice,
   readOnly = false,
@@ -86,15 +95,28 @@ const OrganizationSettingsForm: FC<IOrganizationSettingsForm> = ({
   )
   const savedSignature = JSON.stringify(savedValues)
 
+  const mappedApiError = useMemo(
+    () => mapOrganizationSettingsApiError(apiError),
+    [apiError],
+  )
   const [values, setValues] = useState(savedValues)
   const [errors, setErrors] = useState<OrganizationSettingsFieldErrors>({})
+  const [apiFieldErrors, setApiFieldErrors] =
+    useState<OrganizationSettingsFieldErrors>(mappedApiError.fieldErrors)
   const [syncedSignature, setSyncedSignature] = useState(savedSignature)
+  const [appliedApiError, setAppliedApiError] = useState(apiError)
 
   // Re-sync the form when saved settings change (initial load, save, refetch).
   if (syncedSignature !== savedSignature) {
     setSyncedSignature(savedSignature)
     setValues(savedValues)
     setErrors({})
+    setApiFieldErrors({})
+  }
+
+  if (apiError !== appliedApiError) {
+    setAppliedApiError(apiError)
+    setApiFieldErrors(mappedApiError.fieldErrors)
   }
 
   const timezoneOptions = useMemo(
@@ -109,25 +131,40 @@ const OrganizationSettingsForm: FC<IOrganizationSettingsForm> = ({
   const patch = buildOrganizationSettingsPatch(values, settings)
   const isDirty = patch !== null
   const fieldsDisabled = isSubmitting || readOnly
+  const fieldErrors = { ...apiFieldErrors, ...errors }
+  const displayedFormError = formError ?? mappedApiError.formError
+
+  const clearFieldError = (field: OrganizationSettingsField) => {
+    setErrors((current) => {
+      if (!current[field]) {
+        return current
+      }
+      const next = { ...current }
+      delete next[field]
+      return next
+    })
+    setApiFieldErrors((current) => {
+      if (!current[field]) {
+        return current
+      }
+      const next = { ...current }
+      delete next[field]
+      return next
+    })
+  }
 
   const updateField =
     (field: OrganizationSettingsField) =>
     (event: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
       const { value } = event.target
       setValues((current) => ({ ...current, [field]: value }))
-      setErrors((current) => {
-        if (!current[field]) {
-          return current
-        }
-        const next = { ...current }
-        delete next[field]
-        return next
-      })
+      clearFieldError(field)
     }
 
   const handleReset = () => {
     setValues(savedValues)
     setErrors({})
+    setApiFieldErrors({})
   }
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
@@ -162,7 +199,7 @@ const OrganizationSettingsForm: FC<IOrganizationSettingsForm> = ({
             label="Timezone"
             htmlFor="organization-timezone"
             required
-            error={errors.timezone}
+            error={fieldErrors.timezone}
           >
             <$Select
               id="organization-timezone"
@@ -181,7 +218,7 @@ const OrganizationSettingsForm: FC<IOrganizationSettingsForm> = ({
             label="Locale"
             htmlFor="organization-locale"
             required
-            error={errors.locale}
+            error={fieldErrors.locale}
           >
             <$Select
               id="organization-locale"
@@ -210,7 +247,7 @@ const OrganizationSettingsForm: FC<IOrganizationSettingsForm> = ({
           label="App name"
           htmlFor="organization-app-name"
           hint="Overrides the product name in workspace surfaces."
-          error={errors.appName}
+          error={fieldErrors.appName}
         >
           <Input
             id="organization-app-name"
@@ -225,7 +262,7 @@ const OrganizationSettingsForm: FC<IOrganizationSettingsForm> = ({
         <FormField
           label="Logo URL"
           htmlFor="organization-logo-url"
-          error={errors.logoUrl}
+          error={fieldErrors.logoUrl}
         >
           <Input
             id="organization-logo-url"
@@ -244,7 +281,7 @@ const OrganizationSettingsForm: FC<IOrganizationSettingsForm> = ({
             <FormField
               label="Primary color"
               htmlFor="organization-primary-color"
-              error={errors.primaryColor}
+              error={fieldErrors.primaryColor}
             >
               <Input
                 id="organization-primary-color"
@@ -262,7 +299,7 @@ const OrganizationSettingsForm: FC<IOrganizationSettingsForm> = ({
             <FormField
               label="Accent color"
               htmlFor="organization-accent-color"
-              error={errors.accentColor}
+              error={fieldErrors.accentColor}
             >
               <Input
                 id="organization-accent-color"
@@ -282,7 +319,9 @@ const OrganizationSettingsForm: FC<IOrganizationSettingsForm> = ({
         <$ReadOnlyNotice role="status">{readOnlyMessage}</$ReadOnlyNotice>
       ) : null}
       {notice ? <$FormNotice role="status">{notice}</$FormNotice> : null}
-      {formError ? <$FormError role="alert">{formError}</$FormError> : null}
+      {displayedFormError ? (
+        <$FormError role="alert">{displayedFormError}</$FormError>
+      ) : null}
 
       {readOnly ? null : (
         <$Actions>

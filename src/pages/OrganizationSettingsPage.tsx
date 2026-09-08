@@ -5,12 +5,16 @@ import { useActiveOrganizationId } from '@/features/organizations/hooks/use-acti
 import { useOrganization } from '@/features/organizations/hooks/use-organization'
 import { useUpdateOrganization } from '@/features/organizations/hooks/use-update-organization'
 import type { OrganizationSettingsPatch } from '@/features/organizations/api/organization-api.types'
-import { getApiErrorMessage } from '@/lib/api/get-api-error-message'
 import OrganizationSettingsForm from '@/features/organizations/components/OrganizationSettingsForm'
 import { OrganizationPermission } from '@/features/organizations/permissions/organization-permission'
 import { usePermission } from '@/features/organizations/hooks/use-permission'
 import {
+  describeOrganizationWorkspaceLoadError,
+  isOrganizationSettingsAccessError,
+} from '@/features/organizations/organization-settings-errors'
+import {
   $ErrorPanel,
+  $ErrorTitle,
   $Eyebrow,
   $Header,
   $Lead,
@@ -24,6 +28,8 @@ import {
 /**
  * Organization settings screen for the active workspace (task 2.3.1).
  * Edits require `settings:update`; PATCH remains backend-enforced (task 2.3.2).
+ * Forbidden, validation, and tenant-context failures map to field or page copy
+ * (task 2.3.3).
  */
 const OrganizationSettingsPage: FC = () => {
   const activeOrganizationId = useActiveOrganizationId()
@@ -81,11 +87,16 @@ const OrganizationSettingsPage: FC = () => {
   }
 
   if (organizationQuery.isError) {
+    const loadError = describeOrganizationWorkspaceLoadError(
+      organizationQuery.error,
+    )
+
     return (
       <$Page>
         {header}
-        <$ErrorPanel>
-          <$Message>{getApiErrorMessage(organizationQuery.error)}</$Message>
+        <$ErrorPanel role="alert">
+          <$ErrorTitle>{loadError.title}</$ErrorTitle>
+          <$Message>{loadError.message}</$Message>
           <Button
             type="button"
             onClick={() => void organizationQuery.refetch()}
@@ -98,6 +109,15 @@ const OrganizationSettingsPage: FC = () => {
   }
 
   const organization = organizationQuery.data
+  const saveApiError = updateOrganizationMutation.isError
+    ? updateOrganizationMutation.error
+    : settingsUpdate.isError
+      ? settingsUpdate.error
+      : undefined
+  const saveAccessBlocked =
+    updateOrganizationMutation.isError &&
+    isOrganizationSettingsAccessError(updateOrganizationMutation.error)
+  const isReadOnly = !canUpdate || saveAccessBlocked
 
   return (
     <$Page>
@@ -120,21 +140,15 @@ const OrganizationSettingsPage: FC = () => {
         settings={organization.settings}
         onSubmit={handleSubmit}
         isSubmitting={updateOrganizationMutation.isPending}
-        readOnly={!canUpdate}
+        readOnly={isReadOnly}
         readOnlyMessage={
-          settingsUpdate.isError
+          saveAccessBlocked || settingsUpdate.isError
             ? undefined
             : settingsUpdate.isPending
               ? 'Checking whether you can edit these settings...'
               : 'You can view these settings, but only admins and owners can change them.'
         }
-        formError={
-          settingsUpdate.isError
-            ? getApiErrorMessage(settingsUpdate.error)
-            : updateOrganizationMutation.isError
-              ? getApiErrorMessage(updateOrganizationMutation.error)
-              : undefined
-        }
+        apiError={saveApiError}
       />
       <Toast
         open={isSavedToastOpen}

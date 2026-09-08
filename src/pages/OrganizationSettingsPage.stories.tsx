@@ -9,6 +9,8 @@ import { useActiveOrganizationId } from '@/features/organizations/hooks/use-acti
 import { useOrganization } from '@/features/organizations/hooks/use-organization'
 import { useUpdateOrganization } from '@/features/organizations/hooks/use-update-organization'
 import { usePermission } from '@/features/organizations/hooks/use-permission'
+import { ApiError } from '@/lib/api/api-error'
+import { ErrorCode } from '@/types/error-code'
 import { paths } from '@/routes/paths'
 import OrganizationSettingsPage from './OrganizationSettingsPage'
 
@@ -65,12 +67,14 @@ const mutate = fn()
 type SettingsPageScenario =
   | 'no-active-org'
   | 'loading'
-  | 'load-error'
+  | 'load-not-found'
+  | 'load-unavailable'
   | 'ready'
   | 'read-only'
   | 'permission-pending'
   | 'save-success'
-  | 'save-error'
+  | 'save-forbidden'
+  | 'save-validation'
 
 function mockPermission(scenario: SettingsPageScenario) {
   if (scenario === 'permission-pending') {
@@ -136,12 +140,28 @@ function mockSettingsPage(scenario: SettingsPageScenario) {
       error: null,
       refetch: fn(),
     } as unknown as ReturnType<typeof useOrganization>)
-  } else if (scenario === 'load-error') {
+  } else if (scenario === 'load-not-found') {
     vi.mocked(useOrganization).mockReturnValue({
       isPending: false,
       isError: true,
       data: undefined,
-      error: new Error('Failed to load organization'),
+      error: new ApiError({
+        code: ErrorCode.RESOURCE_NOT_FOUND,
+        statusCode: 404,
+        message: 'Organization not found',
+      }),
+      refetch: fn(),
+    } as unknown as ReturnType<typeof useOrganization>)
+  } else if (scenario === 'load-unavailable') {
+    vi.mocked(useOrganization).mockReturnValue({
+      isPending: false,
+      isError: true,
+      data: undefined,
+      error: new ApiError({
+        code: ErrorCode.TENANT_ORGANIZATION_FORBIDDEN,
+        statusCode: 403,
+        message: 'You do not have access to this organization.',
+      }),
       refetch: fn(),
     } as unknown as ReturnType<typeof useOrganization>)
   } else {
@@ -163,11 +183,23 @@ function mockSettingsPage(scenario: SettingsPageScenario) {
   vi.mocked(useUpdateOrganization).mockReturnValue({
     mutate,
     isPending: false,
-    isError: scenario === 'save-error',
+    isError: scenario === 'save-forbidden' || scenario === 'save-validation',
     error:
-      scenario === 'save-error'
-        ? new Error('You do not have permission to update these settings.')
-        : null,
+      scenario === 'save-forbidden'
+        ? new ApiError({
+            code: ErrorCode.FORBIDDEN,
+            statusCode: 403,
+            message: 'Missing required permission(s): settings:update.',
+          })
+        : scenario === 'save-validation'
+          ? new ApiError({
+              code: ErrorCode.VALIDATION_FAILED,
+              statusCode: 400,
+              message: [
+                'settings.locale must be shorter than or equal to 16 characters',
+              ],
+            })
+          : null,
   } as unknown as ReturnType<typeof useUpdateOrganization>)
 }
 
@@ -227,15 +259,30 @@ export const Loading: Story = {
   },
 }
 
-export const LoadError: Story = {
+export const LoadNotFound: Story = {
   parameters: {
-    settingsPageScenario: 'load-error',
+    settingsPageScenario: 'load-not-found',
   },
   play: async ({ canvas }) => {
-    await expect(canvas.getByText('Failed to load organization')).toBeVisible()
+    await expect(
+      canvas.getByRole('alert').querySelector('h2'),
+    ).toHaveTextContent(/no longer available/i)
+    await expect(canvas.getByText(/archived or deleted/i)).toBeVisible()
     await expect(
       canvas.getByRole('button', { name: 'Try again' }),
     ).toBeEnabled()
+  },
+}
+
+export const LoadUnavailable: Story = {
+  parameters: {
+    settingsPageScenario: 'load-unavailable',
+  },
+  play: async ({ canvas }) => {
+    await expect(
+      canvas.getByRole('alert').querySelector('h2'),
+    ).toHaveTextContent(/unavailable/i)
+    await expect(canvas.getByText(/Choose another workspace/i)).toBeVisible()
   },
 }
 
@@ -300,13 +347,28 @@ export const SaveSuccess: Story = {
   },
 }
 
-export const SaveError: Story = {
+export const SaveForbidden: Story = {
   parameters: {
-    settingsPageScenario: 'save-error',
+    settingsPageScenario: 'save-forbidden',
   },
   play: async ({ canvas }) => {
     await expect(canvas.getByRole('alert')).toHaveTextContent(
-      /do not have permission/i,
+      /do not have permission to update/i,
     )
+    await expect(canvas.getByLabelText(/Timezone/i)).toBeDisabled()
+    await expect(
+      canvas.queryByRole('button', { name: 'Save settings' }),
+    ).toBeNull()
+  },
+}
+
+export const SaveValidation: Story = {
+  parameters: {
+    settingsPageScenario: 'save-validation',
+  },
+  play: async ({ canvas }) => {
+    await expect(
+      canvas.getByText('Locale must be 16 characters or fewer.'),
+    ).toBeVisible()
   },
 }
