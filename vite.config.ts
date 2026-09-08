@@ -113,8 +113,9 @@ export default defineConfig({
         test: {
           name: 'unit',
           include: ['src/**/*.{test,spec}.{ts,tsx}'],
-          environment: 'node',
+          environment: 'happy-dom',
           passWithNoTests: true,
+          setupFiles: [path.join(__dirname, 'src/test/setup.ts')],
         },
       },
       {

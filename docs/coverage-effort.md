@@ -60,12 +60,12 @@ Do **lib + auth** first. They are high line-count, easy to unit-test, and the cu
 
 | Status | Area                 | Suggested spec                              | Notes                                                 |
 | ------ | -------------------- | ------------------------------------------- | ----------------------------------------------------- |
-| [ ]    | `ApiError`           | `src/lib/api/api-error.test.ts`             | Constructor, `fromErrorBody`, array vs string message |
-| [ ]    | Error message helper | `src/lib/api/get-api-error-message.test.ts` | Envelope vs network vs unknown                        |
-| [ ]    | Refresh interceptor  | `src/lib/api/refresh-interceptor.test.ts`   | 401 retry, queue, logout on failure                   |
-| [ ]    | API client           | `src/lib/api/api-client.test.ts`            | Mock axios; auth header + org header                  |
-| [ ]    | Env                  | `src/lib/env.test.ts`                       | `VITE_API_URL` missing / present                      |
-| [ ]    | Query client         | `src/lib/query-client.test.ts`              | Default options if any logic exists                   |
+| [x]    | `ApiError`           | `src/lib/api/api-error.test.ts`             | Constructor, `fromErrorBody`, array vs string message |
+| [x]    | Error message helper | `src/lib/api/get-api-error-message.test.ts` | Envelope vs network vs unknown                        |
+| [x]    | Refresh interceptor  | `src/lib/api/refresh-interceptor.test.ts`   | 401 retry, queue, logout on failure                   |
+| [x]    | API client           | `src/lib/api/api-client.test.ts`            | Mock axios; auth header + org header                  |
+| [x]    | Env                  | `src/lib/env.test.ts`                       | `VITE_API_URL` missing / present                      |
+| [x]    | Query client         | `src/lib/query-client.test.ts`              | Default options if any logic exists                   |
 | [ ]    | `AppQueryProvider`   | skip or thin render test                    | Mostly wiring; low ROI                                |
 
 **Effort:** ~1–1.5 days. This is the largest coverage gap.
@@ -74,22 +74,22 @@ Do **lib + auth** first. They are high line-count, easy to unit-test, and the cu
 
 | Status | Area                             | Suggested spec                                                   | Notes                                           |
 | ------ | -------------------------------- | ---------------------------------------------------------------- | ----------------------------------------------- |
-| [ ]    | Session storage                  | `src/features/auth/session-storage.test.ts`                      | Stub `sessionStorage`; get/set/clear/hasSession |
-| [ ]    | Session events                   | `src/features/auth/session-events.test.ts`                       | Subscribe / emit                                |
-| [ ]    | `useAuthSession`                 | `src/features/auth/useAuthSession.test.ts`                       | Throw outside provider; happy path              |
-| [ ]    | `AuthSessionProvider`            | `src/features/auth/AuthSessionProvider.test.tsx`                 | establish / clear session                       |
-| [ ]    | `get-current-user`               | `src/features/auth/api/get-current-user.test.ts`                 | Mock api client                                 |
-| [ ]    | Active org storage               | `src/features/organizations/active-organization-storage.test.ts` | Same pattern as session storage                 |
+| [x]    | Session storage                  | `src/features/auth/session-storage.test.ts`                      | Stub `sessionStorage`; get/set/clear/hasSession |
+| [x]    | Session events                   | `src/features/auth/session-events.test.ts`                       | Subscribe / emit                                |
+| [x]    | `useAuthSession`                 | `src/features/auth/useAuthSession.test.tsx`                      | Throw outside provider; happy path              |
+| [x]    | `AuthSessionProvider`            | `src/features/auth/AuthSessionProvider.test.tsx`                 | establish / clear session                       |
+| [x]    | `get-current-user`               | `src/features/auth/api/get-current-user.test.ts`                 | Mock api client                                 |
+| [x]    | Active org storage               | `src/features/organizations/active-organization-storage.test.ts` | Same pattern as session storage                 |
 | [ ]    | `auth-api.types` / context files | skip                                                             | Types and context objects only                  |
 
-**Effort:** ~1 day. `sessionStorage` tests need a `window` stub (or switch the unit project to `happy-dom` later).
+**Effort:** ~1 day. Unit project uses `happy-dom` so `sessionStorage` and React tests run without a real browser.
 
 ### 3. Routes — unit tests
 
 | Status | Area           | Suggested spec                     | Notes                                           |
 | ------ | -------------- | ---------------------------------- | ----------------------------------------------- |
-| [ ]    | `RequireAuth`  | `src/routes/RequireAuth.test.tsx`  | Redirect when logged out; render outlet when in |
-| [ ]    | `RequireGuest` | `src/routes/RequireGuest.test.tsx` | Opposite of RequireAuth                         |
+| [x]    | `RequireAuth`  | `src/routes/RequireAuth.test.tsx`  | Redirect when logged out; render outlet when in |
+| [x]    | `RequireGuest` | `src/routes/RequireGuest.test.tsx` | Opposite of RequireAuth                         |
 | [ ]    | `paths`        | `src/routes/paths.test.ts`         | Optional; tiny constants                        |
 | [ ]    | `AppRoutes`    | skip or Storybook                  | Composition; better covered via page stories    |
 
