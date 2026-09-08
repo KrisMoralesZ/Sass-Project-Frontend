@@ -6,9 +6,9 @@ import {
 
 describe('isOrganizationPermission', () => {
   it('accepts known organization permissions', () => {
-    expect(isOrganizationPermission(OrganizationPermission.SETTINGS_UPDATE)).toBe(
-      true,
-    )
+    expect(
+      isOrganizationPermission(OrganizationPermission.SETTINGS_UPDATE),
+    ).toBe(true)
   })
 
   it('rejects unknown values', () => {

@@ -16,11 +16,13 @@ vi.mock('./use-active-organization-id', () => ({
 }))
 
 vi.mock('../api/get-member', () => ({
-  organizationMemberQueryKey: vi.fn((organizationId: string, userId: string) => [
-    'members',
-    organizationId,
-    userId,
-  ]),
+  organizationMemberQueryKey: vi.fn(
+    (organizationId: string, userId: string) => [
+      'members',
+      organizationId,
+      userId,
+    ],
+  ),
   organizationMemberQueryOptions: vi.fn(
     (organizationId: string, userId: string) => ({
       queryKey: ['members', organizationId, userId],
@@ -33,7 +35,9 @@ vi.mock('../api/get-member', () => ({
 function wrapper({ children }: { children: ReactNode }) {
   return (
     <QueryClientProvider
-      client={new QueryClient({ defaultOptions: { queries: { retry: false } } })}
+      client={
+        new QueryClient({ defaultOptions: { queries: { retry: false } } })
+      }
     >
       {children}
     </QueryClientProvider>
