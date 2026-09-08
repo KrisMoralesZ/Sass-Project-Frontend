@@ -3,6 +3,10 @@ import { MemoryRouter } from 'react-router-dom'
 import { expect, userEvent, within } from 'storybook/test'
 import PublicLayout from '@/components/layout/PublicLayout'
 import AuthSessionProvider from '@/features/auth/AuthSessionProvider'
+import {
+  SESSION_EXPIRED_MESSAGE,
+  setSessionExpiredNotice,
+} from '@/features/auth/session-expired-notice'
 import { paths } from '@/routes/paths'
 import LoginPage from './LoginPage'
 
@@ -15,6 +19,12 @@ const meta = {
   },
   decorators: [
     (Story, context) => {
+      sessionStorage.clear()
+
+      if (context.parameters.sessionExpiredNotice) {
+        setSessionExpiredNotice()
+      }
+
       const initialEntry =
         (context.parameters.initialEntry as
           string | { pathname: string; state?: unknown } | undefined) ??
@@ -81,5 +91,17 @@ export const WithRedirectState: Story = {
       canvas.getByRole('heading', { level: 1, name: 'Sign in' }),
     ).toBeVisible()
     await expect(canvas.getByLabelText(/Email/i)).toBeEnabled()
+  },
+}
+
+export const WithSessionExpiredNotice: Story = {
+  parameters: {
+    sessionExpiredNotice: true,
+  },
+  play: async ({ canvas }) => {
+    await expect(canvas.getByText(SESSION_EXPIRED_MESSAGE)).toBeVisible()
+    await expect(
+      canvas.getByRole('heading', { level: 1, name: 'Sign in' }),
+    ).toBeVisible()
   },
 }
