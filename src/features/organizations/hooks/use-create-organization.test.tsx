@@ -4,7 +4,10 @@ import { type ReactNode } from 'react'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { organizationsQueryOptions } from '../api/list-organizations'
 import { createOrganization } from '../api/create-organization'
-import type { ListOrganizationsResponse, Organization } from '../api/organization-api.types'
+import type {
+  ListOrganizationsResponse,
+  Organization,
+} from '../api/organization-api.types'
 import { useCreateOrganization } from './use-create-organization'
 
 vi.mock('../api/create-organization', () => ({
