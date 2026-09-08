@@ -11,6 +11,7 @@ describe('paths', () => {
       settings: '/settings',
       projects: '/projects',
       boards: '/boards',
+      createOrganization: '/organizations/new',
     })
   })
 

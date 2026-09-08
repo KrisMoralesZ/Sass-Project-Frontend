@@ -6,6 +6,7 @@ export const paths = {
   settings: '/settings',
   projects: '/projects',
   boards: '/boards',
+  createOrganization: '/organizations/new',
 } as const
 
 export type AppPath = (typeof paths)[keyof typeof paths]
