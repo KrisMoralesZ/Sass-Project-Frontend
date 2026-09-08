@@ -142,4 +142,63 @@ describe('AuthSessionProvider', () => {
       expect(screen.getByTestId('status').textContent).toBe('anonymous')
     })
   })
+
+  it('ignores stale hydrate success after establishSession', async () => {
+    sessionStorage.setItem('sass.auth.accessToken', 'access-1')
+    sessionStorage.setItem('sass.auth.refreshToken', 'refresh-1')
+
+    let resolveProfile: ((value: typeof profile) => void) | undefined
+    vi.mocked(getCurrentUser).mockImplementation(
+      () =>
+        new Promise((resolve) => {
+          resolveProfile = resolve
+        }),
+    )
+
+    renderSession()
+
+    expect(screen.getByTestId('status').textContent).toBe('loading')
+
+    screen.getByRole('button', { name: 'Sign in' }).click()
+    await waitFor(() => {
+      expect(screen.getByTestId('status').textContent).toBe('authenticated')
+      expect(screen.getByTestId('email').textContent).toBe(profile.email)
+    })
+
+    resolveProfile?.({
+      ...profile,
+      email: 'stale@company.com',
+    })
+
+    await waitFor(() => {
+      expect(screen.getByTestId('email').textContent).toBe(profile.email)
+    })
+  })
+
+  it('ignores stale hydrate failure after establishSession', async () => {
+    sessionStorage.setItem('sass.auth.accessToken', 'access-1')
+    sessionStorage.setItem('sass.auth.refreshToken', 'refresh-1')
+
+    let rejectProfile: ((reason?: unknown) => void) | undefined
+    vi.mocked(getCurrentUser).mockImplementation(
+      () =>
+        new Promise((_resolve, reject) => {
+          rejectProfile = reject
+        }),
+    )
+
+    renderSession()
+    screen.getByRole('button', { name: 'Sign in' }).click()
+
+    await waitFor(() => {
+      expect(screen.getByTestId('status').textContent).toBe('authenticated')
+    })
+
+    rejectProfile?.(new Error('unauthorized'))
+
+    await waitFor(() => {
+      expect(screen.getByTestId('status').textContent).toBe('authenticated')
+    })
+    expect(sessionStorage.getItem('sass.auth.accessToken')).toBe('a')
+  })
 })

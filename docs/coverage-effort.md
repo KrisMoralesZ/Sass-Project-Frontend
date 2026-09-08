@@ -72,15 +72,22 @@ Do **lib + auth** first. They are high line-count, easy to unit-test, and the cu
 
 ### 2. Auth + organization session — unit tests
 
-| Status | Area                             | Suggested spec                                                   | Notes                                           |
-| ------ | -------------------------------- | ---------------------------------------------------------------- | ----------------------------------------------- |
-| [x]    | Session storage                  | `src/features/auth/session-storage.test.ts`                      | Stub `sessionStorage`; get/set/clear/hasSession |
-| [x]    | Session events                   | `src/features/auth/session-events.test.ts`                       | Subscribe / emit                                |
-| [x]    | `useAuthSession`                 | `src/features/auth/useAuthSession.test.tsx`                      | Throw outside provider; happy path              |
-| [x]    | `AuthSessionProvider`            | `src/features/auth/AuthSessionProvider.test.tsx`                 | establish / clear session                       |
-| [x]    | `get-current-user`               | `src/features/auth/api/get-current-user.test.ts`                 | Mock api client                                 |
-| [x]    | Active org storage               | `src/features/organizations/active-organization-storage.test.ts` | Same pattern as session storage                 |
-| [ ]    | `auth-api.types` / context files | skip                                                             | Types and context objects only                  |
+| Status | Area                             | Suggested spec                                                              | Notes                                           |
+| ------ | -------------------------------- | --------------------------------------------------------------------------- | ----------------------------------------------- |
+| [x]    | Session storage                  | `src/features/auth/session-storage.test.ts`                                 | Stub `sessionStorage`; get/set/clear/hasSession |
+| [x]    | Session events                   | `src/features/auth/session-events.test.ts`                                  | Subscribe / emit                                |
+| [x]    | `useAuthSession`                 | `src/features/auth/useAuthSession.test.tsx`                                 | Throw outside provider; happy path              |
+| [x]    | `AuthSessionProvider`            | `src/features/auth/AuthSessionProvider.test.tsx`                            | establish / clear session                       |
+| [x]    | `get-current-user`               | `src/features/auth/api/get-current-user.test.ts`                            | Mock api client                                 |
+| [x]    | Active org storage               | `src/features/organizations/active-organization-storage.test.ts`            | Same pattern as session storage                 |
+| [x]    | `clear-client-session`           | `src/features/auth/clear-client-session.test.ts`                            | Tokens, org, expired notice vs logout           |
+| [x]    | `apply-auth-session`             | `src/features/auth/apply-auth-session.test.ts`                              | establishSession + query cache sync             |
+| [x]    | Session expired notice           | `src/features/auth/session-expired-notice.test.ts`                          | One-shot flag get/set/clear                     |
+| [x]    | Password validation              | `src/features/auth/password.test.ts`                                        | `getPasswordError` rules                        |
+| [x]    | Auth API helpers                 | `src/features/auth/api/login.test.ts`, `register.test.ts`, `logout.test.ts` | Mock api client                                 |
+| [x]    | Auth mutations / logout hook     | `src/features/auth/hooks/*.test.tsx`                                        | Login, register, sign-out flows                 |
+| [x]    | `SessionExpiredRecovery`         | `src/features/auth/SessionExpiredRecovery.test.tsx`                         | Expired toast + redirect; ignore logout         |
+| [x]    | `auth-api.types` / context files | skip                                                                        | Types and context objects only                  |
 
 **Effort:** ~1 day. Unit project uses `happy-dom` so `sessionStorage` and React tests run without a real browser.
 
