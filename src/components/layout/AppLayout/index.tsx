@@ -2,6 +2,7 @@ import { type FC, type ReactNode } from 'react'
 import { Outlet } from 'react-router-dom'
 import Button from '@/components/ui/Button'
 import { useLogout } from '@/features/auth/hooks/use-logout'
+import OrganizationSwitcher from '../OrganizationSwitcher'
 import { paths } from '@/routes/paths'
 import {
   $BrandLink,
@@ -43,6 +44,7 @@ const AppLayout: FC<IAppLayout> = ({ children }) => {
           <$BrandMark>Sass Project</$BrandMark>
           <$BrandMeta>Workspace</$BrandMeta>
         </$BrandLink>
+        <OrganizationSwitcher />
         <$Nav aria-label="Workspace">
           {navItems.map((item) => (
             <$NavItem key={item.to} to={item.to} end={item.end}>

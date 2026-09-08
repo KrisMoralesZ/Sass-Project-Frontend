@@ -33,6 +33,7 @@ function createAxiosInstance(): AxiosInstance {
       config.headers.set('Authorization', `Bearer ${accessToken}`)
     }
 
+    // Apply the current tenant context to every request made through apiClient.
     const organizationId = getActiveOrganizationId()
     if (organizationId) {
       config.headers.set(ORGANIZATION_ID_HEADER, organizationId)
