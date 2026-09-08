@@ -1,5 +1,5 @@
 import { render, screen } from '@testing-library/react'
-import { MemoryRouter, Outlet, Route, Routes } from 'react-router-dom'
+import { MemoryRouter, Outlet, Route, Routes, useLocation } from 'react-router-dom'
 import { describe, expect, it, vi } from 'vitest'
 import { useAuthSession } from '@/features/auth/useAuthSession'
 import { paths } from './paths'
@@ -8,6 +8,13 @@ import RequireAuth from './RequireAuth'
 vi.mock('@/features/auth/useAuthSession', () => ({
   useAuthSession: vi.fn(),
 }))
+
+function LoginRedirectProbe() {
+  const location = useLocation()
+  const from = (location.state as { from?: { pathname: string } } | null)?.from
+
+  return <div data-testid="from">{from?.pathname ?? ''}</div>
+}
 
 function renderWithSession(
   status: 'anonymous' | 'loading' | 'authenticated',
@@ -24,7 +31,7 @@ function renderWithSession(
   return render(
     <MemoryRouter initialEntries={[initialPath]}>
       <Routes>
-        <Route path={paths.login} element={<div>Login</div>} />
+        <Route path={paths.login} element={<LoginRedirectProbe />} />
         <Route element={<RequireAuth />}>
           <Route
             path="/projects"
@@ -49,7 +56,13 @@ describe('RequireAuth', () => {
 
   it('redirects anonymous users to login', () => {
     renderWithSession('anonymous')
-    expect(screen.getByText('Login')).toBeTruthy()
+    expect(screen.getByTestId('from')).toBeTruthy()
+  })
+
+  it('preserves the intended destination in login redirect state', () => {
+    renderWithSession('anonymous', '/projects')
+
+    expect(screen.getByTestId('from').textContent).toBe('/projects')
   })
 
   it('renders the outlet when authenticated', () => {

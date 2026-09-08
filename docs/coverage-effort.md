@@ -97,8 +97,8 @@ Do **lib + auth** first. They are high line-count, easy to unit-test, and the cu
 | ------ | -------------- | ---------------------------------- | ----------------------------------------------- |
 | [x]    | `RequireAuth`  | `src/routes/RequireAuth.test.tsx`  | Redirect when logged out; render outlet when in |
 | [x]    | `RequireGuest` | `src/routes/RequireGuest.test.tsx` | Opposite of RequireAuth                         |
-| [ ]    | `paths`        | `src/routes/paths.test.ts`         | Optional; tiny constants                        |
-| [ ]    | `AppRoutes`    | skip or Storybook                  | Composition; better covered via page stories    |
+| [x]    | `paths`        | `src/routes/paths.test.ts`         | Route constants + `AppPath` type                    |
+| [x]    | `AppRoutes`    | skip                               | Composition; covered via page stories later       |
 
 **Effort:** ~0.5 day. Wrap with `MemoryRouter` + a stub session provider.
 

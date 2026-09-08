@@ -41,7 +41,7 @@ describe('RequireGuest', () => {
     expect(screen.getByText('Login')).toBeTruthy()
   })
 
-  it('sends authenticated users home', () => {
+  it('sends authenticated users home with replace navigation', () => {
     renderWithSession('authenticated')
     expect(screen.getByText('Home')).toBeTruthy()
   })
