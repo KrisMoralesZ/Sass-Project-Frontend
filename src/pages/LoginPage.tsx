@@ -1,44 +1,48 @@
-import type { FC } from 'react'
-import { Link, useLocation, useNavigate } from 'react-router-dom'
-import { useAuthSession } from '@/features/auth/useAuthSession'
+import { type FC, useState } from 'react'
+import { useLocation, useNavigate } from 'react-router-dom'
+import LoginForm from '@/features/auth/components/LoginForm'
+import { useLoginMutation } from '@/features/auth/hooks/use-login-mutation'
+import { getApiErrorMessage } from '@/lib/api/get-api-error-message'
 import { paths } from '@/routes/paths'
+import {
+  consumeSessionExpiredNotice,
+  SESSION_EXPIRED_MESSAGE,
+} from '@/features/auth/session-expired-notice'
 
-/** Local-only shell preview until login UI (1.2) ships. Not a real API session. */
-const DEV_PREVIEW_TOKENS = {
-  accessToken: 'dev-access-token',
-  refreshToken: 'dev-refresh-token',
-} as const
+function getPostLoginPath(state: unknown): string {
+  const from = (state as { from?: { pathname?: string } } | null)?.from
+    ?.pathname
+  return from && from !== paths.login && from !== paths.register
+    ? from
+    : paths.home
+}
 
 const LoginPage: FC = () => {
   const navigate = useNavigate()
   const location = useLocation()
-  const { establishSession } = useAuthSession()
-  const from =
-    (location.state as { from?: { pathname?: string } } | null)?.from
-      ?.pathname ?? paths.home
+  const redirectTo = getPostLoginPath(location.state)
+  const [sessionNotice] = useState(() => consumeSessionExpiredNotice())
+
+  const loginMutation = useLoginMutation({
+    onAuthenticated: () => {
+      navigate(redirectTo, { replace: true })
+    },
+  })
 
   return (
     <main>
-      <h1>Sign in</h1>
-      <p>
-        Login form and <code>POST /auth/login</code> wiring land in task 1.2.
-      </p>
-      {import.meta.env.DEV ? (
-        <p>
-          <button
-            type="button"
-            onClick={() => {
-              establishSession({ ...DEV_PREVIEW_TOKENS })
-              navigate(from, { replace: true })
-            }}
-          >
-            Preview app shell (dev only)
-          </button>
-        </p>
-      ) : null}
-      <p>
-        Need an account? <Link to={paths.register}>Create one</Link>
-      </p>
+      <LoginForm
+        isSubmitting={loginMutation.isPending}
+        notice={sessionNotice ? SESSION_EXPIRED_MESSAGE : undefined}
+        formError={
+          loginMutation.isError
+            ? getApiErrorMessage(loginMutation.error)
+            : undefined
+        }
+        onSubmit={(values) => {
+          loginMutation.mutate(values)
+        }}
+      />
     </main>
   )
 }

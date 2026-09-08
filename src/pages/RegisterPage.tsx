@@ -1,17 +1,32 @@
-import { Link } from 'react-router-dom'
+import { type FC } from 'react'
+import { useNavigate } from 'react-router-dom'
+import RegisterForm from '@/features/auth/components/RegisterForm'
+import { useRegisterMutation } from '@/features/auth/hooks/use-register-mutation'
+import { getApiErrorMessage } from '@/lib/api/get-api-error-message'
 import { paths } from '@/routes/paths'
-import type { FC } from 'react'
 
 const RegisterPage: FC = () => {
+  const navigate = useNavigate()
+
+  const registerMutation = useRegisterMutation({
+    onAuthenticated: () => {
+      navigate(paths.home, { replace: true })
+    },
+  })
+
   return (
     <main>
-      <h1>Create account</h1>
-      <p>
-        Registration UI will call <code>POST /auth/register</code> in Phase 1.
-      </p>
-      <p>
-        Already have an account? <Link to={paths.login}>Sign in</Link>
-      </p>
+      <RegisterForm
+        isSubmitting={registerMutation.isPending}
+        formError={
+          registerMutation.isError
+            ? getApiErrorMessage(registerMutation.error)
+            : undefined
+        }
+        onSubmit={(values) => {
+          registerMutation.mutate(values)
+        }}
+      />
     </main>
   )
 }
