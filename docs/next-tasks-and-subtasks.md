@@ -19,22 +19,16 @@ This is a **Vite + React SPA**. Next.js is not part of the stack.
 
 ## Current repo readiness
 
-The frontend is a Vite + React + React Router scaffold and currently has:
+Phases **0–2** are in place on the frontend: design system + Storybook, API client,
+auth session, organization create/switch/settings/archive, and client RBAC
+helpers used by settings.
 
-- Vite + React 19 + TypeScript
-- React Router with a root route shell under `src/`
-- Path alias `@/*` → `src/*`
-- `.env.example` with `VITE_API_URL`
-- Implementation backlog in `docs/next-tasks-and-subtasks.md`
+Still ahead on the frontend:
 
-It does **not** yet have:
-
-- styled-components + theme provider setup
-- Storybook for component documentation/modularity
-- Design system / shared UI primitives
-- API client, auth session handling, or organization context
-- Auth vs authenticated app route shells
-- Domain screens (orgs, members, projects, boards, issues)
+- Profile settings (`GET`/`PATCH /users/me`) and a shell user menu
+- Members directory (`GET /members`, `GET /members/:userId`)
+- Invitations and member role/removal UI (backend + frontend **alongside** when we get there)
+- Projects, boards, issues, and later collaboration screens
 
 Backend readiness the frontend can already consume:
 
@@ -77,8 +71,8 @@ Reference docs in the backend repo:
 1. App foundation (env, API client, layout shell, routing)
 2. Authentication UI + session
 3. Organizations + active workspace switching
-4. Profile, members directory, and client-side RBAC helpers
-5. Invitations + member management (after backend 3.3 / 3.4)
+4. Profile + members directory (client RBAC helpers already landed in 2.3.2 / 2.3.4)
+5. Invitations + member management — backend and frontend **alongside** (backend 3.3 + frontend 3.4, then backend 3.4 + frontend 3.5)
 6. Projects
 7. Boards
 8. Issues / kanban workflow
@@ -333,71 +327,140 @@ Acceptance criteria:
 
 ## Phase 3 — Users, roles, and members
 
+`GET`/`PATCH /users/me` and members list/detail are available on the backend.
+Client RBAC helpers already exist from organization settings/archive. Invites
+and member mutations wait on backend **3.3** / **3.4**.
+
+Next implementation order: **3.1** profile, then **3.2** members directory.
+**3.3** is already done. When we reach invites and member mutations, implement
+**frontend 3.4 alongside backend 3.3**, then **frontend 3.5 alongside backend 3.4**
+(API and UI in the same pass, not frontend waiting on a finished backend).
+
 ### Task 3.1 — Profile screens
+
+User-scoped (`@OptionalOrganization()`): `GET /users/me` and `PATCH /users/me`.
+This is **not** `GET /auth/me` (auth session is a smaller `{ id, email, displayName, createdAt }`).
+
+Profile fields from `UserProfileResponse` / `UpdateUserProfileDto`:
+
+- `displayName` (string, 1–120, nullable)
+- `avatarUrl` (absolute http(s) URL, max 2048, nullable)
+- `preferences.timezone` (max 64), `locale` (max 16)
+- `preferences.theme`: `system` | `light` | `dark`
+- `preferences.notifications`: `email`, `inApp`, `marketing` booleans
 
 Subtasks:
 
-- Wire `GET /users/me` and `PATCH /users/me`
-- Build profile settings for display name, avatar URL, preferences (theme/locale/notifications)
-- Keep shell user menu in sync after profile updates
+- [x] **3.1.1** Add typed users API helpers and Query options under `features/users/` mirroring `UserProfileResponse` / `UpdateUserProfileDto`
+- [ ] **3.1.2** Add `useMyProfile` / `useUpdateMyProfile`; on success refresh profile cache and keep `AuthSessionProvider` `user.displayName` in sync
+- [ ] **3.1.3** Build `/profile` settings UI: display name, avatar URL, timezone, locale, theme, notification toggles
+- [ ] **3.1.4** Client-validate field constraints and map `VALIDATION_FAILED` onto fields (same pattern as organization settings)
+- [ ] **3.1.5** Apply `preferences.theme` in the product (`ThemeProvider`); add a dark token set so `dark` / `system` actually change the UI
+- [ ] **3.1.6** Add a shell user menu (display name + link to profile) above Sign out; stay in sync after save
+- [ ] **3.1.7** Add Storybook stories for the profile form (idle, submitting, field error, API error, saved)
+- [ ] **3.1.8** Register `/profile` under the authenticated shell **outside** `RequireOrganization` so it works with zero workspaces
+
+**3.1 out of scope:**
+
+- Email / password change and avatar file upload (URL only)
+- Marketing-email delivery; persist the preference only
+- Organization timezone/locale (already on `/settings`)
 
 Acceptance criteria:
 
 - Users can view and update their own profile
-- Preference changes (e.g. theme) apply in the UI
+- Preference changes (especially theme) apply in the UI
+- Shell user menu shows the saved display name without a full reload
 
 ### Task 3.2 — Members directory
 
+Tenant-scoped: `GET /members` (paginated, optional `search`, sort `createdAt` |
+`updatedAt` | `role`) and `GET /members/:userId`. `get-member` already exists for
+the current user; list + detail screens still need building.
+
 Subtasks:
 
-- Build members list/detail views on `GET /members` and `GET /members/:userId`
-- Display role badges (`OWNER`, `ADMIN`, `MEMBER`, `VIEWER`)
-- Require active organization context before loading
+- [ ] **3.2.1** Add typed list-members API helper and Query options (`['members', organizationId, query]`)
+- [ ] **3.2.2** Build the members list page with the Table primitive, role badges (`OWNER` / `ADMIN` / `MEMBER` / `VIEWER`), search, and pagination
+- [ ] **3.2.3** Add member detail (`GET /members/:userId`) for identity + role; reuse `getOrganizationMember`
+- [ ] **3.2.4** Replace the `/members` placeholder; add `/members/:userId` if detail is a route rather than a panel
+- [ ] **3.2.5** Surface tenant-context / forbidden / not-found copy with the same error helpers as settings
+- [ ] **3.2.6** Add Storybook stories for the list (default, empty, loading, error) and role badge
+
+**3.2 out of scope:**
+
+- Invite, role-change, and remove controls (**3.4** / **3.5**)
+- Profile editing of other members
 
 Acceptance criteria:
 
 - Workspace members are listable for the active organization
 - Member detail shows identity + role fields from the API
+- Missing tenant context does not fetch or render another workspace’s members
 
 ### Task 3.3 — Client-side permission helpers
 
+Landed with organization settings (**2.3.2**) and archive (**2.3.4**). Keep
+using these helpers on new screens; do not duplicate the matrix.
+
 Subtasks:
 
-- Port the backend permission matrix into shared frontend helpers
-- Add hooks/utilities such as `usePermission('invite:create')` / `hasMinRole('ADMIN')`
-- Hide or disable unauthorized actions in the UI (still rely on backend 403s)
+- [x] **3.3.1** Port organization roles (`OWNER` / `ADMIN` / `MEMBER` / `VIEWER`) and `hasMinRole`
+- [x] **3.3.2** Port the permission catalog (`settings:update`, `invite:*`, …)
+- [x] **3.3.3** Port the role → permission matrix + unit tests
+- [x] **3.3.4** Add `useCurrentOrganizationMember` (`GET /members/:userId` for the signed-in user)
+- [x] **3.3.5** Add `usePermission(permission)` and gate settings edits on `settings:update`
+- [x] **3.3.6** Gate owner-only archive with `hasMinRole(..., OWNER)` while backend `RequireMinRole` remains source of truth
 
 Acceptance criteria:
 
 - UI affordances match backend roles/permissions for implemented actions
 - Forbidden API responses still degrade gracefully if the UI is stale
 
-### Task 3.4 — Invitations UI (depends on backend 3.3)
+### Task 3.4 — Invitations UI (alongside backend 3.3)
+
+Ship with backend **3.3.1–3.3.8** in the same pass (`invite:create` / `invite:read` /
+`invite:revoke` + token accept). Reuse `usePermission` for invite actions. Do not
+wait for the backend task to be fully closed before starting the UI; land
+endpoint + screen together per slice.
+
+Policy source of truth: [`sass-backend/docs/organization-invitations-v1.md`](../../sass-backend/docs/organization-invitations-v1.md).
 
 Subtasks:
 
-- Build invite member modal/form once invite endpoints exist
-- Add accept-invite route/flow for tokenized links
-- Add revoke-invite controls for admins/owners
-- Stub email delivery messaging for development
+- [x] **3.4.1** Add typed invite API helpers as create/list/revoke/accept endpoints land
+- [ ] **3.4.2** Add invite-member modal on the members page, gated on `invite:create`
+- [ ] **3.4.3** List pending invites and revoke, gated on `invite:read` / `invite:revoke`
+- [ ] **3.4.4** Add an accept-invite route for tokenized links (authenticated user + token)
+- [ ] **3.4.5** Show the development stub copy (invite URL logged by the API; no real SMTP)
+- [ ] **3.4.6** Stories + forbidden/validation/expired-token feedback
 
 Acceptance criteria:
 
 - Owners/admins can invite users when the API is available
 - Invitees can accept and join the active organization
 
-### Task 3.5 — Member management UI (depends on backend 3.4)
+### Task 3.5 — Member management UI (alongside backend 3.4)
+
+Ship with backend role-update and member-removal endpoints in the same pass.
 
 Subtasks:
 
-- Add role change controls
-- Add remove-member controls
-- Prevent attempting to remove/demote the last owner in the UI
+- [ ] **3.5.1** Add role-change controls on member detail, with confirmation
+- [ ] **3.5.2** Add remove-member confirmation (Dialog danger pattern from archive)
+- [ ] **3.5.3** Prevent last-owner remove/demote in the UI and explain the backend rule
+- [ ] **3.5.4** Stories + forbidden handling
 
 Acceptance criteria:
 
 - Admins can manage membership safely with clear confirmations
 - Backend last-owner protections are reflected in UX copy
+
+**Phase 3 out of scope** (later phases):
+
+- Projects, boards, issues
+- Changing another user’s email or password
+- Real invite email delivery (SMTP)
 
 ---
 
@@ -539,10 +602,15 @@ Subtasks:
 - [x] **2.3.3** Settings forbidden, validation, and tenant-context error surfacing
 - [x] **2.3.4** Owner archive confirmation (`DELETE /organizations/:id`)
 - [x] **2.3.5** Active-organization cleanup after archive
-- [ ] Wire profile settings and members directory (Phase 3)
-- [ ] Add frontend permission helpers from the backend matrix
-- [ ] Defer invites/member mutations/projects/boards/issues until matching backend APIs ship
-- [ ] Keep screens aligned with backend seed users for local QA
+- [x] **3.3** Client permission helpers (roles, matrix, `usePermission`, `hasMinRole`)
+- [ ] **3.1.1–3.1.4** Profile API + `/profile` form, validation, session display-name sync
+- [ ] **3.1.5–3.1.8** Theme apply, shell user menu, stories, `/profile` outside `RequireOrganization`
+- [ ] **3.2.1–3.2.4** Members list/detail API + pages (replace `/members` placeholder)
+- [ ] **3.2.5–3.2.6** Members tenant-error copy + Storybook
+- [x] **3.4.1** Typed invite API helpers (create/list/revoke/accept) mirroring invitation policy
+- [ ] **3.4.2–3.4.6 / 3.5 alongside backend 3.3–3.4** Invite UI + member role/remove (API and screens in the same pass)
+- [ ] Defer projects/boards/issues until matching backend APIs ship
+- [ ] Keep screens aligned with backend seed users (`owner@acme.local` / `Password1`, …) for local QA
 
 ## Backend / frontend dependency map
 
@@ -552,8 +620,8 @@ Subtasks:
 | Org create/switch/settings         | Phase 2               | Available                                        |
 | Profile + members read             | Phase 3.1             | Available                                        |
 | Client RBAC helpers                | Phase 3.2 docs/matrix | Available (matrix + guards)                      |
-| Invites UI                         | Phase 3.3             | Not yet                                          |
-| Member role/remove UI              | Phase 3.4             | Not yet                                          |
+| Invites UI                         | Phase 3.3             | Not yet — take **alongside** frontend 3.4       |
+| Member role/remove UI              | Phase 3.4             | Not yet — take **alongside** frontend 3.5       |
 | Projects UI                        | Phase 4               | Not yet                                          |
 | Boards UI                          | Phase 5               | Not yet                                          |
 | Issues / kanban UI                 | Phase 6               | Not yet                                          |
@@ -565,7 +633,7 @@ Subtasks:
 - Host is **Vite**; routing is **React Router**. Do not add Next.js or mix in another router.
 - **styled-components** is the styling system; keep styles colocated with components and theme-driven.
 - **Storybook** is required for shared/modular components before (or alongside) route integration.
-- Prefer building against **available** backend endpoints first (Phases 0–3.2 on the frontend).
+- Prefer building against **available** backend endpoints first (frontend **3.1–3.2** next). When we reach invites and member mutations, take **backend + frontend alongside** (backend 3.3 + frontend 3.4, then backend 3.4 + frontend 3.5).
 - Do not invent parallel API shapes; mirror backend DTOs and error codes.
 - Keep tenant scoping explicit in the client: no workspace data fetch without an active organization id.
 - UI permission checks are convenience only; backend enforcement remains the source of truth.
