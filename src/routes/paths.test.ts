@@ -7,10 +7,12 @@ describe('paths', () => {
       home: '/',
       login: '/login',
       register: '/register',
+      profile: '/profile',
       members: '/members',
       settings: '/settings',
       projects: '/projects',
       boards: '/boards',
+      createOrganization: '/organizations/new',
     })
   })
 
