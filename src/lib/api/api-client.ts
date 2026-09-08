@@ -50,6 +50,36 @@ function createAxiosInstance(): AxiosInstance {
 /** Shared axios instance. Prefer `apiClient` helpers so responses stay unwrapped. */
 export const http = createAxiosInstance()
 
+/**
+ * Unwrap a Nest envelope, including 204 archive/delete responses whose JSON
+ * may omit `data` (JSON.stringify drops `undefined`).
+ */
+export function unwrapApiResponseData<T>(statusCode: number, body: unknown): T {
+  if (isApiErrorResponse(body)) {
+    throw ApiError.fromErrorBody(body.error, body.meta)
+  }
+
+  if (isApiSuccessResponse<T>(body)) {
+    return body.data
+  }
+
+  if (statusCode === 204) {
+    if (body == null || body === '') {
+      return undefined as T
+    }
+
+    if (
+      typeof body === 'object' &&
+      'success' in body &&
+      (body as { success: unknown }).success === true
+    ) {
+      return (body as { data?: T }).data as T
+    }
+  }
+
+  throw ApiError.unexpected(statusCode, body)
+}
+
 async function request<T>(
   method: Method,
   url: string,
@@ -64,17 +94,7 @@ async function request<T>(
       data,
     })
 
-    const body = response.data
-
-    if (isApiSuccessResponse<T>(body)) {
-      return body.data
-    }
-
-    if (isApiErrorResponse(body)) {
-      throw ApiError.fromErrorBody(body.error, body.meta)
-    }
-
-    throw ApiError.unexpected(response.status, body)
+    return unwrapApiResponseData<T>(response.status, response.data)
   } catch (error) {
     if (error instanceof ApiError) {
       throw error

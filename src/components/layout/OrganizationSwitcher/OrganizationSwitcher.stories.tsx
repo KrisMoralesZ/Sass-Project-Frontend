@@ -118,6 +118,12 @@ function OrganizationSwitcherHarness({
   seed?: (client: QueryClient) => void
 }) {
   const [client] = useState(() => {
+    if (activeOrgId) {
+      setActiveOrganizationId(activeOrgId)
+    } else {
+      clearActiveOrganizationId()
+    }
+
     const next = new QueryClient({
       defaultOptions: {
         queries: {
@@ -134,12 +140,6 @@ function OrganizationSwitcherHarness({
     seed?.(next)
     return next
   })
-
-  if (activeOrgId) {
-    setActiveOrganizationId(activeOrgId)
-  } else {
-    clearActiveOrganizationId()
-  }
 
   return (
     <QueryClientProvider client={client}>
