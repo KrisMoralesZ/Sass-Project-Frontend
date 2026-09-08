@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { MemoryRouter } from 'react-router-dom'
+import { MemoryRouter, Route, Routes } from 'react-router-dom'
 import { expect, userEvent, within } from 'storybook/test'
 import styled from 'styled-components'
 import Button from '@/components/ui/Button'
@@ -194,6 +194,59 @@ export const EmptyOutlet: Story = {
     ).toBeVisible()
     await expect(
       canvas.getByText('Route pages render here via React Router’s outlet.'),
+    ).toBeVisible()
+  },
+}
+
+export const RoutedOutlet: Story = {
+  render: () => (
+    <Routes>
+      <Route element={<PublicLayout />}>
+        <Route
+          index
+          element={
+            <Panel>
+              <Title>Login outlet</Title>
+              <Lead>Guest routes render through the layout outlet.</Lead>
+            </Panel>
+          }
+        />
+      </Route>
+    </Routes>
+  ),
+  play: async ({ canvas }) => {
+    await expectPublicShell(canvas)
+    await expect(
+      canvas.getByRole('heading', { level: 1, name: 'Login outlet' }),
+    ).toBeVisible()
+    await expect(
+      canvas.getByText('Guest routes render through the layout outlet.'),
+    ).toBeVisible()
+  },
+}
+
+export const NavLinks: Story = {
+  args: {
+    children: (
+      <Panel>
+        <Title>Sign in</Title>
+        <Lead>Public navigation links stay reachable from guest screens.</Lead>
+      </Panel>
+    ),
+  },
+  play: async ({ canvas }) => {
+    const nav = canvas.getByRole('navigation', { name: 'Public' })
+
+    await expect(
+      within(nav).getByRole('link', { name: 'Sign in' }),
+    ).toHaveAttribute('href', paths.login)
+    await expect(
+      within(nav).getByRole('link', { name: 'Create account' }),
+    ).toHaveAttribute('href', paths.register)
+
+    await userEvent.click(within(nav).getByRole('link', { name: 'Sign in' }))
+    await expect(
+      canvas.getByRole('heading', { level: 1, name: 'Sign in' }),
     ).toBeVisible()
   },
 }
