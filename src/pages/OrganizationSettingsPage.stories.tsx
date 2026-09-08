@@ -9,6 +9,7 @@ import { useActiveOrganizationId } from '@/features/organizations/hooks/use-acti
 import { useOrganization } from '@/features/organizations/hooks/use-organization'
 import { useUpdateOrganization } from '@/features/organizations/hooks/use-update-organization'
 import { usePermission } from '@/features/organizations/hooks/use-permission'
+import { useArchiveOrganization } from '@/features/organizations/hooks/use-archive-organization'
 import { ApiError } from '@/lib/api/api-error'
 import { ErrorCode } from '@/types/error-code'
 import { paths } from '@/routes/paths'
@@ -37,6 +38,10 @@ vi.mock('@/features/organizations/hooks/use-permission', () => ({
   usePermission: vi.fn(),
 }))
 
+vi.mock('@/features/organizations/hooks/use-archive-organization', () => ({
+  useArchiveOrganization: vi.fn(),
+}))
+
 const organization: Organization = {
   id: 'org-acme',
   name: 'Acme',
@@ -63,6 +68,7 @@ const organization: Organization = {
 }
 
 const mutate = fn()
+const archiveMutateAsync = fn()
 
 type SettingsPageScenario =
   | 'no-active-org'
@@ -75,6 +81,7 @@ type SettingsPageScenario =
   | 'save-success'
   | 'save-forbidden'
   | 'save-validation'
+  | 'archive-forbidden'
 
 function mockPermission(scenario: SettingsPageScenario) {
   if (scenario === 'permission-pending') {
@@ -110,6 +117,7 @@ function mockPermission(scenario: SettingsPageScenario) {
 
 function mockSettingsPage(scenario: SettingsPageScenario) {
   mutate.mockReset()
+  archiveMutateAsync.mockReset()
   mockPermission(scenario)
 
   if (scenario === 'no-active-org') {
@@ -127,6 +135,13 @@ function mockSettingsPage(scenario: SettingsPageScenario) {
       isError: false,
       error: null,
     } as unknown as ReturnType<typeof useUpdateOrganization>)
+    vi.mocked(useArchiveOrganization).mockReturnValue({
+      mutate: fn(),
+      mutateAsync: archiveMutateAsync,
+      isPending: false,
+      isError: false,
+      error: null,
+    } as unknown as ReturnType<typeof useArchiveOrganization>)
     return
   }
 
@@ -201,6 +216,21 @@ function mockSettingsPage(scenario: SettingsPageScenario) {
             })
           : null,
   } as unknown as ReturnType<typeof useUpdateOrganization>)
+
+  vi.mocked(useArchiveOrganization).mockReturnValue({
+    mutate: fn(),
+    mutateAsync: archiveMutateAsync,
+    isPending: false,
+    isError: scenario === 'archive-forbidden',
+    error:
+      scenario === 'archive-forbidden'
+        ? new ApiError({
+            code: ErrorCode.FORBIDDEN,
+            statusCode: 403,
+            message: 'Requires at least the OWNER role.',
+          })
+        : null,
+  } as unknown as ReturnType<typeof useArchiveOrganization>)
 }
 
 const meta = {
@@ -301,6 +331,9 @@ export const Default: Story = {
     await expect(
       canvas.getByRole('button', { name: 'Save settings' }),
     ).toBeDisabled()
+    await expect(
+      canvas.getByRole('button', { name: 'Archive workspace' }),
+    ).toBeVisible()
   },
 }
 
@@ -370,5 +403,22 @@ export const SaveValidation: Story = {
     await expect(
       canvas.getByText('Locale must be 16 characters or fewer.'),
     ).toBeVisible()
+  },
+}
+
+export const ArchiveForbidden: Story = {
+  parameters: {
+    settingsPageScenario: 'archive-forbidden',
+  },
+  play: async ({ canvas }) => {
+    await userEvent.click(
+      canvas.getByRole('button', { name: 'Archive workspace' }),
+    )
+
+    await waitFor(async () => {
+      await expect(screen.getByRole('alert')).toHaveTextContent(
+        /Only the workspace owner/i,
+      )
+    })
   },
 }

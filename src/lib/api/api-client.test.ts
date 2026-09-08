@@ -71,6 +71,20 @@ describe('apiClient', () => {
     expect(lastConfig?.headers.get(ORGANIZATION_ID_HEADER)).toBe('org-1')
   })
 
+  it('resolves DELETE with HTTP 204 and an empty body', async () => {
+    http.defaults.adapter = async (config) => ({
+      data: '',
+      status: 204,
+      statusText: 'No Content',
+      headers: {},
+      config,
+    })
+
+    await expect(
+      apiClient.delete('/organizations/org-1'),
+    ).resolves.toBeUndefined()
+  })
+
   it('throws ApiError from an error envelope on HTTP 200', async () => {
     http.defaults.adapter = async (config) => ({
       data: errorEnvelope(ErrorCode.FORBIDDEN, 403, 'No access'),
