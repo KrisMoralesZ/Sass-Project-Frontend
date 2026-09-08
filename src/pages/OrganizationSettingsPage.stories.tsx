@@ -8,6 +8,7 @@ import type { Organization } from '@/features/organizations/api/organization-api
 import { useActiveOrganizationId } from '@/features/organizations/hooks/use-active-organization-id'
 import { useOrganization } from '@/features/organizations/hooks/use-organization'
 import { useUpdateOrganization } from '@/features/organizations/hooks/use-update-organization'
+import { usePermission } from '@/features/organizations/hooks/use-permission'
 import { paths } from '@/routes/paths'
 import OrganizationSettingsPage from './OrganizationSettingsPage'
 
@@ -28,6 +29,10 @@ vi.mock('@/features/organizations/hooks/use-organization', () => ({
 
 vi.mock('@/features/organizations/hooks/use-update-organization', () => ({
   useUpdateOrganization: vi.fn(),
+}))
+
+vi.mock('@/features/organizations/hooks/use-permission', () => ({
+  usePermission: vi.fn(),
 }))
 
 const organization: Organization = {
@@ -62,11 +67,46 @@ type SettingsPageScenario =
   | 'loading'
   | 'load-error'
   | 'ready'
+  | 'read-only'
+  | 'permission-pending'
   | 'save-success'
   | 'save-error'
 
+function mockPermission(scenario: SettingsPageScenario) {
+  if (scenario === 'permission-pending') {
+    vi.mocked(usePermission).mockReturnValue({
+      isPending: true,
+      isError: false,
+      error: null,
+      role: null,
+      allowed: false,
+    })
+    return
+  }
+
+  if (scenario === 'read-only') {
+    vi.mocked(usePermission).mockReturnValue({
+      isPending: false,
+      isError: false,
+      error: null,
+      role: 'VIEWER',
+      allowed: false,
+    })
+    return
+  }
+
+  vi.mocked(usePermission).mockReturnValue({
+    isPending: false,
+    isError: false,
+    error: null,
+    role: 'OWNER',
+    allowed: true,
+  })
+}
+
 function mockSettingsPage(scenario: SettingsPageScenario) {
   mutate.mockReset()
+  mockPermission(scenario)
 
   if (scenario === 'no-active-org') {
     vi.mocked(useActiveOrganizationId).mockReturnValue(null)
@@ -214,6 +254,32 @@ export const Default: Story = {
     await expect(
       canvas.getByRole('button', { name: 'Save settings' }),
     ).toBeDisabled()
+  },
+}
+
+export const ReadOnly: Story = {
+  parameters: {
+    settingsPageScenario: 'read-only',
+  },
+  play: async ({ canvas }) => {
+    await expect(canvas.getByLabelText(/Timezone/i)).toBeDisabled()
+    await expect(canvas.getByRole('status')).toHaveTextContent(
+      /only admins and owners/i,
+    )
+    await expect(
+      canvas.queryByRole('button', { name: 'Save settings' }),
+    ).toBeNull()
+  },
+}
+
+export const PermissionPending: Story = {
+  parameters: {
+    settingsPageScenario: 'permission-pending',
+  },
+  play: async ({ canvas }) => {
+    await expect(canvas.getByRole('status')).toHaveTextContent(
+      /Checking whether you can edit/i,
+    )
   },
 }
 
