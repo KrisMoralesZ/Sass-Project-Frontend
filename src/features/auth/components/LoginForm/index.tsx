@@ -17,6 +17,7 @@ import {
   $FooterLink,
   $Form,
   $FormError,
+  $FormNotice,
   $Header,
   $Lead,
   $Panel,
@@ -29,6 +30,8 @@ export interface ILoginForm {
   isSubmitting?: boolean
   /** Server/API error shown above the submit button (task 1.2.5). */
   formError?: ReactNode
+  /** Informational banner (e.g. session expired on redirect). */
+  notice?: ReactNode
 }
 
 interface LoginFormValues {
@@ -70,6 +73,7 @@ const LoginForm: FC<ILoginForm> = ({
   onSubmit,
   isSubmitting = false,
   formError,
+  notice,
 }) => {
   const [values, setValues] = useState<LoginFormValues>(INITIAL_VALUES)
   const [errors, setErrors] = useState<FieldErrors>({})
@@ -114,6 +118,8 @@ const LoginForm: FC<ILoginForm> = ({
       </$Header>
 
       <$Form onSubmit={handleSubmit} noValidate>
+        {notice ? <$FormNotice role="status">{notice}</$FormNotice> : null}
+
         <FormField label="Email" required error={errors.email}>
           <Input
             type="email"

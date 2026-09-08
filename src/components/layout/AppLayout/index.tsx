@@ -1,7 +1,7 @@
 import { type FC, type ReactNode } from 'react'
 import { Outlet } from 'react-router-dom'
 import Button from '@/components/ui/Button'
-import { useAuthSession } from '@/features/auth/useAuthSession'
+import { useLogout } from '@/features/auth/hooks/use-logout'
 import { paths } from '@/routes/paths'
 import {
   $BrandLink,
@@ -34,7 +34,7 @@ export interface IAppLayout {
  * (task 0.2.9).
  */
 const AppLayout: FC<IAppLayout> = ({ children }) => {
-  const { clearSession } = useAuthSession()
+  const { signOut, isLoggingOut } = useLogout()
 
   return (
     <$Shell>
@@ -51,7 +51,12 @@ const AppLayout: FC<IAppLayout> = ({ children }) => {
           ))}
         </$Nav>
         <$SidebarFooter>
-          <Button type="button" variant="ghost" onClick={clearSession}>
+          <Button
+            type="button"
+            variant="ghost"
+            loading={isLoggingOut}
+            onClick={() => void signOut()}
+          >
             Sign out
           </Button>
         </$SidebarFooter>
