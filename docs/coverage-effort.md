@@ -66,7 +66,7 @@ Do **lib + auth** first. They are high line-count, easy to unit-test, and the cu
 | [x]    | API client           | `src/lib/api/api-client.test.ts`            | Mock axios; auth header + org header                  |
 | [x]    | Env                  | `src/lib/env.test.ts`                       | `VITE_API_URL` missing / present                      |
 | [x]    | Query client         | `src/lib/query-client.test.ts`              | Default options if any logic exists                   |
-| [ ]    | `AppQueryProvider`   | skip or thin render test                    | Mostly wiring; low ROI                                |
+| [x]    | `AppQueryProvider`   | `src/lib/AppQueryProvider.test.tsx`         | Provider wiring + session-cleared invalidation        |
 
 **Effort:** ~1–1.5 days. This is the largest coverage gap.
 

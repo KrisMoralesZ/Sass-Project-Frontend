@@ -49,7 +49,7 @@ const coverage =
   coverageProjectName === 'storybook'
     ? {
         provider: 'v8' as const,
-        reporter: ['text', 'json-summary', 'html'] as const,
+        reporter: ['text', 'json-summary', 'html'],
         reportsDirectory: './coverage/storybook',
         include: ['src/components/**/*.{ts,tsx}', 'src/styles/**/*.{ts,tsx}'],
         exclude: [...coverageExclude],
@@ -62,7 +62,7 @@ const coverage =
       }
     : {
         provider: 'v8' as const,
-        reporter: ['text', 'json-summary', 'html'] as const,
+        reporter: ['text', 'json-summary', 'html'],
         reportsDirectory:
           coverageProjectName === 'unit' ? './coverage/unit' : './coverage',
         include: [
@@ -114,7 +114,6 @@ export default defineConfig({
           name: 'unit',
           include: ['src/**/*.{test,spec}.{ts,tsx}'],
           environment: 'happy-dom',
-          passWithNoTests: true,
           setupFiles: [path.join(__dirname, 'src/test/setup.ts')],
         },
       },

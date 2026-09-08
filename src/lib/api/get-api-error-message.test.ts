@@ -58,15 +58,37 @@ describe('getApiErrorMessage', () => {
 
   it('uses mapped copy for known ApiError codes', () => {
     const error = new ApiError({
-      code: ErrorCode.CONFLICT,
-      statusCode: 409,
-      message: 'ignored server string',
+      code: ErrorCode.FORBIDDEN,
+      statusCode: 403,
+      message: '   ',
     })
 
-    expect(getApiErrorMessage(error)).toMatch(/conflicts/i)
+    expect(getApiErrorMessage(error)).toBe(
+      'You do not have permission to do that.',
+    )
+  })
+
+  it('prefers the API message for auth-related codes', () => {
+    const error = new ApiError({
+      code: ErrorCode.CONFLICT,
+      statusCode: 409,
+      message: 'Email is already registered',
+    })
+
+    expect(getApiErrorMessage(error)).toBe('Email is already registered')
   })
 
   it('keeps the network helper message', () => {
     expect(getApiErrorMessage(ApiError.network())).toMatch(/connection/i)
+  })
+
+  it('falls back to the ApiError message for unknown codes', () => {
+    const error = new ApiError({
+      code: 'CUSTOM_BACKEND_CODE',
+      statusCode: 400,
+      message: 'Something specific from the server',
+    })
+
+    expect(getApiErrorMessage(error)).toBe('Something specific from the server')
   })
 })

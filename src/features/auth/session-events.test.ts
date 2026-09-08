@@ -6,11 +6,11 @@ describe('session-events', () => {
     const listener = vi.fn()
     const unsubscribe = subscribeSessionCleared(listener)
 
-    notifySessionCleared()
-    expect(listener).toHaveBeenCalledTimes(1)
+    notifySessionCleared('expired')
+    expect(listener).toHaveBeenCalledWith('expired')
 
     unsubscribe()
-    notifySessionCleared()
+    notifySessionCleared('expired')
     expect(listener).toHaveBeenCalledTimes(1)
   })
 })

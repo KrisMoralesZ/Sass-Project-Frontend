@@ -137,7 +137,7 @@ describe('AuthSessionProvider', () => {
       expect(screen.getByTestId('status').textContent).toBe('authenticated')
     })
 
-    notifySessionCleared()
+    notifySessionCleared('expired')
     await waitFor(() => {
       expect(screen.getByTestId('status').textContent).toBe('anonymous')
     })

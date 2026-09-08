@@ -122,4 +122,43 @@ describe('apiClient', () => {
       statusCode: 403,
     })
   })
+
+  it('throws ApiError.unexpected for a non-envelope HTTP 200 body', async () => {
+    http.defaults.adapter = async (config) => ({
+      data: { notAnEnvelope: true },
+      status: 200,
+      statusText: 'OK',
+      headers: {},
+      config,
+    })
+
+    await expect(apiClient.get('/widgets')).rejects.toMatchObject({
+      statusCode: 200,
+      message: 'Unexpected API response.',
+    })
+  })
+
+  it('throws ApiError.unexpected for a non-envelope HTTP error body', async () => {
+    http.defaults.adapter = async (config) => {
+      const headers = new AxiosHeaders()
+      throw new AxiosError(
+        'Bad Gateway',
+        'ERR_BAD_RESPONSE',
+        config,
+        undefined,
+        {
+          data: '<html>gateway error</html>',
+          status: 502,
+          statusText: 'Bad Gateway',
+          headers,
+          config,
+        },
+      )
+    }
+
+    await expect(apiClient.get('/widgets')).rejects.toMatchObject({
+      statusCode: 502,
+      message: 'Unexpected API response.',
+    })
+  })
 })
