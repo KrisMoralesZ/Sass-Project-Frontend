@@ -51,7 +51,11 @@ const coverage =
         provider: 'v8' as const,
         reporter: ['text', 'json-summary', 'html'],
         reportsDirectory: './coverage/storybook',
-        include: ['src/components/**/*.{ts,tsx}', 'src/styles/**/*.{ts,tsx}'],
+        include: [
+          'src/components/**/*.{ts,tsx}',
+          'src/styles/**/*.{ts,tsx}',
+          'src/pages/**/*.{ts,tsx}',
+        ],
         exclude: [...coverageExclude],
         thresholds: {
           statements: STORYBOOK_COVERAGE_THRESHOLD,

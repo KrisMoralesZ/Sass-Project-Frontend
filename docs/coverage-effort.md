@@ -7,7 +7,7 @@ Two independent gates (same metrics: statements, branches, functions, lines):
 | Unit (Vitest) | **70%**   | `src/lib`, `src/features`, `src/routes`, `App.tsx` | `npm run test:coverage:unit`      |
 | Storybook     | **80%**   | `src/components`, `src/styles`                     | `npm run test:coverage:storybook` |
 
-Storybook is higher because those files already have (or should have) interaction stories. Unit stays at 70% while auth/API specs are filled in. Add `src/pages/**` to the Storybook include in `vite.config.ts` when page stories exist.
+Storybook is higher because those files already have (or should have) interaction stories. Unit stays at 70% while auth/API specs are filled in. `src/pages/**` is included in the Storybook coverage gate now that page stories exist.
 
 Work this list **module by module**. Check an item off when its tests are in and the matching coverage command still passes.
 
@@ -44,7 +44,6 @@ These are not counted toward either gate:
 - `*.d.ts`, `src/types/**`
 - `*.sc.tsx` (styled-components style files)
 - `src/main.tsx` (bootstrap)
-- `src/pages/**` until page stories exist (then add them to the Storybook `include` in `vite.config.ts`)
 
 Unit logic (`src/lib`, `src/features`, `src/routes`) is counted only in the 70% gate. Component `index.tsx` files rendered by stories are counted only in the 80% gate.
 
@@ -104,13 +103,13 @@ Do **lib + auth** first. They are high line-count, easy to unit-test, and the cu
 
 ### 4. Pages — Storybook (or RTL)
 
-| Status | Area        | Suggested story / spec                  | Notes                                                   |
-| ------ | ----------- | --------------------------------------- | ------------------------------------------------------- |
-| [ ]    | Login       | `src/pages/LoginPage.stories.tsx`       | Heading, guest layout, preview control if still present |
-| [ ]    | Register    | `src/pages/RegisterPage.stories.tsx`    | Restore if removed; field errors if the form exists     |
-| [ ]    | Home        | `src/pages/HomePage.stories.tsx`        | Authenticated shell                                     |
-| [ ]    | Not found   | `src/pages/NotFoundPage.stories.tsx`    |                                                         |
-| [ ]    | Placeholder | `src/pages/PlaceholderPage.stories.tsx` | Title/description props                                 |
+| Status | Area        | Suggested story / spec                  | Notes                                                                       |
+| ------ | ----------- | --------------------------------------- | --------------------------------------------------------------------------- |
+| [x]    | Login       | `src/pages/LoginPage.stories.tsx`       | Heading, guest layout, field errors, redirect state, session-expired notice |
+| [x]    | Register    | `src/pages/RegisterPage.stories.tsx`    | Guest layout, field errors                                                  |
+| [x]    | Home        | `src/pages/HomePage.stories.tsx`        | Authenticated shell via `AppLayout`                                         |
+| [x]    | Not found   | `src/pages/NotFoundPage.stories.tsx`    | 404 copy + back link                                                        |
+| [x]    | Placeholder | `src/pages/PlaceholderPage.stories.tsx` | Title/description props (Projects, Members, Settings)                       |
 
 **Effort:** ~0.5–1 day.
 
