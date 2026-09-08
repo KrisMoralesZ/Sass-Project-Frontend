@@ -79,7 +79,9 @@ const ProfilePage: FC = () => {
         }}
         isSubmitting={updateProfileMutation.isPending}
         apiError={
-          updateProfileMutation.isError ? updateProfileMutation.error : undefined
+          updateProfileMutation.isError
+            ? updateProfileMutation.error
+            : undefined
         }
       />
       <Toast

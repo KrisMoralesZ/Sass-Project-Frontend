@@ -130,9 +130,7 @@ export function buildProfilePatch(
     notifications.inApp = values.notifyInApp
   }
 
-  if (
-    values.notifyMarketing !== current.preferences.notifications.marketing
-  ) {
+  if (values.notifyMarketing !== current.preferences.notifications.marketing) {
     notifications.marketing = values.notifyMarketing
   }
 
