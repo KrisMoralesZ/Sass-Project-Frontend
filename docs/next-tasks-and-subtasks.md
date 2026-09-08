@@ -352,7 +352,7 @@ Profile fields from `UserProfileResponse` / `UpdateUserProfileDto`:
 Subtasks:
 
 - [x] **3.1.1** Add typed users API helpers and Query options under `features/users/` mirroring `UserProfileResponse` / `UpdateUserProfileDto`
-- [ ] **3.1.2** Add `useMyProfile` / `useUpdateMyProfile`; on success refresh profile cache and keep `AuthSessionProvider` `user.displayName` in sync
+- [x] **3.1.2** Add `useMyProfile` / `useUpdateMyProfile`; on success refresh profile cache and keep `AuthSessionProvider` `user.displayName` in sync
 - [ ] **3.1.3** Build `/profile` settings UI: display name, avatar URL, timezone, locale, theme, notification toggles
 - [ ] **3.1.4** Client-validate field constraints and map `VALIDATION_FAILED` onto fields (same pattern as organization settings)
 - [ ] **3.1.5** Apply `preferences.theme` in the product (`ThemeProvider`); add a dark token set so `dark` / `system` actually change the UI
@@ -620,8 +620,8 @@ Subtasks:
 | Org create/switch/settings         | Phase 2               | Available                                        |
 | Profile + members read             | Phase 3.1             | Available                                        |
 | Client RBAC helpers                | Phase 3.2 docs/matrix | Available (matrix + guards)                      |
-| Invites UI                         | Phase 3.3             | Not yet — take **alongside** frontend 3.4       |
-| Member role/remove UI              | Phase 3.4             | Not yet — take **alongside** frontend 3.5       |
+| Invites UI                         | Phase 3.3             | Not yet — take **alongside** frontend 3.4        |
+| Member role/remove UI              | Phase 3.4             | Not yet — take **alongside** frontend 3.5        |
 | Projects UI                        | Phase 4               | Not yet                                          |
 | Boards UI                          | Phase 5               | Not yet                                          |
 | Issues / kanban UI                 | Phase 6               | Not yet                                          |
