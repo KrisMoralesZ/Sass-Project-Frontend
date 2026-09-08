@@ -35,5 +35,26 @@ describe('describeOrganizationArchiveError', () => {
         apiError(ErrorCode.RESOURCE_NOT_FOUND, 'Organization not found', 404),
       ),
     ).toMatch(/already have been archived/)
+
+    expect(
+      describeOrganizationArchiveError(
+        apiError(
+          ErrorCode.TENANT_ORGANIZATION_REQUIRED,
+          'Organization context is required.',
+        ),
+      ),
+    ).toMatch(/Select a workspace/)
+  })
+
+  it('falls back for unknown and non-API errors', () => {
+    expect(describeOrganizationArchiveError(new Error('Network down'))).toBe(
+      'Network down',
+    )
+
+    expect(
+      describeOrganizationArchiveError(
+        apiError(ErrorCode.CONFLICT, 'Slug already taken', 409),
+      ),
+    ).toBe('Slug already taken')
   })
 })

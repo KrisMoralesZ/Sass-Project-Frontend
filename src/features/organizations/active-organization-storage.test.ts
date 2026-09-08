@@ -3,6 +3,7 @@ import {
   clearActiveOrganizationId,
   getActiveOrganizationId,
   setActiveOrganizationId,
+  subscribeActiveOrganizationId,
 } from './active-organization-storage'
 
 describe('active-organization-storage', () => {
@@ -18,5 +19,19 @@ describe('active-organization-storage', () => {
 
     clearActiveOrganizationId()
     expect(getActiveOrganizationId()).toBeNull()
+  })
+
+  it('notifies subscribers when the active organization changes', () => {
+    let renderCount = 0
+    const unsubscribe = subscribeActiveOrganizationId(() => {
+      renderCount += 1
+    })
+
+    setActiveOrganizationId('org-1')
+    clearActiveOrganizationId()
+    unsubscribe()
+    setActiveOrganizationId('org-2')
+
+    expect(renderCount).toBe(2)
   })
 })
