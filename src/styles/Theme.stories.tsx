@@ -1,5 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
+import { expect } from 'storybook/test'
 import styled from 'styled-components'
+import { mediaDown, mediaUp } from './media'
 import type { AppTheme } from './theme'
 
 const Page = styled.div`
@@ -251,6 +253,13 @@ type Story = StoryObj<typeof meta>
 
 export const Overview: Story = {
   render: () => <VisualDirectionOverview />,
+  play: async ({ canvas }) => {
+    await expect(canvas.getByRole('heading', { name: 'Canopy' })).toBeVisible()
+    await expect(canvas.getByText('Brand & neutrals')).toBeVisible()
+    await expect(canvas.getByText('Typography')).toBeVisible()
+    await expect(mediaUp('md')).toContain('min-width')
+    await expect(mediaDown('lg')).toContain('max-width')
+  },
 }
 
 export const ThemeActive: Story = {
@@ -263,4 +272,8 @@ export const ThemeActive: Story = {
       <span>Brand: #1a5c40</span>
     </Swatch>
   ),
+  play: async ({ canvas }) => {
+    await expect(canvas.getByText('Theme provider active')).toBeVisible()
+    await expect(canvas.getByText('Brand: #1a5c40')).toBeVisible()
+  },
 }
