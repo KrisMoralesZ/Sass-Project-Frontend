@@ -111,3 +111,14 @@ export const ApiError: Story = {
     await expect(alert).toHaveTextContent('Invalid email or password.')
   },
 }
+
+export const AccountLocked: Story = {
+  args: {
+    formError: 'This account is temporarily locked. Try again later.',
+  },
+  play: async ({ canvas }) => {
+    const alert = canvas.getByRole('alert')
+    await expect(alert).toBeVisible()
+    await expect(alert).toHaveTextContent(/temporarily locked/i)
+  },
+}

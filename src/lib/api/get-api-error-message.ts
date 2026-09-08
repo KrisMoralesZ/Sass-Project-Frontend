@@ -66,6 +66,17 @@ export function getApiErrorMessage(error: unknown): string {
     }
   }
 
+  // Prefer the API's own message for common auth failures (login/register).
+  if (
+    (error.code === ErrorCode.UNAUTHORIZED ||
+      error.code === ErrorCode.CONFLICT ||
+      error.code === ErrorCode.ACCOUNT_LOCKED ||
+      error.code === ErrorCode.TOO_MANY_REQUESTS) &&
+    error.message.trim().length > 0
+  ) {
+    return error.message
+  }
+
   // Network helper already sets a clear message on INTERNAL with status 0.
   if (error.statusCode === 0 && error.message.trim().length > 0) {
     return error.message
