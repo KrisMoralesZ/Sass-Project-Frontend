@@ -129,6 +129,12 @@ export const $ToggleHint = styled.span`
   line-height: ${({ theme }) => theme.font.lineHeight.relaxed};
 `
 
+export const $ToggleError = styled.span`
+  color: ${({ theme }) => theme.colors.danger};
+  font-size: ${({ theme }) => theme.font.size.xs};
+  line-height: ${({ theme }) => theme.font.lineHeight.relaxed};
+`
+
 export const $FormError = styled.p`
   margin: 0;
   padding: ${({ theme }) => theme.space.sm} ${({ theme }) => theme.space.md};

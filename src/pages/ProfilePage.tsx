@@ -1,9 +1,9 @@
 import { type FC, useState } from 'react'
 import Button from '@/components/ui/Button'
 import Toast from '@/components/ui/Toast'
-import { getApiErrorMessage } from '@/lib/api/get-api-error-message'
 import { useAuthSession } from '@/features/auth/useAuthSession'
 import ProfileForm from '@/features/users/components/ProfileForm'
+import { describeProfileLoadError } from '@/features/users/profile-settings-errors'
 import { useMyProfile } from '@/features/users/hooks/use-my-profile'
 import { useUpdateMyProfile } from '@/features/users/hooks/use-update-my-profile'
 import {
@@ -47,12 +47,14 @@ const ProfilePage: FC = () => {
   }
 
   if (profileQuery.isError) {
+    const loadError = describeProfileLoadError(profileQuery.error)
+
     return (
       <$Page>
         {header}
         <$ErrorPanel role="alert">
-          <$ErrorTitle>Could not load profile</$ErrorTitle>
-          <$Message>{getApiErrorMessage(profileQuery.error)}</$Message>
+          <$ErrorTitle>{loadError.title}</$ErrorTitle>
+          <$Message>{loadError.message}</$Message>
           <Button type="button" onClick={() => void profileQuery.refetch()}>
             Try again
           </Button>

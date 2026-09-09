@@ -31,6 +31,8 @@ export const AVATAR_URL_MAX_LENGTH = 2048
 export const TIMEZONE_MAX_LENGTH = 64
 export const LOCALE_MAX_LENGTH = 16
 
+const LOCALE_PATTERN = /^[a-z]{2,3}(?:-[a-z0-9]{2,8})*$/i
+
 export interface ProfileThemeOption {
   value: UserProfileTheme
   label: string
@@ -52,6 +54,10 @@ export interface ProfileFormValues {
   notifyInApp: boolean
   notifyMarketing: boolean
 }
+
+export type ProfileField = keyof ProfileFormValues
+
+export type ProfileFieldErrors = Partial<Record<ProfileField, string>>
 
 export function normalizeProfilePreferences(
   profile: UserProfile | null | undefined,
@@ -84,6 +90,48 @@ export function toProfileFormValues(
  * Build a `PATCH /users/me` body with only changed fields.
  * Returns `null` when the form matches the saved profile.
  */
+export function validateProfileForm(
+  values: ProfileFormValues,
+): ProfileFieldErrors {
+  const errors: ProfileFieldErrors = {}
+  const displayName = values.displayName.trim()
+  const avatarUrl = values.avatarUrl.trim()
+  const timezone = values.timezone.trim()
+  const locale = values.locale.trim()
+
+  if (displayName.length > DISPLAY_NAME_MAX_LENGTH) {
+    errors.displayName = `Display name must be ${DISPLAY_NAME_MAX_LENGTH} characters or fewer.`
+  }
+
+  if (avatarUrl) {
+    if (avatarUrl.length > AVATAR_URL_MAX_LENGTH) {
+      errors.avatarUrl = `Avatar URL must be ${AVATAR_URL_MAX_LENGTH} characters or fewer.`
+    } else if (!/^https?:\/\/\S+$/i.test(avatarUrl)) {
+      errors.avatarUrl = 'Enter an absolute http(s) URL.'
+    }
+  }
+
+  if (!timezone) {
+    errors.timezone = 'Timezone is required.'
+  } else if (timezone.length > TIMEZONE_MAX_LENGTH) {
+    errors.timezone = `Timezone must be ${TIMEZONE_MAX_LENGTH} characters or fewer.`
+  }
+
+  if (!locale) {
+    errors.locale = 'Locale is required.'
+  } else if (locale.length > LOCALE_MAX_LENGTH) {
+    errors.locale = `Locale must be ${LOCALE_MAX_LENGTH} characters or fewer.`
+  } else if (!LOCALE_PATTERN.test(locale)) {
+    errors.locale = 'Use a BCP 47 locale such as en or pt-BR.'
+  }
+
+  if (!USER_PROFILE_THEMES.includes(values.theme)) {
+    errors.theme = 'Choose a valid theme.'
+  }
+
+  return errors
+}
+
 export function buildProfilePatch(
   values: ProfileFormValues,
   current: UserProfile | null | undefined,

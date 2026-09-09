@@ -354,7 +354,7 @@ Subtasks:
 - [x] **3.1.1** Add typed users API helpers and Query options under `features/users/` mirroring `UserProfileResponse` / `UpdateUserProfileDto`
 - [x] **3.1.2** Add `useMyProfile` / `useUpdateMyProfile`; on success refresh profile cache and keep `AuthSessionProvider` `user.displayName` in sync
 - [x] **3.1.3** Build `/profile` settings UI: display name, avatar URL, timezone, locale, theme, notification toggles
-- [ ] **3.1.4** Client-validate field constraints and map `VALIDATION_FAILED` onto fields (same pattern as organization settings)
+- [x] **3.1.4** Client-validate field constraints and map `VALIDATION_FAILED` onto fields (same pattern as organization settings)
 - [ ] **3.1.5** Apply `preferences.theme` in the product (`ThemeProvider`); add a dark token set so `dark` / `system` actually change the UI
 - [ ] **3.1.6** Add a shell user menu (display name + link to profile) above Sign out; stay in sync after save
 - [ ] **3.1.7** Add Storybook stories for the profile form (idle, submitting, field error, API error, saved)

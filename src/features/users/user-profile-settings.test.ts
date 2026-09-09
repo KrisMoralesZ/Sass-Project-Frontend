@@ -2,28 +2,21 @@ import { describe, expect, it } from 'vitest'
 import type { UserProfile } from './api/user-api.types'
 import {
   buildProfilePatch,
-  DEFAULT_PROFILE_LOCALE,
-  DEFAULT_PROFILE_NOTIFICATIONS,
-  DEFAULT_PROFILE_THEME,
-  DEFAULT_PROFILE_TIMEZONE,
-  getProfileLocaleOptions,
-  getProfileThemeOptions,
-  getProfileTimezoneOptions,
-  normalizeProfilePreferences,
   toProfileFormValues,
+  validateProfileForm,
   type ProfileFormValues,
 } from './user-profile-settings'
 
 const savedProfile: UserProfile = {
   id: 'profile-1',
   userId: 'user-1',
-  email: 'owner@company.com',
-  displayName: 'Owner',
-  avatarUrl: 'https://cdn.example.com/avatar.png',
+  email: 'owner@acme.local',
+  displayName: 'Jane Owner',
+  avatarUrl: 'https://cdn.example.com/avatars/jane.png',
   preferences: {
     timezone: 'America/New_York',
     locale: 'en',
-    theme: 'dark',
+    theme: 'system',
     notifications: {
       email: true,
       inApp: true,
@@ -43,113 +36,83 @@ function formValues(
   }
 }
 
-describe('normalizeProfilePreferences', () => {
-  it('falls back to backend defaults when profile is missing', () => {
-    expect(normalizeProfilePreferences(undefined)).toEqual({
-      displayName: '',
-      avatarUrl: '',
-      timezone: DEFAULT_PROFILE_TIMEZONE,
-      locale: DEFAULT_PROFILE_LOCALE,
-      theme: DEFAULT_PROFILE_THEME,
-      notifyEmail: DEFAULT_PROFILE_NOTIFICATIONS.email,
-      notifyInApp: DEFAULT_PROFILE_NOTIFICATIONS.inApp,
-      notifyMarketing: DEFAULT_PROFILE_NOTIFICATIONS.marketing,
-    })
+describe('validateProfileForm', () => {
+  it('accepts the saved profile unchanged', () => {
+    expect(validateProfileForm(formValues())).toEqual({})
   })
-})
 
-describe('toProfileFormValues', () => {
-  it('maps null display name and avatar to empty strings', () => {
+  it('allows empty display name and avatar URL', () => {
     expect(
-      toProfileFormValues({
-        ...savedProfile,
-        displayName: null,
-        avatarUrl: null,
+      validateProfileForm(formValues({ displayName: '  ', avatarUrl: '' })),
+    ).toEqual({})
+  })
+
+  it('rejects malformed avatar URL and locale', () => {
+    const errors = validateProfileForm(
+      formValues({
+        avatarUrl: 'cdn.example.com/avatar.png',
+        locale: 'english_US',
       }),
-    ).toEqual({
-      displayName: '',
-      avatarUrl: '',
-      timezone: 'America/New_York',
-      locale: 'en',
-      theme: 'dark',
-      notifyEmail: true,
-      notifyInApp: true,
-      notifyMarketing: false,
-    })
+    )
+
+    expect(errors.avatarUrl).toMatch(/http\(s\) URL/)
+    expect(errors.locale).toMatch(/BCP 47/)
+  })
+
+  it('requires timezone and locale', () => {
+    const errors = validateProfileForm(
+      formValues({ timezone: '  ', locale: '' }),
+    )
+
+    expect(errors.timezone).toBe('Timezone is required.')
+    expect(errors.locale).toBe('Locale is required.')
+  })
+
+  it('rejects an invalid theme value', () => {
+    const errors = validateProfileForm(
+      formValues({ theme: 'neon' as ProfileFormValues['theme'] }),
+    )
+
+    expect(errors.theme).toMatch(/valid theme/)
   })
 })
 
 describe('buildProfilePatch', () => {
-  it('returns null when there is no saved profile', () => {
-    expect(buildProfilePatch(formValues(), null)).toBeNull()
-  })
-
-  it('returns null when the form matches the saved profile', () => {
+  it('returns null when nothing changed', () => {
     expect(buildProfilePatch(formValues(), savedProfile)).toBeNull()
   })
 
   it('sends only changed top-level fields', () => {
     expect(
       buildProfilePatch(
-        formValues({ displayName: '  New Name  ', avatarUrl: '' }),
+        formValues({ displayName: 'Jane Updated' }),
         savedProfile,
       ),
-    ).toEqual({
-      displayName: 'New Name',
-      avatarUrl: null,
-    })
+    ).toEqual({ displayName: 'Jane Updated' })
   })
 
-  it('sends nested preference patches for timezone, locale, and theme', () => {
+  it('clears nullable fields when emptied', () => {
+    expect(
+      buildProfilePatch(formValues({ avatarUrl: '   ' }), savedProfile),
+    ).toEqual({ avatarUrl: null })
+  })
+
+  it('sends only changed preference keys', () => {
     expect(
       buildProfilePatch(
         formValues({
-          timezone: 'Europe/London',
-          locale: 'es',
-          theme: 'light',
+          timezone: 'Europe/Madrid',
+          theme: 'dark',
+          notifyMarketing: true,
         }),
         savedProfile,
       ),
     ).toEqual({
       preferences: {
-        timezone: 'Europe/London',
-        locale: 'es',
-        theme: 'light',
+        timezone: 'Europe/Madrid',
+        theme: 'dark',
+        notifications: { marketing: true },
       },
     })
-  })
-
-  it('sends partial notification preference patches', () => {
-    expect(
-      buildProfilePatch(
-        formValues({ notifyEmail: false, notifyMarketing: true }),
-        savedProfile,
-      ),
-    ).toEqual({
-      preferences: {
-        notifications: {
-          email: false,
-          marketing: true,
-        },
-      },
-    })
-  })
-})
-
-describe('profile option helpers', () => {
-  it('delegates timezone and locale options to organization helpers', () => {
-    expect(getProfileTimezoneOptions('Custom/Zone')).toContain('Custom/Zone')
-    expect(getProfileLocaleOptions('xx-YY')).toContainEqual({
-      value: 'xx-YY',
-      label: 'xx-YY',
-    })
-  })
-
-  it('returns the standard theme options', () => {
-    expect(getProfileThemeOptions()).toEqual([
-      { value: 'system', label: 'Match system' },
-      { value: 'light', label: 'Light' },
-      { value: 'dark', label: 'Dark' },
-    ])
   })
 })

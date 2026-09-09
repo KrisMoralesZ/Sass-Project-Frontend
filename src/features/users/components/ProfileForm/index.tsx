@@ -9,9 +9,9 @@ import {
 import Button from '@/components/ui/Button'
 import FormField from '@/components/ui/FormField'
 import Input from '@/components/ui/Input'
-import { getApiErrorMessage } from '@/lib/api/get-api-error-message'
 import type { UserProfile } from '../../api/user-api.types'
 import type { UpdateUserProfileRequest } from '../../api/user-api.types'
+import { mapProfileApiError } from '../../profile-settings-errors'
 import {
   AVATAR_URL_MAX_LENGTH,
   buildProfilePatch,
@@ -20,6 +20,9 @@ import {
   getProfileThemeOptions,
   getProfileTimezoneOptions,
   toProfileFormValues,
+  validateProfileForm,
+  type ProfileField,
+  type ProfileFieldErrors,
   type ProfileFormValues,
 } from '../../user-profile-settings'
 import {
@@ -35,6 +38,7 @@ import {
   $SectionTitle,
   $Select,
   $ToggleCopy,
+  $ToggleError,
   $ToggleHint,
   $ToggleItem,
   $ToggleLabel,
@@ -47,6 +51,7 @@ export interface IProfileForm {
   onSubmit?: (body: UpdateUserProfileRequest) => void
   isSubmitting?: boolean
   apiError?: unknown
+  formError?: ReactNode
 }
 
 const NOTIFICATION_TOGGLES = [
@@ -69,7 +74,8 @@ const NOTIFICATION_TOGGLES = [
 
 /**
  * Profile settings form for display name, avatar URL, locale, theme, and
- * notification preferences (task 3.1.3).
+ * notification preferences (task 3.1.3). Client validation and API field
+ * mapping follow the organization settings pattern (task 3.1.4).
  */
 const ProfileForm: FC<IProfileForm> = ({
   profile,
@@ -77,16 +83,30 @@ const ProfileForm: FC<IProfileForm> = ({
   onSubmit,
   isSubmitting = false,
   apiError,
+  formError,
 }) => {
   const savedValues = useMemo(() => toProfileFormValues(profile), [profile])
   const savedSignature = JSON.stringify(savedValues)
 
+  const mappedApiError = useMemo(() => mapProfileApiError(apiError), [apiError])
   const [values, setValues] = useState(savedValues)
+  const [errors, setErrors] = useState<ProfileFieldErrors>({})
+  const [apiFieldErrors, setApiFieldErrors] = useState<ProfileFieldErrors>(
+    mappedApiError.fieldErrors,
+  )
   const [syncedSignature, setSyncedSignature] = useState(savedSignature)
+  const [appliedApiError, setAppliedApiError] = useState(apiError)
 
   if (syncedSignature !== savedSignature) {
     setSyncedSignature(savedSignature)
     setValues(savedValues)
+    setErrors({})
+    setApiFieldErrors({})
+  }
+
+  if (apiError !== appliedApiError) {
+    setAppliedApiError(apiError)
+    setApiFieldErrors(mappedApiError.fieldErrors)
   }
 
   const timezoneOptions = useMemo(
@@ -105,12 +125,34 @@ const ProfileForm: FC<IProfileForm> = ({
   const patch = buildProfilePatch(values, profile)
   const isDirty = patch !== null
   const fieldsDisabled = isSubmitting
+  const fieldErrors = { ...apiFieldErrors, ...errors }
+  const displayedFormError = formError ?? mappedApiError.formError
+
+  const clearFieldError = (field: ProfileField) => {
+    setErrors((current) => {
+      if (!current[field]) {
+        return current
+      }
+      const next = { ...current }
+      delete next[field]
+      return next
+    })
+    setApiFieldErrors((current) => {
+      if (!current[field]) {
+        return current
+      }
+      const next = { ...current }
+      delete next[field]
+      return next
+    })
+  }
 
   const updateTextField =
     (field: 'displayName' | 'avatarUrl') =>
     (event: ChangeEvent<HTMLInputElement>) => {
       const { value } = event.target
       setValues((current) => ({ ...current, [field]: value }))
+      clearFieldError(field)
     }
 
   const updateSelectField =
@@ -121,6 +163,7 @@ const ProfileForm: FC<IProfileForm> = ({
         ...current,
         [field]: value as ProfileFormValues[typeof field],
       }))
+      clearFieldError(field)
     }
 
   const updateNotification =
@@ -128,25 +171,27 @@ const ProfileForm: FC<IProfileForm> = ({
     (event: ChangeEvent<HTMLInputElement>) => {
       const { checked } = event.target
       setValues((current) => ({ ...current, [field]: checked }))
+      clearFieldError(field)
     }
 
   const handleReset = () => {
     setValues(savedValues)
+    setErrors({})
+    setApiFieldErrors({})
   }
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault()
 
-    if (!patch) {
+    const nextErrors = validateProfileForm(values)
+    setErrors(nextErrors)
+
+    if (Object.keys(nextErrors).length > 0 || !patch) {
       return
     }
 
     onSubmit?.(patch)
   }
-
-  const formError: ReactNode | undefined = apiError
-    ? getApiErrorMessage(apiError)
-    : undefined
 
   return (
     <$Form onSubmit={handleSubmit} noValidate>
@@ -164,6 +209,7 @@ const ProfileForm: FC<IProfileForm> = ({
           label="Display name"
           htmlFor="profile-display-name"
           hint="Shown in the shell, member directory, and activity feeds."
+          error={fieldErrors.displayName}
         >
           <Input
             id="profile-display-name"
@@ -179,6 +225,7 @@ const ProfileForm: FC<IProfileForm> = ({
           label="Avatar URL"
           htmlFor="profile-avatar-url"
           hint="Absolute http(s) link to your profile image."
+          error={fieldErrors.avatarUrl}
         >
           <Input
             id="profile-avatar-url"
@@ -201,7 +248,12 @@ const ProfileForm: FC<IProfileForm> = ({
           </$SectionLead>
         </$SectionHeader>
         <$Grid>
-          <FormField label="Timezone" htmlFor="profile-timezone" required>
+          <FormField
+            label="Timezone"
+            htmlFor="profile-timezone"
+            required
+            error={fieldErrors.timezone}
+          >
             <$Select
               id="profile-timezone"
               value={values.timezone}
@@ -215,7 +267,12 @@ const ProfileForm: FC<IProfileForm> = ({
               ))}
             </$Select>
           </FormField>
-          <FormField label="Locale" htmlFor="profile-locale" required>
+          <FormField
+            label="Locale"
+            htmlFor="profile-locale"
+            required
+            error={fieldErrors.locale}
+          >
             <$Select
               id="profile-locale"
               value={values.locale}
@@ -234,6 +291,7 @@ const ProfileForm: FC<IProfileForm> = ({
           label="Theme"
           htmlFor="profile-theme"
           hint="Your saved appearance preference. Product-wide theme switching is coming soon."
+          error={fieldErrors.theme}
         >
           <$Select
             id="profile-theme"
@@ -268,14 +326,20 @@ const ProfileForm: FC<IProfileForm> = ({
               />
               <$ToggleCopy>
                 <$ToggleLabel>{label}</$ToggleLabel>
-                <$ToggleHint>{hint}</$ToggleHint>
+                {fieldErrors[field] ? (
+                  <$ToggleError role="alert">{fieldErrors[field]}</$ToggleError>
+                ) : (
+                  <$ToggleHint>{hint}</$ToggleHint>
+                )}
               </$ToggleCopy>
             </$ToggleItem>
           ))}
         </$ToggleList>
       </$Section>
 
-      {formError ? <$FormError role="alert">{formError}</$FormError> : null}
+      {displayedFormError ? (
+        <$FormError role="alert">{displayedFormError}</$FormError>
+      ) : null}
 
       <$Actions>
         <Button
