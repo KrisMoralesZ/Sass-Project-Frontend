@@ -43,9 +43,9 @@ describe('ShellUserMenu', () => {
 
     expect(screen.getByRole('navigation', { name: 'Account' })).toBeTruthy()
     expect(screen.getByText('Jane Owner')).toBeTruthy()
-    expect(screen.getByRole('link', { name: 'Profile' }).getAttribute('href')).toBe(
-      paths.profile,
-    )
+    expect(
+      screen.getByRole('link', { name: 'Profile' }).getAttribute('href'),
+    ).toBe(paths.profile)
     expect(screen.getByText('owner@acme.local')).toBeTruthy()
   })
 

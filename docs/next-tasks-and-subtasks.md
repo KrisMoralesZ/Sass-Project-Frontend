@@ -357,7 +357,7 @@ Subtasks:
 - [x] **3.1.4** Client-validate field constraints and map `VALIDATION_FAILED` onto fields (same pattern as organization settings)
 - [x] **3.1.5** Light/dark theme foundation: `darkTheme` tokens, `AppThemeProvider` `system`/`light`/`dark`, `useThemePreference()` (profile still wires `setPreference` on load/save)
 - [x] **3.1.6** Add a shell user menu (display name + link to profile) above Sign out; stay in sync after save
-- [ ] **3.1.7** Add Storybook stories for the profile form (idle, submitting, field error, API error, saved)
+- [x] **3.1.7** Add Storybook stories for the profile form (idle, submitting, field error, API error, saved)
 - [x] **3.1.8** Register `/profile` under the authenticated shell **outside** `RequireOrganization` so it works with zero workspaces
 
 **3.1 out of scope:**
@@ -607,7 +607,7 @@ Subtasks:
 - [x] **3.1.5** Light/dark theme tokens + `AppThemeProvider` preference API
 - [x] **3.1.8** Register `/profile` outside `RequireOrganization`
 - [x] **3.1.6** Shell user menu (display name + profile link)
-- [ ] **3.1.7** Profile stories; wire `setPreference` on profile load/save
+- [x] **3.1.7** Profile stories; wire `setPreference` on profile load/save
 - [ ] **3.2.1–3.2.4** Members list/detail API + pages (replace `/members` placeholder)
 - [ ] **3.2.5–3.2.6** Members tenant-error copy + Storybook
 - [x] **3.4.1** Typed invite API helpers (create/list/revoke/accept) mirroring invitation policy

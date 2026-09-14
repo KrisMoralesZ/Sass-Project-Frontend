@@ -1,7 +1,8 @@
-import { type FC, useState } from 'react'
+import { type FC, useEffect, useState } from 'react'
 import Button from '@/components/ui/Button'
 import Toast from '@/components/ui/Toast'
 import { useAuthSession } from '@/features/auth/useAuthSession'
+import { useThemePreference } from '@/styles/useThemePreference'
 import ProfileForm from '@/features/users/components/ProfileForm'
 import { describeProfileLoadError } from '@/features/users/profile-settings-errors'
 import { useMyProfile } from '@/features/users/hooks/use-my-profile'
@@ -23,9 +24,17 @@ import {
  */
 const ProfilePage: FC = () => {
   const { user } = useAuthSession()
+  const { setPreference } = useThemePreference()
   const profileQuery = useMyProfile()
   const updateProfileMutation = useUpdateMyProfile()
   const [isSavedToastOpen, setIsSavedToastOpen] = useState(false)
+  const savedTheme = profileQuery.data?.preferences.theme
+
+  useEffect(() => {
+    if (savedTheme) {
+      setPreference(savedTheme)
+    }
+  }, [savedTheme, setPreference])
 
   const header = (
     <$Header>

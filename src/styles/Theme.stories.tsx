@@ -289,8 +289,8 @@ function ThemePreferenceControls() {
       <Section>
         <SectionTitle>Theme preference</SectionTitle>
         <SectionLead>
-          `system` follows the OS setting. Profile settings will call{' '}
-          <code>setPreference</code> when that branch merges.
+          `system` follows the OS setting. Profile settings call{' '}
+          <code>setPreference</code> after load and save.
         </SectionLead>
         <p>
           Preference: <strong>{preference}</strong> · Resolved:{' '}
