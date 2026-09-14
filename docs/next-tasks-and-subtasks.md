@@ -355,7 +355,7 @@ Subtasks:
 - [x] **3.1.2** Add `useMyProfile` / `useUpdateMyProfile`; on success refresh profile cache and keep `AuthSessionProvider` `user.displayName` in sync
 - [x] **3.1.3** Build `/profile` settings UI: display name, avatar URL, timezone, locale, theme, notification toggles
 - [x] **3.1.4** Client-validate field constraints and map `VALIDATION_FAILED` onto fields (same pattern as organization settings)
-- [ ] **3.1.5** Apply `preferences.theme` in the product (`ThemeProvider`); add a dark token set so `dark` / `system` actually change the UI
+- [x] **3.1.5** Light/dark theme foundation: `darkTheme` tokens, `AppThemeProvider` `system`/`light`/`dark`, `useThemePreference()` (profile still wires `setPreference` on load/save)
 - [ ] **3.1.6** Add a shell user menu (display name + link to profile) above Sign out; stay in sync after save
 - [ ] **3.1.7** Add Storybook stories for the profile form (idle, submitting, field error, API error, saved)
 - [x] **3.1.8** Register `/profile` under the authenticated shell **outside** `RequireOrganization` so it works with zero workspaces
@@ -369,7 +369,7 @@ Subtasks:
 Acceptance criteria:
 
 - Users can view and update their own profile
-- Preference changes (especially theme) apply in the UI
+- Saved theme preference applies app-wide via `useThemePreference().setPreference`
 - Shell user menu shows the saved display name without a full reload
 
 ### Task 3.2 — Members directory
@@ -603,8 +603,10 @@ Subtasks:
 - [x] **2.3.4** Owner archive confirmation (`DELETE /organizations/:id`)
 - [x] **2.3.5** Active-organization cleanup after archive
 - [x] **3.3** Client permission helpers (roles, matrix, `usePermission`, `hasMinRole`)
-- [ ] **3.1.1–3.1.4** Profile API + `/profile` form, validation, session display-name sync
-- [ ] **3.1.5–3.1.8** Theme apply, shell user menu, stories, `/profile` outside `RequireOrganization`
+- [x] **3.1.1–3.1.4** Profile API + `/profile` form, validation, session display-name sync
+- [x] **3.1.5** Light/dark theme tokens + `AppThemeProvider` preference API
+- [x] **3.1.8** Register `/profile` outside `RequireOrganization`
+- [ ] **3.1.6–3.1.7** Shell user menu, profile stories; wire `setPreference` on profile load/save
 - [ ] **3.2.1–3.2.4** Members list/detail API + pages (replace `/members` placeholder)
 - [ ] **3.2.5–3.2.6** Members tenant-error copy + Storybook
 - [x] **3.4.1** Typed invite API helpers (create/list/revoke/accept) mirroring invitation policy
