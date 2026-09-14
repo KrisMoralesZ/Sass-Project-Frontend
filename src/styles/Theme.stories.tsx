@@ -1,8 +1,11 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { expect } from 'storybook/test'
+import { ThemeProvider } from 'styled-components'
 import styled from 'styled-components'
 import { mediaDown, mediaUp } from './media'
 import type { AppTheme } from './theme'
+import { darkTheme, lightTheme } from './theme'
+import { useThemePreference } from './useThemePreference'
 
 const Page = styled.div`
   display: flex;
@@ -275,5 +278,99 @@ export const ThemeActive: Story = {
   play: async ({ canvas }) => {
     await expect(canvas.getByText('Theme provider active')).toBeVisible()
     await expect(canvas.getByText('Brand: #1a5c40')).toBeVisible()
+  },
+}
+
+function ThemePreferenceControls() {
+  const { preference, resolvedMode, setPreference } = useThemePreference()
+
+  return (
+    <Page>
+      <Section>
+        <SectionTitle>Theme preference</SectionTitle>
+        <SectionLead>
+          `system` follows the OS setting. Profile settings will call{' '}
+          <code>setPreference</code> when that branch merges.
+        </SectionLead>
+        <p>
+          Preference: <strong>{preference}</strong> · Resolved:{' '}
+          <strong>{resolvedMode}</strong>
+        </p>
+        <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+          {(['system', 'light', 'dark'] as const).map((mode) => (
+            <button
+              key={mode}
+              type="button"
+              onClick={() => setPreference(mode)}
+            >
+              {mode}
+            </button>
+          ))}
+        </div>
+      </Section>
+      <Section>
+        <SectionTitle>Live tokens</SectionTitle>
+        <SwatchGrid>
+          <Swatch $bg="#ffffff" $border>
+            <SwatchLabel>surface</SwatchLabel>
+          </Swatch>
+          <Swatch $bg="#1a5c40" $fg="#ffffff">
+            <SwatchLabel>brand</SwatchLabel>
+          </Swatch>
+        </SwatchGrid>
+      </Section>
+    </Page>
+  )
+}
+
+export const PreferenceControls: Story = {
+  parameters: {
+    layout: 'fullscreen',
+  },
+  render: () => <ThemePreferenceControls />,
+  play: async ({ canvas }) => {
+    await expect(canvas.getByText('Theme preference')).toBeVisible()
+    await expect(canvas.getByText(/Preference:/)).toBeVisible()
+  },
+}
+
+export const DarkPalette: Story = {
+  parameters: {
+    layout: 'fullscreen',
+  },
+  render: () => (
+    <ThemeProvider theme={darkTheme}>
+      <Page>
+        <Section>
+          <SectionTitle>Canopy dark</SectionTitle>
+          <SectionLead>
+            Deep green-gray surfaces with a lighter forest brand accent.
+          </SectionLead>
+        </Section>
+        <Section>
+          <SectionTitle>Brand &amp; neutrals</SectionTitle>
+          <SwatchGrid>
+            <Swatch
+              $bg={darkTheme.colors.brand}
+              $fg={darkTheme.colors.brandContrast}
+            >
+              <SwatchLabel>brand</SwatchLabel>
+            </Swatch>
+            <Swatch $bg={darkTheme.colors.background} $border>
+              <SwatchLabel>background</SwatchLabel>
+            </Swatch>
+            <Swatch $bg={darkTheme.colors.surface} $border>
+              <SwatchLabel>surface</SwatchLabel>
+            </Swatch>
+          </SwatchGrid>
+        </Section>
+      </Page>
+    </ThemeProvider>
+  ),
+  play: async ({ canvas }) => {
+    await expect(
+      canvas.getByRole('heading', { name: 'Canopy dark' }),
+    ).toBeVisible()
+    expect(lightTheme.colors.surface).not.toBe(darkTheme.colors.surface)
   },
 }

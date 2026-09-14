@@ -337,14 +337,24 @@ Acceptance criteria:
 
 Subtasks:
 
-- Wire `GET /users/me` and `PATCH /users/me`
-- Build profile settings for display name, avatar URL, preferences (theme/locale/notifications)
-- Keep shell user menu in sync after profile updates
+- [ ] **3.1.1** Add typed users API helpers and Query options under `features/users/`
+- [ ] **3.1.2** Add `useMyProfile` / `useUpdateMyProfile`; sync auth session display name on save
+- [ ] **3.1.3** Build `/profile` settings UI (display name, avatar URL, timezone, locale, theme, notifications)
+- [ ] **3.1.4** Client-validate field constraints and map `VALIDATION_FAILED` onto fields
+- [x] **3.1.5** Light/dark theme foundation: `darkTheme` tokens, `AppThemeProvider` `system`/`light`/`dark`, `useThemePreference()` (profile branch wires `setPreference` on load/save)
+- [ ] **3.1.6** Add shell user menu (display name + link to profile) above Sign out
+- [ ] **3.1.7** Profile form Storybook stories
+- [ ] **3.1.8** Register `/profile` outside `RequireOrganization`
+
+**3.1 out of scope (profile branch):**
+
+- Email / password change and avatar file upload (URL only)
+- Marketing-email delivery; persist the preference only
 
 Acceptance criteria:
 
-- Users can view and update their own profile
-- Preference changes (e.g. theme) apply in the UI
+- Users can view and update their own profile (profile branch)
+- Saved theme preference applies app-wide via `useThemePreference().setPreference` once profile merges
 
 ### Task 3.2 — Members directory
 
@@ -539,7 +549,8 @@ Subtasks:
 - [x] **2.3.3** Settings forbidden, validation, and tenant-context error surfacing
 - [x] **2.3.4** Owner archive confirmation (`DELETE /organizations/:id`)
 - [x] **2.3.5** Active-organization cleanup after archive
-- [ ] Wire profile settings and members directory (Phase 3)
+- [x] **3.1.5** Light/dark theme tokens + `AppThemeProvider` preference API
+- [ ] Profile settings UI + members directory (Phase 3; profile on separate branch)
 - [ ] Add frontend permission helpers from the backend matrix
 - [ ] Defer invites/member mutations/projects/boards/issues until matching backend APIs ship
 - [ ] Keep screens aligned with backend seed users for local QA
