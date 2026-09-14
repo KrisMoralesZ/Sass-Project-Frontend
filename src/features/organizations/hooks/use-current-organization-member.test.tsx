@@ -57,6 +57,7 @@ describe('useCurrentOrganizationMember', () => {
       isAuthenticated: true,
       establishSession: vi.fn(),
       clearSession: vi.fn(),
+      syncSessionUserDisplayName: vi.fn(),
     })
     vi.mocked(useActiveOrganizationId).mockReturnValue('org-1')
 
@@ -75,6 +76,7 @@ describe('useCurrentOrganizationMember', () => {
       isAuthenticated: false,
       establishSession: vi.fn(),
       clearSession: vi.fn(),
+      syncSessionUserDisplayName: vi.fn(),
     })
     vi.mocked(useActiveOrganizationId).mockReturnValue(null)
 

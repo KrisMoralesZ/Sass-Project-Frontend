@@ -32,6 +32,7 @@ function renderWithSession(
     isAuthenticated: status === 'authenticated',
     establishSession: vi.fn(),
     clearSession: vi.fn(),
+    syncSessionUserDisplayName: vi.fn(),
   })
 
   return render(
