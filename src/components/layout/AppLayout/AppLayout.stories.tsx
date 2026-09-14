@@ -11,17 +11,30 @@ import Table, {
   TableHeader,
   TableRow,
 } from '@/components/ui/Table'
+import type { AuthUserProfile } from '@/features/auth/auth-api.types'
 import AuthSessionProvider from '@/features/auth/AuthSessionProvider'
+import { useAuthSession } from '@/features/auth/useAuthSession'
 import { paths } from '@/routes/paths'
 import AppLayout from '.'
 
 const signOut = fn()
+
+const shellUser: AuthUserProfile = {
+  id: 'user-1',
+  email: 'owner@acme.local',
+  displayName: 'Jane Owner',
+  createdAt: '2026-01-01T00:00:00.000Z',
+}
 
 vi.mock('@/features/auth/hooks/use-logout', () => ({
   useLogout: () => ({
     signOut,
     isLoggingOut: false,
   }),
+}))
+
+vi.mock('@/features/auth/useAuthSession', () => ({
+  useAuthSession: vi.fn(),
 }))
 
 const Page = styled.section`
@@ -76,6 +89,18 @@ const meta = {
     (Story, context) => {
       const initialPath =
         (context.parameters.initialPath as string | undefined) ?? paths.home
+      const user =
+        (context.parameters.shellUser as AuthUserProfile | null | undefined) ??
+        shellUser
+
+      vi.mocked(useAuthSession).mockReturnValue({
+        user,
+        status: user ? 'authenticated' : 'anonymous',
+        isAuthenticated: Boolean(user),
+        establishSession: fn(),
+        syncSessionUserDisplayName: fn(),
+        clearSession: fn(),
+      })
 
       return (
         <MemoryRouter initialEntries={[initialPath]}>
@@ -119,6 +144,13 @@ async function expectWorkspaceShell(
     navQueries.getByRole('link', { name: 'Settings' }),
   ).toHaveAttribute('href', paths.settings)
 
+  const accountNav = canvas.getByRole('navigation', { name: 'Account' })
+  const accountQueries = within(accountNav)
+
+  await expect(accountQueries.getByText('Jane Owner')).toBeVisible()
+  await expect(
+    accountQueries.getByRole('link', { name: 'Profile' }),
+  ).toHaveAttribute('href', paths.profile)
   await expect(canvas.getByRole('button', { name: 'Sign out' })).toBeEnabled()
 }
 
@@ -261,6 +293,33 @@ export const Settings: Story = {
     await expect(
       canvas.getByText('Organization and profile settings land in Phases 2–3.'),
     ).toBeVisible()
+  },
+}
+
+export const UserMenuEmailFallback: Story = {
+  parameters: {
+    shellUser: {
+      ...shellUser,
+      displayName: null,
+    },
+  },
+  args: {
+    children: (
+      <PageBlock
+        title="Home"
+        description="The shell falls back to email when no display name is saved."
+      />
+    ),
+  },
+  play: async ({ canvas }) => {
+    const accountNav = canvas.getByRole('navigation', { name: 'Account' })
+    const accountQueries = within(accountNav)
+
+    await expect(accountQueries.getByText('owner@acme.local')).toBeVisible()
+    await expect(
+      accountQueries.getByRole('link', { name: 'Profile' }),
+    ).toHaveAttribute('href', paths.profile)
+    await expect(canvas.getByRole('button', { name: 'Sign out' })).toBeEnabled()
   },
 }
 
