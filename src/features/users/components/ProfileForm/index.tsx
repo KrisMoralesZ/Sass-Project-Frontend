@@ -203,7 +203,7 @@ const ProfileForm: FC<IProfileForm> = ({
           </$SectionLead>
         </$SectionHeader>
         <FormField label="Email" htmlFor="profile-email">
-          <$ReadOnlyValue id="profile-email">{email}</$ReadOnlyValue>
+          <$ReadOnlyValue id="profile-email" value={email} />
         </FormField>
         <FormField
           label="Display name"
@@ -290,7 +290,7 @@ const ProfileForm: FC<IProfileForm> = ({
         <FormField
           label="Theme"
           htmlFor="profile-theme"
-          hint="Your saved appearance preference. Product-wide theme switching is coming soon."
+          hint="Applied across the product after you save, and restored on refresh."
           error={fieldErrors.theme}
         >
           <$Select
