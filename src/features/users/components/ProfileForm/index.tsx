@@ -203,7 +203,7 @@ const ProfileForm: FC<IProfileForm> = ({
           </$SectionLead>
         </$SectionHeader>
         <FormField label="Email" htmlFor="profile-email">
-          <$ReadOnlyValue id="profile-email">{email}</$ReadOnlyValue>
+          <$ReadOnlyValue id="profile-email" value={email} />
         </FormField>
         <FormField
           label="Display name"

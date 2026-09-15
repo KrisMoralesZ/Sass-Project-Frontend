@@ -60,7 +60,7 @@ type Story = StoryObj<typeof meta>
 
 export const Idle: Story = {
   play: async ({ canvas }) => {
-    await expect(canvas.getByLabelText(/^Email$/i)).toHaveTextContent(
+    await expect(canvas.getByLabelText(/^Email$/i)).toHaveValue(
       'owner@acme.local',
     )
     await expect(canvas.getByLabelText(/Display name/i)).toHaveValue(
