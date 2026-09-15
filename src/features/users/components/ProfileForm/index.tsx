@@ -290,7 +290,7 @@ const ProfileForm: FC<IProfileForm> = ({
         <FormField
           label="Theme"
           htmlFor="profile-theme"
-          hint="Applied across the product after you save."
+          hint="Applied across the product after you save, and restored on refresh."
           error={fieldErrors.theme}
         >
           <$Select
