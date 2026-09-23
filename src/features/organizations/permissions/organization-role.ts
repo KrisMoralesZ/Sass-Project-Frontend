@@ -19,6 +19,17 @@ export const ORGANIZATION_ROLES = [
   OrganizationRole.VIEWER,
 ] as const
 
+export const ORGANIZATION_ROLE_LABELS: Record<OrganizationRole, string> = {
+  [OrganizationRole.OWNER]: 'Owner',
+  [OrganizationRole.ADMIN]: 'Admin',
+  [OrganizationRole.MEMBER]: 'Member',
+  [OrganizationRole.VIEWER]: 'Viewer',
+}
+
+export function getOrganizationRoleLabel(role: OrganizationRole): string {
+  return ORGANIZATION_ROLE_LABELS[role]
+}
+
 const ORGANIZATION_ROLE_RANK: Record<OrganizationRole, number> = {
   [OrganizationRole.OWNER]: 400,
   [OrganizationRole.ADMIN]: 300,
