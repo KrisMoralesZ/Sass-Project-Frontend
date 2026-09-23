@@ -5,6 +5,7 @@ import PublicLayout from '@/components/layout/PublicLayout'
 import HomePage from '@/pages/HomePage'
 import CreateOrganizationPage from '@/pages/CreateOrganizationPage'
 import LoginPage from '@/pages/LoginPage'
+import MembersPage from '@/pages/MembersPage'
 import NotFoundPage from '@/pages/NotFoundPage'
 import OrganizationSettingsPage from '@/pages/OrganizationSettingsPage'
 import PlaceholderPage from '@/pages/PlaceholderPage'
@@ -55,15 +56,7 @@ const AppRoutes: FC = () => {
                 />
               }
             />
-            <Route
-              path={paths.members}
-              element={
-                <PlaceholderPage
-                  title="Members"
-                  description="Members directory lands in Phase 3."
-                />
-              }
-            />
+            <Route path={paths.members} element={<MembersPage />} />
             <Route
               path={paths.settings}
               element={<OrganizationSettingsPage />}
