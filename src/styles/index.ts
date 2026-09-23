@@ -13,4 +13,8 @@ export {
 } from './theme-mode'
 export type { ThemePreferenceContextValue } from './theme-preference-context'
 export { ThemePreferenceContext } from './theme-preference-context'
+export {
+  getStoredThemePreference,
+  setStoredThemePreference,
+} from './theme-preference-storage'
 export { useThemePreference } from './useThemePreference'

@@ -289,7 +289,8 @@ function ThemePreferenceControls() {
       <Section>
         <SectionTitle>Theme preference</SectionTitle>
         <SectionLead>
-          `system` follows the OS setting. Profile settings call{' '}
+          `system` follows the OS setting. The last preference is stored and
+          restored on refresh. Profile settings also call{' '}
           <code>setPreference</code> after load and save.
         </SectionLead>
         <p>

@@ -68,16 +68,19 @@ export const $Select = styled.select`
   }
 `
 
-export const $ReadOnlyValue = styled.p`
+export const $ReadOnlyValue = styled.input.attrs({
+  readOnly: true,
+  tabIndex: 0,
+})`
   margin: 0;
+  width: 100%;
   min-height: 2.75rem;
-  display: flex;
-  align-items: center;
   padding: 0 ${({ theme }) => theme.space.md};
   border: 1px solid ${({ theme }) => theme.colors.border};
   border-radius: ${({ theme }) => theme.radii.sm};
   background: ${({ theme }) => theme.colors.surfaceMuted};
   color: ${({ theme }) => theme.colors.textMuted};
+  font: inherit;
   font-size: ${({ theme }) => theme.font.size.sm};
 `
 
