@@ -37,10 +37,25 @@ export const $Lead = styled.p`
   line-height: ${({ theme }) => theme.font.lineHeight.relaxed};
 `
 
-export const $Toolbar = styled.form`
+export const $Toolbar = styled.div`
   display: flex;
   align-items: flex-end;
+  justify-content: space-between;
+  flex-wrap: wrap;
   gap: ${({ theme }) => theme.space.md};
+
+  @media (max-width: ${({ theme }) => theme.breakpoints.sm}) {
+    align-items: stretch;
+    flex-direction: column;
+  }
+`
+
+export const $SearchForm = styled.form`
+  display: flex;
+  flex: 1;
+  align-items: flex-end;
+  gap: ${({ theme }) => theme.space.md};
+  max-width: 36rem;
 
   @media (max-width: ${({ theme }) => theme.breakpoints.sm}) {
     align-items: stretch;
@@ -50,7 +65,12 @@ export const $Toolbar = styled.form`
 
 export const $SearchField = styled.div`
   flex: 1;
-  max-width: 32rem;
+`
+
+export const $ToolbarActions = styled.div`
+  display: flex;
+  align-items: center;
+  gap: ${({ theme }) => theme.space.sm};
 `
 
 export const $Message = styled.p`
