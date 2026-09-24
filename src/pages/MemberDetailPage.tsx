@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query'
 import { type FC } from 'react'
-import { Link, useParams } from 'react-router-dom'
+import { useParams } from 'react-router-dom'
 import Button from '@/components/ui/Button'
 import MemberRoleBadge from '@/features/organizations/components/MemberRoleBadge'
 import { organizationMemberQueryOptions } from '@/features/organizations/api/get-member'
@@ -16,6 +16,16 @@ import {
   $Page,
   $Title,
 } from './MembersPage.sc'
+import {
+  $Avatar,
+  $BackLink,
+  $Card,
+  $Email,
+  $Identity,
+  $Meta,
+  $MetaItem,
+  $Name,
+} from './MemberDetailPage.sc'
 
 const MemberDetailPage: FC = () => {
   const { userId = '' } = useParams<{ userId: string }>()
@@ -74,52 +84,40 @@ const MemberDetailPage: FC = () => {
   return (
     <$Page>
       {header}
-      <div
-        style={{
-          display: 'flex',
-          flexDirection: 'column',
-          gap: '1rem',
-          padding: '1.5rem',
-          border: '1px solid rgba(0,0,0,0.08)',
-          borderRadius: '1rem',
-          background: 'rgba(255,255,255,0.02)',
-        }}
-      >
-        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+      <$Card>
+        <$Identity>
           {member.avatarUrl ? (
-            <img
-              src={member.avatarUrl}
-              alt={memberName}
-              style={{ width: '3rem', height: '3rem', borderRadius: '50%' }}
-            />
+            <$Avatar src={member.avatarUrl} alt={memberName} />
           ) : null}
           <div>
-            <div style={{ fontSize: '1.5rem', fontWeight: 700 }}>
-              {memberName}
-            </div>
-            <div style={{ color: '#6b7280' }}>{member.email}</div>
+            <$Name>{memberName}</$Name>
+            <$Email>{member.email}</$Email>
           </div>
-        </div>
+        </$Identity>
 
-        <div style={{ display: 'grid', gap: '0.75rem' }}>
-          <div>
-            <strong>Role</strong>
-            <div style={{ marginTop: '0.25rem' }}>
+        <$Meta>
+          <$MetaItem>
+            <dt>Role</dt>
+            <dd>
               <MemberRoleBadge role={member.role} />
-            </div>
-          </div>
-          <div>
-            <strong>User ID</strong>
-            <div style={{ marginTop: '0.25rem' }}>{member.userId}</div>
-          </div>
-          <div>
-            <strong>Workspace ID</strong>
-            <div style={{ marginTop: '0.25rem' }}>{member.organizationId}</div>
-          </div>
-        </div>
-      </div>
+            </dd>
+          </$MetaItem>
+          <$MetaItem>
+            <dt>Member ID</dt>
+            <dd>{member.id}</dd>
+          </$MetaItem>
+          <$MetaItem>
+            <dt>User ID</dt>
+            <dd>{member.userId}</dd>
+          </$MetaItem>
+          <$MetaItem>
+            <dt>Workspace ID</dt>
+            <dd>{member.organizationId}</dd>
+          </$MetaItem>
+        </$Meta>
+      </$Card>
 
-      <Link to={paths.members}>Back to members</Link>
+      <$BackLink to={paths.members}>Back to members</$BackLink>
     </$Page>
   )
 }
