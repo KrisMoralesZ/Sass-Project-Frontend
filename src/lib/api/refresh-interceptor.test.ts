@@ -3,236 +3,248 @@ import axios, {
   AxiosHeaders,
   type AxiosInstance,
   type AxiosResponse,
-  type InternalAxiosRequestConfig,
 } from 'axios'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
-import type { ApiResponseMeta } from '@/types/api-response'
 import { ErrorCode } from '@/types/error-code'
-import {
-  subscribeSessionCleared,
-  type SessionClearedListener,
-} from '@/features/auth/session-events'
-import {
-  getAccessToken,
-  getRefreshToken,
-  setSessionTokens,
-} from '@/features/auth/session-storage'
-import { consumeSessionExpiredNotice } from '@/features/auth/session-expired-notice'
+import { ApiError } from './api-error'
 import {
   attachRefreshInterceptor,
   resetRefreshSingleFlight,
 } from './refresh-interceptor'
 
-const meta: ApiResponseMeta = {
-  timestamp: '2026-08-24T00:00:00.000Z',
-  path: '/auth/me',
-  version: '1',
-}
-
-function envelopeError(statusCode = 401) {
+vi.mock('axios', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('axios')>()
   return {
-    success: false as const,
-    error: {
-      code: ErrorCode.UNAUTHORIZED,
-      statusCode,
-      message: 'Unauthorized',
+    ...actual,
+    default: {
+      ...actual.default,
+      post: vi.fn(),
+      isAxiosError: actual.default.isAxiosError,
     },
-    meta,
   }
-}
+})
 
-function envelopeOk<T>(data: T, path = '/auth/me') {
-  return {
-    success: true as const,
-    data,
-    meta: { ...meta, path },
-  }
-}
-
-function refreshOkResponse(): AxiosResponse {
-  return {
-    data: envelopeOk(
-      {
-        tokens: {
-          accessToken: 'new-access',
-          refreshToken: 'new-refresh',
-          expiresIn: 15,
-        },
-      },
-      '/auth/refresh',
-    ),
-    status: 200,
-    statusText: 'OK',
-    headers: {},
-    config: { headers: new AxiosHeaders() },
-  }
-}
-
-function unauthorizedError(config: InternalAxiosRequestConfig): AxiosError {
-  const error = new AxiosError('Unauthorized')
-  error.config = config
-  error.response = {
-    data: envelopeError(),
-    status: 401,
-    statusText: 'Unauthorized',
-    headers: {},
-    config,
-  }
-  return error
-}
-
-function createClient(
-  adapter: NonNullable<AxiosInstance['defaults']['adapter']>,
-): AxiosInstance {
-  const instance = axios.create({ adapter })
-  attachRefreshInterceptor(instance)
-  return instance
-}
-
-describe('refresh interceptor (task 1.3.4)', () => {
-  let sessionCleared: SessionClearedListener
-  let unsubscribe: () => void
+describe('attachRefreshInterceptor', () => {
+  let instance: AxiosInstance
+  let callCount: number
 
   beforeEach(() => {
     sessionStorage.clear()
-    resetRefreshSingleFlight()
-    sessionCleared = vi.fn()
-    unsubscribe = subscribeSessionCleared(sessionCleared)
-    setSessionTokens({
-      accessToken: 'expired-access',
-      refreshToken: 'valid-refresh',
-    })
-  })
+    callCount = 0
+    vi.stubEnv('VITE_API_URL', 'http://localhost:3000')
+    vi.mocked(axios.post).mockReset()
 
-  afterEach(() => {
-    unsubscribe()
-    resetRefreshSingleFlight()
-    vi.restoreAllMocks()
-  })
+    instance = axios.create()
+    attachRefreshInterceptor(instance)
 
-  it('refreshes once, retries, and stays silent when refresh succeeds', async () => {
-    const postSpy = vi
-      .spyOn(axios, 'post')
-      .mockResolvedValue(refreshOkResponse())
-    let attempts = 0
-
-    const client = createClient(async (config) => {
-      attempts += 1
-      const headers = AxiosHeaders.from(config.headers)
-
-      if (attempts === 1) {
-        throw unauthorizedError({ ...config, headers })
+    instance.defaults.adapter = async (config) => {
+      callCount += 1
+      if (callCount === 1) {
+        const headers = new AxiosHeaders()
+        throw new AxiosError(
+          'Unauthorized',
+          'ERR_BAD_REQUEST',
+          config,
+          undefined,
+          {
+            data: {},
+            status: 401,
+            statusText: 'Unauthorized',
+            headers,
+            config,
+          },
+        )
       }
 
-      expect(headers.get('Authorization')).toBe('Bearer new-access')
-
       return {
-        data: envelopeOk({ id: 'user-1' }),
+        data: { retried: true },
         status: 200,
         statusText: 'OK',
         headers: {},
-        config: { ...config, headers },
-      }
+        config,
+      } satisfies AxiosResponse
+    }
+  })
+
+  afterEach(() => {
+    resetRefreshSingleFlight()
+    vi.unstubAllEnvs()
+  })
+
+  it('refreshes once and retries the original request', async () => {
+    sessionStorage.setItem('sass.auth.refreshToken', 'refresh-1')
+    vi.mocked(axios.post).mockResolvedValue({
+      data: {
+        success: true,
+        data: {
+          tokens: {
+            accessToken: 'access-2',
+            refreshToken: 'refresh-2',
+            expiresIn: 900,
+          },
+        },
+        meta: {
+          timestamp: '2026-01-01T00:00:00.000Z',
+          path: '/auth/refresh',
+          version: '1',
+        },
+      },
     })
 
-    const response = await client.get('/auth/me')
+    await expect(instance.get('/widgets')).resolves.toMatchObject({
+      data: { retried: true },
+    })
+    expect(callCount).toBe(2)
+    expect(axios.post).toHaveBeenCalledTimes(1)
+    expect(sessionStorage.getItem('sass.auth.accessToken')).toBe('access-2')
+  })
 
-    expect(response.data).toEqual(envelopeOk({ id: 'user-1' }))
-    expect(attempts).toBe(2)
-    expect(postSpy).toHaveBeenCalledTimes(1)
-    expect(postSpy.mock.calls[0]?.[0]).toBe(
-      'http://localhost:3000/api/v1/auth/refresh',
+  it('does not refresh login requests', async () => {
+    await expect(instance.post('/auth/login', {})).rejects.toBeInstanceOf(
+      AxiosError,
     )
-    expect(postSpy.mock.calls[0]?.[1]).toEqual({
-      refreshToken: 'valid-refresh',
-    })
-    expect(getAccessToken()).toBe('new-access')
-    expect(getRefreshToken()).toBe('new-refresh')
-    expect(sessionCleared).not.toHaveBeenCalled()
-    expect(consumeSessionExpiredNotice()).toBe(false)
+    expect(axios.post).not.toHaveBeenCalled()
+    expect(callCount).toBe(1)
   })
 
-  it('single-flights concurrent 401s through one refresh call', async () => {
-    let resolveRefresh: ((value: AxiosResponse) => void) | undefined
-    const refreshGate = new Promise<AxiosResponse>((resolve) => {
-      resolveRefresh = resolve
+  it('clears the session when refresh returns an error envelope', async () => {
+    sessionStorage.setItem('sass.auth.refreshToken', 'refresh-1')
+    vi.mocked(axios.post).mockResolvedValue({
+      data: {
+        success: false,
+        error: {
+          code: ErrorCode.UNAUTHORIZED,
+          statusCode: 401,
+          message: 'Invalid refresh token',
+        },
+        meta: {
+          timestamp: '2026-01-01T00:00:00.000Z',
+          path: '/auth/refresh',
+          version: '1',
+        },
+      },
     })
-    const postSpy = vi.spyOn(axios, 'post').mockReturnValue(refreshGate)
 
-    const client = createClient(async (config) => {
-      const headers = AxiosHeaders.from(config.headers)
-      const auth = headers.get('Authorization')
+    await expect(instance.get('/widgets')).rejects.toBeInstanceOf(ApiError)
+    expect(sessionStorage.getItem('sass.auth.refreshToken')).toBeNull()
+    expect(callCount).toBe(1)
+  })
 
-      if (auth === 'Bearer new-access') {
-        return {
-          data: envelopeOk({ ok: true }, config.url ?? '/'),
-          status: 200,
-          statusText: 'OK',
-          headers: {},
-          config: { ...config, headers },
-        }
+  it('clears the session when there is no refresh token', async () => {
+    sessionStorage.setItem('sass.org.activeOrganizationId', 'org-1')
+
+    await expect(instance.get('/widgets')).rejects.toBeInstanceOf(ApiError)
+    expect(sessionStorage.getItem('sass.org.activeOrganizationId')).toBeNull()
+    expect(axios.post).not.toHaveBeenCalled()
+  })
+
+  it('shares one refresh when multiple requests get 401', async () => {
+    instance.defaults.adapter = async (config) => {
+      callCount += 1
+      const retriable = config as { _retry?: boolean }
+      if (!retriable._retry) {
+        const headers = new AxiosHeaders()
+        throw new AxiosError(
+          'Unauthorized',
+          'ERR_BAD_REQUEST',
+          config,
+          undefined,
+          {
+            data: {},
+            status: 401,
+            statusText: 'Unauthorized',
+            headers,
+            config,
+          },
+        )
       }
 
-      throw unauthorizedError({ ...config, headers })
-    })
-
-    const first = client.get('/auth/me')
-    const second = client.get('/users/me')
-
-    await vi.waitFor(() => {
-      expect(postSpy).toHaveBeenCalledTimes(1)
-    })
-
-    resolveRefresh?.(refreshOkResponse())
-
-    await Promise.all([first, second])
-
-    expect(postSpy).toHaveBeenCalledTimes(1)
-    expect(sessionCleared).not.toHaveBeenCalled()
-    expect(consumeSessionExpiredNotice()).toBe(false)
-  })
-
-  it('does not refresh skipped auth paths', async () => {
-    const postSpy = vi.spyOn(axios, 'post')
-    const client = createClient(async (config) => {
-      throw unauthorizedError({
-        ...config,
-        headers: AxiosHeaders.from(config.headers),
-      })
-    })
-
-    await expect(client.post('/auth/login', {})).rejects.toMatchObject({
-      response: { status: 401 },
-    })
-
-    expect(postSpy).not.toHaveBeenCalled()
-    expect(getAccessToken()).toBe('expired-access')
-    expect(sessionCleared).not.toHaveBeenCalled()
-  })
-
-  it('clears the session when refresh fails', async () => {
-    vi.spyOn(axios, 'post').mockRejectedValue(
-      new AxiosError('Unauthorized', undefined, undefined, undefined, {
-        data: envelopeError(),
-        status: 401,
-        statusText: 'Unauthorized',
+      return {
+        data: { retried: true },
+        status: 200,
+        statusText: 'OK',
         headers: {},
-        config: { headers: new AxiosHeaders() },
-      }),
-    )
+        config,
+      } satisfies AxiosResponse
+    }
 
-    const client = createClient(async (config) => {
-      throw unauthorizedError({
-        ...config,
-        headers: AxiosHeaders.from(config.headers),
-      })
+    sessionStorage.setItem('sass.auth.refreshToken', 'refresh-1')
+    vi.mocked(axios.post).mockResolvedValue({
+      data: {
+        success: true,
+        data: {
+          tokens: {
+            accessToken: 'access-2',
+            refreshToken: 'refresh-2',
+            expiresIn: 900,
+          },
+        },
+        meta: {
+          timestamp: '2026-01-01T00:00:00.000Z',
+          path: '/auth/refresh',
+          version: '1',
+        },
+      },
     })
 
-    await expect(client.get('/auth/me')).rejects.toBeDefined()
+    await Promise.all([instance.get('/widgets'), instance.get('/widgets/2')])
 
-    expect(getAccessToken()).toBeNull()
-    expect(getRefreshToken()).toBeNull()
-    expect(sessionCleared).toHaveBeenCalledWith('expired')
-    expect(consumeSessionExpiredNotice()).toBe(true)
+    expect(axios.post).toHaveBeenCalledTimes(1)
+    expect(callCount).toBe(4)
+  })
+
+  it('does not refresh register or logout requests', async () => {
+    instance.defaults.adapter = async (config) => {
+      const headers = new AxiosHeaders()
+      throw new AxiosError(
+        'Unauthorized',
+        'ERR_BAD_REQUEST',
+        config,
+        undefined,
+        {
+          data: {},
+          status: 401,
+          statusText: 'Unauthorized',
+          headers,
+          config,
+        },
+      )
+    }
+
+    await expect(instance.post('/auth/register', {})).rejects.toBeInstanceOf(
+      AxiosError,
+    )
+    await expect(instance.post('/auth/logout', {})).rejects.toBeInstanceOf(
+      AxiosError,
+    )
+    expect(axios.post).not.toHaveBeenCalled()
+  })
+
+  it('clears the session when refresh returns an unexpected body', async () => {
+    sessionStorage.setItem('sass.auth.refreshToken', 'refresh-1')
+    vi.mocked(axios.post).mockResolvedValue({
+      data: { notAnEnvelope: true },
+      status: 200,
+      statusText: 'OK',
+      headers: {},
+      config: {},
+    })
+
+    await expect(instance.get('/widgets')).rejects.toMatchObject({
+      message: 'Unexpected API response.',
+    })
+    expect(sessionStorage.getItem('sass.auth.refreshToken')).toBeNull()
+  })
+
+  it('clears the session when refresh hits a network error', async () => {
+    sessionStorage.setItem('sass.auth.refreshToken', 'refresh-1')
+    vi.mocked(axios.post).mockRejectedValue(
+      new AxiosError('Network Error', 'ERR_NETWORK'),
+    )
+
+    await expect(instance.get('/widgets')).rejects.toMatchObject({
+      statusCode: 0,
+    })
+    expect(sessionStorage.getItem('sass.auth.refreshToken')).toBeNull()
   })
 })

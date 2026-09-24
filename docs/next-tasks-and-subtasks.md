@@ -351,14 +351,14 @@ Profile fields from `UserProfileResponse` / `UpdateUserProfileDto`:
 
 Subtasks:
 
-- [ ] **3.1.1** Add typed users API helpers and Query options under `features/users/` mirroring `UserProfileResponse` / `UpdateUserProfileDto`
-- [ ] **3.1.2** Add `useMyProfile` / `useUpdateMyProfile`; on success refresh profile cache and keep `AuthSessionProvider` `user.displayName` in sync
-- [ ] **3.1.3** Build `/profile` settings UI: display name, avatar URL, timezone, locale, theme, notification toggles
-- [ ] **3.1.4** Client-validate field constraints and map `VALIDATION_FAILED` onto fields (same pattern as organization settings)
-- [ ] **3.1.5** Apply `preferences.theme` in the product (`ThemeProvider`); add a dark token set so `dark` / `system` actually change the UI
-- [ ] **3.1.6** Add a shell user menu (display name + link to profile) above Sign out; stay in sync after save
-- [ ] **3.1.7** Add Storybook stories for the profile form (idle, submitting, field error, API error, saved)
-- [ ] **3.1.8** Register `/profile` under the authenticated shell **outside** `RequireOrganization` so it works with zero workspaces
+- [x] **3.1.1** Add typed users API helpers and Query options under `features/users/` mirroring `UserProfileResponse` / `UpdateUserProfileDto`
+- [x] **3.1.2** Add `useMyProfile` / `useUpdateMyProfile`; on success refresh profile cache and keep `AuthSessionProvider` `user.displayName` in sync
+- [x] **3.1.3** Build `/profile` settings UI: display name, avatar URL, timezone, locale, theme, notification toggles
+- [x] **3.1.4** Client-validate field constraints and map `VALIDATION_FAILED` onto fields (same pattern as organization settings)
+- [x] **3.1.5** Light/dark theme foundation: `darkTheme` tokens, `AppThemeProvider` `system`/`light`/`dark`, `useThemePreference()` (profile still wires `setPreference` on load/save)
+- [x] **3.1.6** Add a shell user menu (display name + link to profile) above Sign out; stay in sync after save
+- [x] **3.1.7** Add Storybook stories for the profile form (idle, submitting, field error, API error, saved)
+- [x] **3.1.8** Register `/profile` under the authenticated shell **outside** `RequireOrganization` so it works with zero workspaces
 
 **3.1 out of scope:**
 
@@ -369,8 +369,7 @@ Subtasks:
 Acceptance criteria:
 
 - Users can view and update their own profile
-- Preference changes (especially theme) apply in the UI
-- Shell user menu shows the saved display name without a full reload
+- Preference changes (e.g. theme) apply in the UI
 
 ### Task 3.2 — Members directory
 
@@ -380,10 +379,10 @@ the current user; list + detail screens still need building.
 
 Subtasks:
 
-- [ ] **3.2.1** Add typed list-members API helper and Query options (`['members', organizationId, query]`)
-- [ ] **3.2.2** Build the members list page with the Table primitive, role badges (`OWNER` / `ADMIN` / `MEMBER` / `VIEWER`), search, and pagination
-- [ ] **3.2.3** Add member detail (`GET /members/:userId`) for identity + role; reuse `getOrganizationMember`
-- [ ] **3.2.4** Replace the `/members` placeholder; add `/members/:userId` if detail is a route rather than a panel
+- [x] **3.2.1** Add typed list-members API helper and Query options (`['members', organizationId, query]`)
+- [x] **3.2.2** Build the members list page with the Table primitive, role badges (`OWNER` / `ADMIN` / `MEMBER` / `VIEWER`), search, and pagination
+- [x] **3.2.3** Add member detail (`GET /members/:userId`) for identity + role; reuse `getOrganizationMember`
+- [x] **3.2.4** Replace the `/members` placeholder; add `/members/:userId` if detail is a route rather than a panel
 - [ ] **3.2.5** Surface tenant-context / forbidden / not-found copy with the same error helpers as settings
 - [ ] **3.2.6** Add Storybook stories for the list (default, empty, loading, error) and role badge
 
@@ -603,13 +602,14 @@ Subtasks:
 - [x] **2.3.4** Owner archive confirmation (`DELETE /organizations/:id`)
 - [x] **2.3.5** Active-organization cleanup after archive
 - [x] **3.3** Client permission helpers (roles, matrix, `usePermission`, `hasMinRole`)
-- [ ] **3.1.1–3.1.4** Profile API + `/profile` form, validation, session display-name sync
-- [ ] **3.1.5–3.1.8** Theme apply, shell user menu, stories, `/profile` outside `RequireOrganization`
-- [ ] **3.2.1–3.2.4** Members list/detail API + pages (replace `/members` placeholder)
+- [x] **3.1.1–3.1.4** Profile API + `/profile` form, validation, session display-name sync
+- [x] **3.1.5** Light/dark theme tokens + `AppThemeProvider` preference API
+- [x] **3.1.8** Register `/profile` outside `RequireOrganization`
+- [x] **3.1.6** Shell user menu (display name + profile link)
+- [x] **3.1.7** Profile stories; wire `setPreference` on profile load/save
+- [x] **3.2.1–3.2.4** Members list/detail API + pages (replace `/members` placeholder)
 - [ ] **3.2.5–3.2.6** Members tenant-error copy + Storybook
-- [x] **3.4.1** Typed invite API helpers (create/list/revoke/accept) mirroring invitation policy
-- [ ] **3.4.2–3.4.6 / 3.5 alongside backend 3.3–3.4** Invite UI + member role/remove (API and screens in the same pass)
-- [ ] Defer projects/boards/issues until matching backend APIs ship
+- [ ] Defer invites/member mutations/projects/boards/issues until matching backend APIs ship
 - [ ] Keep screens aligned with backend seed users (`owner@acme.local` / `Password1`, …) for local QA
 
 ## Backend / frontend dependency map

@@ -5,9 +5,12 @@ import PublicLayout from '@/components/layout/PublicLayout'
 import HomePage from '@/pages/HomePage'
 import CreateOrganizationPage from '@/pages/CreateOrganizationPage'
 import LoginPage from '@/pages/LoginPage'
+import MemberDetailPage from '@/pages/MemberDetailPage'
+import MembersPage from '@/pages/MembersPage'
 import NotFoundPage from '@/pages/NotFoundPage'
 import OrganizationSettingsPage from '@/pages/OrganizationSettingsPage'
 import PlaceholderPage from '@/pages/PlaceholderPage'
+import ProfilePage from '@/pages/ProfilePage'
 import RequireAuth from './RequireAuth'
 import RequireGuest from './RequireGuest'
 import RequireOrganization from './RequireOrganization'
@@ -33,6 +36,7 @@ const AppRoutes: FC = () => {
             path={paths.createOrganization}
             element={<CreateOrganizationPage />}
           />
+          <Route path={paths.profile} element={<ProfilePage />} />
           <Route element={<RequireOrganization />}>
             <Route path={paths.home} element={<HomePage />} />
             <Route
@@ -53,15 +57,8 @@ const AppRoutes: FC = () => {
                 />
               }
             />
-            <Route
-              path={paths.members}
-              element={
-                <PlaceholderPage
-                  title="Members"
-                  description="Members directory lands in Phase 3."
-                />
-              }
-            />
+            <Route path={paths.members} element={<MembersPage />} />
+            <Route path={paths.memberDetail} element={<MemberDetailPage />} />
             <Route
               path={paths.settings}
               element={<OrganizationSettingsPage />}

@@ -114,15 +114,23 @@ const AuthSessionProvider: FC<{ children: ReactNode }> = ({ children }) => {
     resetToAnonymous()
   }, [queryClient, resetToAnonymous])
 
+  const syncSessionUserDisplayName = useCallback(
+    (displayName: string | null) => {
+      setUser((current) => (current ? { ...current, displayName } : current))
+    },
+    [],
+  )
+
   const value = useMemo(
     () => ({
       user,
       status,
       isAuthenticated: status === 'authenticated',
       establishSession,
+      syncSessionUserDisplayName,
       clearSession,
     }),
-    [user, status, establishSession, clearSession],
+    [user, status, establishSession, syncSessionUserDisplayName, clearSession],
   )
 
   return (

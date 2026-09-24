@@ -98,6 +98,36 @@ describe('mapOrganizationSettingsApiError', () => {
       ).formError,
     ).toMatch(/no longer available/)
   })
+
+  it('handles empty, unknown, and non-API errors', () => {
+    expect(mapOrganizationSettingsApiError(undefined)).toEqual({
+      fieldErrors: {},
+    })
+
+    expect(
+      mapOrganizationSettingsApiError(new Error('Network down')).formError,
+    ).toBe('Network down')
+
+    expect(
+      mapOrganizationSettingsApiError(
+        apiError(ErrorCode.CONFLICT, 'Slug already taken', 409),
+      ).formError,
+    ).toBe('Slug already taken')
+  })
+
+  it('maps validation details from a string payload', () => {
+    const mapped = mapOrganizationSettingsApiError(
+      new ApiError({
+        code: ErrorCode.VALIDATION_FAILED,
+        statusCode: 400,
+        message:
+          'settings.locale must be shorter than or equal to 16 characters',
+      }),
+    )
+
+    expect(mapped.fieldErrors.locale).toMatch(/Locale/)
+    expect(mapped.formError).toBeUndefined()
+  })
 })
 
 describe('describeOrganizationWorkspaceLoadError', () => {
@@ -136,6 +166,30 @@ describe('describeOrganizationWorkspaceLoadError', () => {
       message: 'Choose a workspace in the sidebar to manage its settings.',
     })
   })
+
+  it('explains forbidden and fallback load failures', () => {
+    expect(
+      describeOrganizationWorkspaceLoadError(
+        apiError(ErrorCode.FORBIDDEN, 'Forbidden', 403),
+      ),
+    ).toEqual({
+      title: 'You cannot view these settings',
+      message: 'You do not have permission to open this workspace.',
+    })
+
+    expect(
+      describeOrganizationWorkspaceLoadError(new Error('Network down')),
+    ).toEqual({
+      title: 'We could not load this workspace',
+      message: 'Network down',
+    })
+
+    expect(
+      describeOrganizationWorkspaceLoadError(
+        apiError(ErrorCode.INTERNAL_SERVER_ERROR, 'Server error', 500),
+      ).title,
+    ).toBe('We could not load this workspace')
+  })
 })
 
 describe('isOrganizationSettingsAccessError', () => {
@@ -143,6 +197,23 @@ describe('isOrganizationSettingsAccessError', () => {
     expect(
       isOrganizationSettingsAccessError(
         apiError(ErrorCode.FORBIDDEN, 'nope', 403),
+      ),
+    ).toBe(true)
+    expect(
+      isOrganizationSettingsAccessError(
+        apiError(
+          ErrorCode.TENANT_ORGANIZATION_FORBIDDEN,
+          'You do not have access to this organization.',
+          403,
+        ),
+      ),
+    ).toBe(true)
+    expect(
+      isOrganizationSettingsAccessError(
+        apiError(
+          ErrorCode.TENANT_ORGANIZATION_REQUIRED,
+          'Organization context is required.',
+        ),
       ),
     ).toBe(true)
     expect(
@@ -155,5 +226,6 @@ describe('isOrganizationSettingsAccessError', () => {
         apiError(ErrorCode.VALIDATION_FAILED, ['bad']),
       ),
     ).toBe(false)
+    expect(isOrganizationSettingsAccessError(new Error('nope'))).toBe(false)
   })
 })

@@ -14,15 +14,19 @@ const meta = {
     layout: 'fullscreen',
   },
   decorators: [
-    (Story) => (
-      <MemoryRouter initialEntries={[paths.register]}>
-        <AuthSessionProvider>
-          <PublicLayout>
-            <Story />
-          </PublicLayout>
-        </AuthSessionProvider>
-      </MemoryRouter>
-    ),
+    (Story) => {
+      sessionStorage.clear()
+
+      return (
+        <MemoryRouter initialEntries={[paths.register]}>
+          <AuthSessionProvider>
+            <PublicLayout>
+              <Story />
+            </PublicLayout>
+          </AuthSessionProvider>
+        </MemoryRouter>
+      )
+    },
   ],
 } satisfies Meta<typeof RegisterPage>
 
