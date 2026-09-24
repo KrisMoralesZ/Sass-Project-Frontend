@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import Button from '@/components/ui/Button'
 import FormField from '@/components/ui/FormField'
 import Input from '@/components/ui/Input'
+import Toast from '@/components/ui/Toast'
 import Table, {
   TableBody,
   TableCaption,
@@ -17,6 +18,11 @@ import type { OrganizationMember } from '@/features/organizations/api/get-member
 import { describeMembersLoadError } from '@/features/organizations/members-errors'
 import { useActiveOrganizationId } from '@/features/organizations/hooks/use-active-organization-id'
 import { useListOrganizationMembers } from '@/features/organizations/hooks/use-list-organization-members'
+import { usePermission } from '@/features/organizations/hooks/use-permission'
+import { OrganizationPermission } from '@/features/organizations/permissions/organization-permission'
+import { getOrganizationRoleLabel } from '@/features/organizations/permissions/organization-role'
+import InviteMemberDialog from '@/features/invitations/components/InviteMemberDialog'
+import type { Invitation } from '@/features/invitations/api/invitation-api.types'
 import { paths } from '@/routes/paths'
 import {
   $ErrorPanel,
@@ -30,8 +36,10 @@ import {
   $PaginationActions,
   $PaginationSummary,
   $SearchField,
+  $SearchForm,
   $Title,
   $Toolbar,
+  $ToolbarActions,
 } from './MembersPage.sc'
 
 const PAGE_SIZE = 20
@@ -49,6 +57,9 @@ const MembersPage: FC = () => {
   const [searchInput, setSearchInput] = useState('')
   const [search, setSearch] = useState('')
   const [page, setPage] = useState(1)
+  const [isInviteDialogOpen, setIsInviteDialogOpen] = useState(false)
+  const [lastInvitation, setLastInvitation] = useState<Invitation | null>(null)
+  const inviteCreate = usePermission(OrganizationPermission.INVITE_CREATE)
   const membersQuery = useListOrganizationMembers(activeOrganizationId, {
     page,
     limit: PAGE_SIZE,
@@ -86,19 +97,28 @@ const MembersPage: FC = () => {
   return (
     <$Page>
       {header}
-      <$Toolbar onSubmit={handleSearchSubmit} role="search">
-        <$SearchField>
-          <FormField label="Search members" htmlFor="member-search">
-            <Input
-              id="member-search"
-              value={searchInput}
-              onChange={(event) => setSearchInput(event.target.value)}
-              placeholder="Name or email"
-              fullWidth
-            />
-          </FormField>
-        </$SearchField>
-        <Button type="submit">Search</Button>
+      <$Toolbar>
+        <$SearchForm onSubmit={handleSearchSubmit} role="search">
+          <$SearchField>
+            <FormField label="Search members" htmlFor="member-search">
+              <Input
+                id="member-search"
+                value={searchInput}
+                onChange={(event) => setSearchInput(event.target.value)}
+                placeholder="Name or email"
+                fullWidth
+              />
+            </FormField>
+          </$SearchField>
+          <Button type="submit">Search</Button>
+        </$SearchForm>
+        <$ToolbarActions>
+          {inviteCreate.allowed ? (
+            <Button type="button" onClick={() => setIsInviteDialogOpen(true)}>
+              Invite member
+            </Button>
+          ) : null}
+        </$ToolbarActions>
       </$Toolbar>
 
       {membersQuery.isPending ? (
@@ -180,6 +200,23 @@ const MembersPage: FC = () => {
           </$Pagination>
         </>
       )}
+
+      <InviteMemberDialog
+        open={isInviteDialogOpen}
+        onClose={() => setIsInviteDialogOpen(false)}
+        organizationId={activeOrganizationId}
+        onInvited={(invitation) => setLastInvitation(invitation)}
+      />
+      <Toast
+        open={lastInvitation !== null}
+        onClose={() => setLastInvitation(null)}
+        variant="success"
+        title="Invite created"
+      >
+        {lastInvitation
+          ? `${lastInvitation.email} was invited as ${getOrganizationRoleLabel(lastInvitation.role)}.`
+          : undefined}
+      </Toast>
     </$Page>
   )
 }

@@ -428,7 +428,7 @@ Policy source of truth: [`sass-backend/docs/organization-invitations-v1.md`](../
 Subtasks:
 
 - [x] **3.4.1** Add typed invite API helpers as create/list/revoke/accept endpoints land
-- [ ] **3.4.2** Add invite-member modal on the members page, gated on `invite:create`
+- [x] **3.4.2** Add invite-member modal on the members page, gated on `invite:create`
 - [ ] **3.4.3** List pending invites and revoke, gated on `invite:read` / `invite:revoke`
 - [ ] **3.4.4** Add an accept-invite route for tokenized links (authenticated user + token)
 - [ ] **3.4.5** Show the development stub copy (invite URL logged by the API; no real SMTP)
@@ -620,8 +620,8 @@ Subtasks:
 | Org create/switch/settings         | Phase 2               | Available                                        |
 | Profile + members read             | Phase 3.1             | Available                                        |
 | Client RBAC helpers                | Phase 3.2 docs/matrix | Available (matrix + guards)                      |
-| Invites UI                         | Phase 3.3             | Not yet — take **alongside** frontend 3.4       |
-| Member role/remove UI              | Phase 3.4             | Not yet — take **alongside** frontend 3.5       |
+| Invites UI                         | Phase 3.3             | Not yet — take **alongside** frontend 3.4        |
+| Member role/remove UI              | Phase 3.4             | Not yet — take **alongside** frontend 3.5        |
 | Projects UI                        | Phase 4               | Not yet                                          |
 | Boards UI                          | Phase 5               | Not yet                                          |
 | Issues / kanban UI                 | Phase 6               | Not yet                                          |

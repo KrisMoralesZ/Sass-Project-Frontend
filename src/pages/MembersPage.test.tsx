@@ -1,3 +1,4 @@
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { MemoryRouter } from 'react-router-dom'
@@ -8,6 +9,7 @@ import { ErrorCode } from '@/types/error-code'
 import { OrganizationRole } from '@/features/organizations/permissions/organization-role'
 import { useActiveOrganizationId } from '@/features/organizations/hooks/use-active-organization-id'
 import { useListOrganizationMembers } from '@/features/organizations/hooks/use-list-organization-members'
+import { usePermission } from '@/features/organizations/hooks/use-permission'
 import type { OrganizationMember } from '@/features/organizations/api/get-member'
 import MembersPage from './MembersPage'
 
@@ -17,6 +19,10 @@ vi.mock('@/features/organizations/hooks/use-active-organization-id', () => ({
 
 vi.mock('@/features/organizations/hooks/use-list-organization-members', () => ({
   useListOrganizationMembers: vi.fn(),
+}))
+
+vi.mock('@/features/organizations/hooks/use-permission', () => ({
+  usePermission: vi.fn(),
 }))
 
 const member: OrganizationMember = {
@@ -44,12 +50,21 @@ const response = {
 }
 
 function renderPage() {
+  const queryClient = new QueryClient({
+    defaultOptions: {
+      queries: { retry: false },
+      mutations: { retry: false },
+    },
+  })
+
   return render(
-    <AppThemeProvider>
-      <MemoryRouter>
-        <MembersPage />
-      </MemoryRouter>
-    </AppThemeProvider>,
+    <QueryClientProvider client={queryClient}>
+      <AppThemeProvider>
+        <MemoryRouter>
+          <MembersPage />
+        </MemoryRouter>
+      </AppThemeProvider>
+    </QueryClientProvider>,
   )
 }
 
@@ -66,9 +81,20 @@ function mockReadyQuery(overrides = {}) {
   } as unknown as ReturnType<typeof useListOrganizationMembers>)
 }
 
+function mockInvitePermission(allowed = true) {
+  vi.mocked(usePermission).mockReturnValue({
+    isPending: false,
+    isError: false,
+    error: null,
+    role: allowed ? OrganizationRole.ADMIN : OrganizationRole.MEMBER,
+    allowed,
+  } as ReturnType<typeof usePermission>)
+}
+
 describe('MembersPage', () => {
   beforeEach(() => {
     vi.clearAllMocks()
+    mockInvitePermission(true)
   })
 
   it('renders members and their role badges', () => {
@@ -125,9 +151,20 @@ describe('MembersPage', () => {
       refetch: vi.fn(),
     } as unknown as ReturnType<typeof useListOrganizationMembers>)
     rerender(
-      <AppThemeProvider>
-        <MembersPage />
-      </AppThemeProvider>,
+      <QueryClientProvider
+        client={
+          new QueryClient({
+            defaultOptions: {
+              queries: { retry: false },
+              mutations: { retry: false },
+            },
+          })
+        }
+      >
+        <AppThemeProvider>
+          <MembersPage />
+        </AppThemeProvider>
+      </QueryClientProvider>,
     )
 
     expect(screen.getByRole('alert').textContent).toContain(
@@ -219,15 +256,48 @@ describe('MembersPage', () => {
       refetch: vi.fn(),
     } as unknown as ReturnType<typeof useListOrganizationMembers>)
     rerender(
-      <AppThemeProvider>
-        <MemoryRouter>
-          <MembersPage />
-        </MemoryRouter>
-      </AppThemeProvider>,
+      <QueryClientProvider
+        client={
+          new QueryClient({
+            defaultOptions: {
+              queries: { retry: false },
+              mutations: { retry: false },
+            },
+          })
+        }
+      >
+        <AppThemeProvider>
+          <MemoryRouter>
+            <MembersPage />
+          </MemoryRouter>
+        </AppThemeProvider>
+      </QueryClientProvider>,
     )
 
     expect(screen.getByRole('alert').textContent).toContain(
       'This workspace is no longer available',
     )
+  })
+
+  it('offers an invite control and opens the invite dialog when permitted', async () => {
+    const user = userEvent.setup()
+    mockReadyQuery()
+    mockInvitePermission(true)
+
+    renderPage()
+
+    await user.click(screen.getByRole('button', { name: 'Invite member' }))
+
+    expect(screen.getByRole('dialog', { name: 'Invite a member' })).toBeTruthy()
+  })
+
+  it('hides the invite control without invite:create', () => {
+    mockReadyQuery()
+    mockInvitePermission(false)
+
+    renderPage()
+
+    expect(screen.queryByRole('button', { name: 'Invite member' })).toBeNull()
+    expect(screen.queryByRole('dialog')).toBeNull()
   })
 })
