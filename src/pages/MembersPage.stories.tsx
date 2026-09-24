@@ -1,5 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { vi } from 'vitest'
+import { ApiError } from '@/lib/api/api-error'
+import { ErrorCode } from '@/types/error-code'
 import { OrganizationRole } from '@/features/organizations/permissions/organization-role'
 import { useActiveOrganizationId } from '@/features/organizations/hooks/use-active-organization-id'
 import { useListOrganizationMembers } from '@/features/organizations/hooks/use-list-organization-members'
@@ -48,12 +50,23 @@ export default meta
 
 type Story = StoryObj<typeof meta>
 
-function renderScenario(query: Record<string, unknown>) {
-  vi.mocked(useActiveOrganizationId).mockReturnValue('org-1')
+function renderScenario(
+  query: Record<string, unknown>,
+  organizationId: string | null = 'org-1',
+) {
+  vi.mocked(useActiveOrganizationId).mockReturnValue(organizationId)
   vi.mocked(useListOrganizationMembers).mockReturnValue(
     query as unknown as ReturnType<typeof useListOrganizationMembers>,
   )
   return <MembersPage />
+}
+
+function apiError(
+  code: ErrorCode,
+  message: string,
+  statusCode: number,
+): ApiError {
+  return new ApiError({ code, statusCode, message })
 }
 
 export const Default: Story = {
@@ -85,7 +98,66 @@ export const Loading: Story = {
     renderScenario({ data: undefined, isPending: true, isError: false }),
 }
 
+export const NoWorkspace: Story = {
+  render: () =>
+    renderScenario(
+      { data: undefined, isPending: false, isError: false },
+      null,
+    ),
+}
+
 export const Error: Story = {
   render: () =>
-    renderScenario({ data: undefined, isPending: false, isError: true }),
+    renderScenario({
+      data: undefined,
+      isPending: false,
+      isError: true,
+      error: apiError(
+        ErrorCode.INTERNAL_SERVER_ERROR,
+        'Server error',
+        500,
+      ),
+    }),
+}
+
+export const ErrorTenantForbidden: Story = {
+  render: () =>
+    renderScenario({
+      data: undefined,
+      isPending: false,
+      isError: true,
+      error: apiError(
+        ErrorCode.TENANT_ORGANIZATION_FORBIDDEN,
+        'You do not have access to this organization.',
+        403,
+      ),
+    }),
+}
+
+export const ErrorForbidden: Story = {
+  render: () =>
+    renderScenario({
+      data: undefined,
+      isPending: false,
+      isError: true,
+      error: apiError(
+        ErrorCode.FORBIDDEN,
+        'Missing required permission(s).',
+        403,
+      ),
+    }),
+}
+
+export const ErrorWorkspaceArchived: Story = {
+  render: () =>
+    renderScenario({
+      data: undefined,
+      isPending: false,
+      isError: true,
+      error: apiError(
+        ErrorCode.RESOURCE_NOT_FOUND,
+        'Organization not found',
+        404,
+      ),
+    }),
 }

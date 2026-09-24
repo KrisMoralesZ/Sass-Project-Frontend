@@ -3,6 +3,8 @@ import userEvent from '@testing-library/user-event'
 import { MemoryRouter } from 'react-router-dom'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import AppThemeProvider from '@/styles/AppThemeProvider'
+import { ApiError } from '@/lib/api/api-error'
+import { ErrorCode } from '@/types/error-code'
 import { OrganizationRole } from '@/features/organizations/permissions/organization-role'
 import { useActiveOrganizationId } from '@/features/organizations/hooks/use-active-organization-id'
 import { useListOrganizationMembers } from '@/features/organizations/hooks/use-list-organization-members'
@@ -141,5 +143,93 @@ describe('MembersPage', () => {
     expect(
       screen.getByRole('cell', { name: 'No members in this workspace yet.' }),
     ).toBeTruthy()
+  })
+
+  it('explains a missing tenant context', () => {
+    vi.mocked(useActiveOrganizationId).mockReturnValue('org-1')
+    vi.mocked(useListOrganizationMembers).mockReturnValue({
+      data: undefined,
+      isPending: false,
+      isError: true,
+      error: new ApiError({
+        code: ErrorCode.TENANT_ORGANIZATION_REQUIRED,
+        statusCode: 400,
+        message: 'Organization context is required.',
+      }),
+      refetch: vi.fn(),
+    } as unknown as ReturnType<typeof useListOrganizationMembers>)
+
+    renderPage()
+
+    expect(screen.getByRole('alert').textContent).toContain(
+      'Select a workspace',
+    )
+    expect(screen.getByRole('alert').textContent).toContain(
+      'view its members',
+    )
+  })
+
+  it('explains an unavailable workspace', () => {
+    vi.mocked(useActiveOrganizationId).mockReturnValue('org-1')
+    vi.mocked(useListOrganizationMembers).mockReturnValue({
+      data: undefined,
+      isPending: false,
+      isError: true,
+      error: new ApiError({
+        code: ErrorCode.TENANT_ORGANIZATION_FORBIDDEN,
+        statusCode: 403,
+        message: 'You do not have access to this organization.',
+      }),
+      refetch: vi.fn(),
+    } as unknown as ReturnType<typeof useListOrganizationMembers>)
+
+    renderPage()
+
+    expect(screen.getByRole('alert').textContent).toContain(
+      'This workspace is unavailable',
+    )
+  })
+
+  it('explains forbidden access and an archived workspace', () => {
+    vi.mocked(useActiveOrganizationId).mockReturnValue('org-1')
+    vi.mocked(useListOrganizationMembers).mockReturnValue({
+      data: undefined,
+      isPending: false,
+      isError: true,
+      error: new ApiError({
+        code: ErrorCode.FORBIDDEN,
+        statusCode: 403,
+        message: 'Missing required permission(s).',
+      }),
+      refetch: vi.fn(),
+    } as unknown as ReturnType<typeof useListOrganizationMembers>)
+
+    const { rerender } = renderPage()
+    expect(screen.getByRole('alert').textContent).toContain(
+      'You cannot view these members',
+    )
+
+    vi.mocked(useListOrganizationMembers).mockReturnValue({
+      data: undefined,
+      isPending: false,
+      isError: true,
+      error: new ApiError({
+        code: ErrorCode.RESOURCE_NOT_FOUND,
+        statusCode: 404,
+        message: 'Organization not found',
+      }),
+      refetch: vi.fn(),
+    } as unknown as ReturnType<typeof useListOrganizationMembers>)
+    rerender(
+      <AppThemeProvider>
+        <MemoryRouter>
+          <MembersPage />
+        </MemoryRouter>
+      </AppThemeProvider>,
+    )
+
+    expect(screen.getByRole('alert').textContent).toContain(
+      'This workspace is no longer available',
+    )
   })
 })

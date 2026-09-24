@@ -4,6 +4,7 @@ import { useParams } from 'react-router-dom'
 import Button from '@/components/ui/Button'
 import MemberRoleBadge from '@/features/organizations/components/MemberRoleBadge'
 import { organizationMemberQueryOptions } from '@/features/organizations/api/get-member'
+import { describeMembersLoadError } from '@/features/organizations/members-errors'
 import { useActiveOrganizationId } from '@/features/organizations/hooks/use-active-organization-id'
 import { paths } from '@/routes/paths'
 import {
@@ -62,14 +63,14 @@ const MemberDetailPage: FC = () => {
   }
 
   if (memberQuery.isError) {
+    const loadError = describeMembersLoadError(memberQuery.error, 'member')
+
     return (
       <$Page>
         {header}
         <$ErrorPanel role="alert">
-          <$ErrorTitle>Member details could not be loaded</$ErrorTitle>
-          <$Message>
-            Check that you still have access to this workspace, then try again.
-          </$Message>
+          <$ErrorTitle>{loadError.title}</$ErrorTitle>
+          <$Message>{loadError.message}</$Message>
           <Button type="button" onClick={() => void memberQuery.refetch()}>
             Try again
           </Button>
