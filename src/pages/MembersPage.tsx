@@ -1,4 +1,5 @@
 import { type FC, type FormEvent, useState } from 'react'
+import { Link } from 'react-router-dom'
 import Button from '@/components/ui/Button'
 import FormField from '@/components/ui/FormField'
 import Input from '@/components/ui/Input'
@@ -15,6 +16,7 @@ import MemberRoleBadge from '@/features/organizations/components/MemberRoleBadge
 import type { OrganizationMember } from '@/features/organizations/api/get-member'
 import { useActiveOrganizationId } from '@/features/organizations/hooks/use-active-organization-id'
 import { useListOrganizationMembers } from '@/features/organizations/hooks/use-list-organization-members'
+import { paths } from '@/routes/paths'
 import {
   $ErrorPanel,
   $ErrorTitle,
@@ -129,7 +131,11 @@ const MembersPage: FC = () => {
               ) : (
                 membersQuery.data.items.map((member) => (
                   <TableRow key={member.id}>
-                    <TableCell>{getMemberName(member)}</TableCell>
+                    <TableCell>
+                      <Link to={`${paths.members}/${member.userId}`}>
+                        {getMemberName(member)}
+                      </Link>
+                    </TableCell>
                     <TableCell>{member.email}</TableCell>
                     <TableCell>
                       <MemberRoleBadge role={member.role} />

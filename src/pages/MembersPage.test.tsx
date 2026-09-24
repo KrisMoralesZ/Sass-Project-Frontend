@@ -1,5 +1,6 @@
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
+import { MemoryRouter } from 'react-router-dom'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import AppThemeProvider from '@/styles/AppThemeProvider'
 import { OrganizationRole } from '@/features/organizations/permissions/organization-role'
@@ -43,7 +44,9 @@ const response = {
 function renderPage() {
   return render(
     <AppThemeProvider>
-      <MembersPage />
+      <MemoryRouter>
+        <MembersPage />
+      </MemoryRouter>
     </AppThemeProvider>,
   )
 }
@@ -74,6 +77,9 @@ describe('MembersPage', () => {
     expect(screen.getByRole('cell', { name: 'Jane Doe' })).toBeTruthy()
     expect(screen.getByRole('cell', { name: 'jane@example.com' })).toBeTruthy()
     expect(screen.getByText('Admin')).toBeTruthy()
+    expect(
+      screen.getByRole('link', { name: 'Jane Doe' }).getAttribute('href'),
+    ).toBe('/members/user-1')
   })
 
   it('submits a search and resets pagination', async () => {
