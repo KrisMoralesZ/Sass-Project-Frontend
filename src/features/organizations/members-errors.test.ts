@@ -84,9 +84,8 @@ describe('describeMembersLoadError', () => {
 
   it('explains forbidden access for the list and detail', () => {
     expect(
-      describeMembersLoadError(
-        apiError(ErrorCode.FORBIDDEN, 'Forbidden', 403),
-      ).title,
+      describeMembersLoadError(apiError(ErrorCode.FORBIDDEN, 'Forbidden', 403))
+        .title,
     ).toBe('You cannot view these members')
 
     expect(

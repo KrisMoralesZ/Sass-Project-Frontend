@@ -164,9 +164,7 @@ describe('MembersPage', () => {
     expect(screen.getByRole('alert').textContent).toContain(
       'Select a workspace',
     )
-    expect(screen.getByRole('alert').textContent).toContain(
-      'view its members',
-    )
+    expect(screen.getByRole('alert').textContent).toContain('view its members')
   })
 
   it('explains an unavailable workspace', () => {

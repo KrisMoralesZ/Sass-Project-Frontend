@@ -50,8 +50,7 @@ export function describeMembersLoadError(
       return subject === 'member'
         ? {
             title: 'Member not found',
-            message:
-              'This member may have left the workspace or been removed.',
+            message: 'This member may have left the workspace or been removed.',
           }
         : {
             title: 'This workspace is no longer available',
