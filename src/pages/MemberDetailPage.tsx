@@ -3,9 +3,7 @@ import { type FC } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import Button from '@/components/ui/Button'
 import MemberRoleBadge from '@/features/organizations/components/MemberRoleBadge'
-import {
-  organizationMemberQueryOptions,
-} from '@/features/organizations/api/get-member'
+import { organizationMemberQueryOptions } from '@/features/organizations/api/get-member'
 import { useActiveOrganizationId } from '@/features/organizations/hooks/use-active-organization-id'
 import { paths } from '@/routes/paths'
 import {
@@ -96,7 +94,9 @@ const MemberDetailPage: FC = () => {
             />
           ) : null}
           <div>
-            <div style={{ fontSize: '1.5rem', fontWeight: 700 }}>{memberName}</div>
+            <div style={{ fontSize: '1.5rem', fontWeight: 700 }}>
+              {memberName}
+            </div>
             <div style={{ color: '#6b7280' }}>{member.email}</div>
           </div>
         </div>

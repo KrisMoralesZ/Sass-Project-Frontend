@@ -58,10 +58,7 @@ const AppRoutes: FC = () => {
               }
             />
             <Route path={paths.members} element={<MembersPage />} />
-            <Route
-              path={paths.memberDetail}
-              element={<MemberDetailPage />}
-            />
+            <Route path={paths.memberDetail} element={<MemberDetailPage />} />
             <Route
               path={paths.settings}
               element={<OrganizationSettingsPage />}
