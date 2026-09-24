@@ -369,8 +369,7 @@ Subtasks:
 Acceptance criteria:
 
 - Users can view and update their own profile
-- Saved theme preference applies app-wide via `useThemePreference().setPreference`
-- Shell user menu shows the saved display name without a full reload
+- Preference changes (e.g. theme) apply in the UI
 
 ### Task 3.2 — Members directory
 
@@ -610,9 +609,7 @@ Subtasks:
 - [x] **3.1.7** Profile stories; wire `setPreference` on profile load/save
 - [x] **3.2.1–3.2.4** Members list/detail API + pages (replace `/members` placeholder)
 - [ ] **3.2.5–3.2.6** Members tenant-error copy + Storybook
-- [x] **3.4.1** Typed invite API helpers (create/list/revoke/accept) mirroring invitation policy
-- [ ] **3.4.2–3.4.6 / 3.5 alongside backend 3.3–3.4** Invite UI + member role/remove (API and screens in the same pass)
-- [ ] Defer projects/boards/issues until matching backend APIs ship
+- [ ] Defer invites/member mutations/projects/boards/issues until matching backend APIs ship
 - [ ] Keep screens aligned with backend seed users (`owner@acme.local` / `Password1`, …) for local QA
 
 ## Backend / frontend dependency map
@@ -623,8 +620,8 @@ Subtasks:
 | Org create/switch/settings         | Phase 2               | Available                                        |
 | Profile + members read             | Phase 3.1             | Available                                        |
 | Client RBAC helpers                | Phase 3.2 docs/matrix | Available (matrix + guards)                      |
-| Invites UI                         | Phase 3.3             | Not yet — take **alongside** frontend 3.4        |
-| Member role/remove UI              | Phase 3.4             | Not yet — take **alongside** frontend 3.5        |
+| Invites UI                         | Phase 3.3             | Not yet — take **alongside** frontend 3.4       |
+| Member role/remove UI              | Phase 3.4             | Not yet — take **alongside** frontend 3.5       |
 | Projects UI                        | Phase 4               | Not yet                                          |
 | Boards UI                          | Phase 5               | Not yet                                          |
 | Issues / kanban UI                 | Phase 6               | Not yet                                          |
