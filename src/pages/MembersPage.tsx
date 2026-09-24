@@ -1,4 +1,5 @@
 import { type FC, type FormEvent, useState } from 'react'
+import { Link } from 'react-router-dom'
 import Button from '@/components/ui/Button'
 import FormField from '@/components/ui/FormField'
 import Input from '@/components/ui/Input'
@@ -13,8 +14,10 @@ import Table, {
 } from '@/components/ui/Table'
 import MemberRoleBadge from '@/features/organizations/components/MemberRoleBadge'
 import type { OrganizationMember } from '@/features/organizations/api/get-member'
+import { describeMembersLoadError } from '@/features/organizations/members-errors'
 import { useActiveOrganizationId } from '@/features/organizations/hooks/use-active-organization-id'
 import { useListOrganizationMembers } from '@/features/organizations/hooks/use-list-organization-members'
+import { paths } from '@/routes/paths'
 import {
   $ErrorPanel,
   $ErrorTitle,
@@ -53,6 +56,9 @@ const MembersPage: FC = () => {
     sortBy: 'createdAt',
     sortOrder: 'ASC',
   })
+  const membersLoadError = membersQuery.isError
+    ? describeMembersLoadError(membersQuery.error)
+    : undefined
 
   const handleSearchSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault()
@@ -99,10 +105,10 @@ const MembersPage: FC = () => {
         <$Message role="status">Loading members...</$Message>
       ) : membersQuery.isError ? (
         <$ErrorPanel role="alert">
-          <$ErrorTitle>Members could not be loaded</$ErrorTitle>
-          <$Message>
-            Check that you still have access to this workspace, then try again.
-          </$Message>
+          <$ErrorTitle>
+            {membersLoadError?.title ?? 'Members could not be loaded'}
+          </$ErrorTitle>
+          <$Message>{membersLoadError?.message}</$Message>
           <Button type="button" onClick={() => void membersQuery.refetch()}>
             Try again
           </Button>
@@ -129,7 +135,11 @@ const MembersPage: FC = () => {
               ) : (
                 membersQuery.data.items.map((member) => (
                   <TableRow key={member.id}>
-                    <TableCell>{getMemberName(member)}</TableCell>
+                    <TableCell>
+                      <Link to={`${paths.members}/${member.userId}`}>
+                        {getMemberName(member)}
+                      </Link>
+                    </TableCell>
                     <TableCell>{member.email}</TableCell>
                     <TableCell>
                       <MemberRoleBadge role={member.role} />
