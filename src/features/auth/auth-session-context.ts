@@ -22,6 +22,8 @@ export interface AuthSessionContextValue {
     tokens: EstablishSessionTokens,
     user?: AuthUserProfile | null,
   ) => void
+  /** Keep shell auth user in sync after profile updates (task 3.1.2). */
+  syncSessionUserDisplayName: (displayName: string | null) => void
   clearSession: () => void
 }
 

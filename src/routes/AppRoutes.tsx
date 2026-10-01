@@ -8,6 +8,7 @@ import LoginPage from '@/pages/LoginPage'
 import NotFoundPage from '@/pages/NotFoundPage'
 import OrganizationSettingsPage from '@/pages/OrganizationSettingsPage'
 import PlaceholderPage from '@/pages/PlaceholderPage'
+import ProfilePage from '@/pages/ProfilePage'
 import RequireAuth from './RequireAuth'
 import RequireGuest from './RequireGuest'
 import RequireOrganization from './RequireOrganization'
@@ -33,6 +34,7 @@ const AppRoutes: FC = () => {
             path={paths.createOrganization}
             element={<CreateOrganizationPage />}
           />
+          <Route path={paths.profile} element={<ProfilePage />} />
           <Route element={<RequireOrganization />}>
             <Route path={paths.home} element={<HomePage />} />
             <Route
