@@ -15,19 +15,27 @@ import {
 } from './theme-mode'
 import { ThemePreferenceContext } from './theme-preference-context'
 import { getAppTheme } from './theme'
+import {
+  getStoredThemePreference,
+  setStoredThemePreference,
+} from './theme-preference-storage'
 
 export interface IAppThemeProvider {
   children: ReactNode
-  /** Initial preference; defaults to `system`. Profile UI can call `setPreference` later. */
+  /**
+   * Explicit starting preference (tests / Storybook). When omitted, the last
+   * stored preference is restored, then `system`.
+   */
   initialPreference?: ThemeModePreference
 }
 
 const AppThemeProvider: FC<IAppThemeProvider> = ({
   children,
-  initialPreference = 'system',
+  initialPreference,
 }) => {
-  const [preference, setPreference] =
-    useState<ThemeModePreference>(initialPreference)
+  const [preference, setPreferenceState] = useState<ThemeModePreference>(
+    () => initialPreference ?? getStoredThemePreference() ?? 'system',
+  )
   const [prefersDark, setPrefersDark] = useState(readSystemPrefersDark)
 
   useEffect(() => {
@@ -48,7 +56,8 @@ const AppThemeProvider: FC<IAppThemeProvider> = ({
   const theme = getAppTheme(resolvedMode)
 
   const setPreferenceStable = useCallback((next: ThemeModePreference) => {
-    setPreference(next)
+    setStoredThemePreference(next)
+    setPreferenceState(next)
   }, [])
 
   const preferenceValue = useMemo(

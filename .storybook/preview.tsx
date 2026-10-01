@@ -5,7 +5,7 @@ import { AppThemeProvider } from '../src/styles'
 const preview: Preview = {
   decorators: [
     (Story) => (
-      <AppThemeProvider>
+      <AppThemeProvider initialPreference="system">
         <AppQueryProvider>
           <Story />
         </AppQueryProvider>
