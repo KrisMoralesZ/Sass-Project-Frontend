@@ -113,8 +113,10 @@ export interface AppTheme {
   }
 }
 
+export type ThemeMode = 'light' | 'dark'
+
 /** Canopy — forest green workspace palette on cool green-gray neutrals. */
-export const defaultTheme: AppTheme = {
+export const lightTheme: AppTheme = {
   colors: {
     background: '#edf1ee',
     surface: '#ffffff',
@@ -223,4 +225,49 @@ export const defaultTheme: AppTheme = {
     modal: 1000,
     toast: 1100,
   },
+}
+
+/** Canopy dark — same brand identity on deep green-gray surfaces. */
+export const darkTheme: AppTheme = {
+  ...lightTheme,
+  colors: {
+    background: '#0f1612',
+    surface: '#162019',
+    surfaceMuted: '#1e2a24',
+    surfaceElevated: '#1c2721',
+    text: '#e8f0eb',
+    textMuted: '#9fb0a6',
+    textSubtle: '#6d8278',
+    border: '#2a3832',
+    borderStrong: '#3a4d44',
+    brand: '#3ba876',
+    brandHover: '#47b884',
+    brandActive: '#2f9668',
+    brandMuted: '#1a3d2e',
+    brandContrast: '#0f1612',
+    danger: '#f97066',
+    dangerMuted: '#3d1f1c',
+    success: '#3ba876',
+    successMuted: '#1a3d2e',
+    warning: '#f5c451',
+    warningMuted: '#3d3014',
+    info: '#6eb6df',
+    infoMuted: '#1a3340',
+    focus: '#47b884',
+    focusRing: 'rgba(71, 184, 132, 0.35)',
+    overlay: 'rgba(8, 12, 10, 0.72)',
+  },
+  shadow: {
+    sm: '0 1px 2px rgba(0, 0, 0, 0.32)',
+    md: '0 4px 12px rgba(0, 0, 0, 0.4)',
+    lg: '0 12px 32px rgba(0, 0, 0, 0.48)',
+    focus: '0 0 0 3px rgba(71, 184, 132, 0.35)',
+  },
+}
+
+/** @deprecated Use `lightTheme`. Kept for existing imports. */
+export const defaultTheme = lightTheme
+
+export function getAppTheme(mode: ThemeMode): AppTheme {
+  return mode === 'dark' ? darkTheme : lightTheme
 }

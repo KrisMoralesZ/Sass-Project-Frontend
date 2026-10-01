@@ -1,12 +1,13 @@
 import { createGlobalStyle } from 'styled-components'
+import type { ThemeMode } from './theme'
 
 /**
  * Base document styles and CSS variable bridge for the Canopy theme.
  * Component-level styling continues in tasks 0.2.3+.
  */
-export const GlobalStyle = createGlobalStyle`
+export const GlobalStyle = createGlobalStyle<{ $colorScheme: ThemeMode }>`
   :root {
-    color-scheme: light;
+    color-scheme: ${({ $colorScheme }) => $colorScheme};
 
     --color-background: ${({ theme }) => theme.colors.background};
     --color-surface: ${({ theme }) => theme.colors.surface};
