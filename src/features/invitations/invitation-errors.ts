@@ -9,6 +9,11 @@ export interface InvitationApiErrorView {
   formError?: string
 }
 
+export interface InvitationsLoadError {
+  title: string
+  message: string
+}
+
 const FIELD_COPY = {
   email: `Enter a valid email up to ${INVITE_EMAIL_MAX_LENGTH} characters.`,
   role: 'Choose a valid role for the invite.',
@@ -113,4 +118,80 @@ export function mapInvitationApiError(error: unknown): InvitationApiErrorView {
   }
 
   return { fieldErrors: {}, formError: getApiErrorMessage(error) }
+}
+
+const REVOKE_COPY: Partial<Record<ErrorCode, string>> = {
+  [ErrorCode.FORBIDDEN]:
+    'You do not have permission to revoke invitations. Ask an admin to update your role.',
+  [ErrorCode.RESOURCE_NOT_FOUND]:
+    'This invitation could not be found. It may already have been revoked.',
+  [ErrorCode.CONFLICT]:
+    'This invitation was already accepted and can no longer be revoked.',
+  [ErrorCode.TENANT_ORGANIZATION_REQUIRED]:
+    'Select a workspace before managing invitations.',
+  [ErrorCode.TENANT_ORGANIZATION_FORBIDDEN]:
+    'You do not have access to this workspace.',
+}
+
+/**
+ * User-facing copy for `POST /invites/:id/revoke` failures (task 3.4.3).
+ * Revoke is idempotent for revoked/expired invites; accepted invites conflict.
+ */
+export function describeInvitationRevokeError(error: unknown): string {
+  if (!isApiError(error)) {
+    return getApiErrorMessage(error)
+  }
+
+  if (error.code in REVOKE_COPY) {
+    return REVOKE_COPY[error.code as ErrorCode] ?? getApiErrorMessage(error)
+  }
+
+  return getApiErrorMessage(error)
+}
+
+/**
+ * User-facing copy for `GET /invites` failures (task 3.4.3). Mirrors
+ * `describeMembersLoadError` so tenant, forbidden, and not-found cases read
+ * consistently across the pending-invitations screen.
+ */
+export function describeInvitationsLoadError(
+  error: unknown,
+): InvitationsLoadError {
+  if (!isApiError(error)) {
+    return {
+      title: 'Pending invitations could not be loaded',
+      message: getApiErrorMessage(error),
+    }
+  }
+
+  switch (error.code) {
+    case ErrorCode.TENANT_ORGANIZATION_REQUIRED:
+      return {
+        title: 'Select a workspace',
+        message: 'Choose a workspace in the sidebar to view its invitations.',
+      }
+    case ErrorCode.TENANT_ORGANIZATION_FORBIDDEN:
+      return {
+        title: 'This workspace is unavailable',
+        message:
+          'You do not have access to this workspace. Choose another workspace in the sidebar.',
+      }
+    case ErrorCode.RESOURCE_NOT_FOUND:
+      return {
+        title: 'No invitations are available',
+        message:
+          'This workspace may no longer accept invitations. Switch to another workspace to continue.',
+      }
+    case ErrorCode.FORBIDDEN:
+      return {
+        title: 'You cannot view these invitations',
+        message:
+          'You do not have permission to view invitations. Ask an admin to update your role.',
+      }
+    default:
+      return {
+        title: 'Pending invitations could not be loaded',
+        message: getApiErrorMessage(error),
+      }
+  }
 }
