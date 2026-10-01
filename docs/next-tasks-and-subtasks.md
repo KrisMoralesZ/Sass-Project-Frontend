@@ -620,8 +620,8 @@ Subtasks:
 | Org create/switch/settings         | Phase 2               | Available                                        |
 | Profile + members read             | Phase 3.1             | Available                                        |
 | Client RBAC helpers                | Phase 3.2 docs/matrix | Available (matrix + guards)                      |
-| Invites UI                         | Phase 3.3             | Not yet — take **alongside** frontend 3.4       |
-| Member role/remove UI              | Phase 3.4             | Not yet — take **alongside** frontend 3.5       |
+| Invites UI                         | Phase 3.3             | Not yet — take **alongside** frontend 3.4        |
+| Member role/remove UI              | Phase 3.4             | Not yet — take **alongside** frontend 3.5        |
 | Projects UI                        | Phase 4               | Not yet                                          |
 | Boards UI                          | Phase 5               | Not yet                                          |
 | Issues / kanban UI                 | Phase 6               | Not yet                                          |
