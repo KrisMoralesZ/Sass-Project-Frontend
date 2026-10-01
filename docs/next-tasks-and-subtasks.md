@@ -380,8 +380,8 @@ the current user; list + detail screens still need building.
 
 Subtasks:
 
-- [ ] **3.2.1** Add typed list-members API helper and Query options (`['members', organizationId, query]`)
-- [ ] **3.2.2** Build the members list page with the Table primitive, role badges (`OWNER` / `ADMIN` / `MEMBER` / `VIEWER`), search, and pagination
+- [x] **3.2.1** Add typed list-members API helper and Query options (`['members', organizationId, query]`)
+- [x] **3.2.2** Build the members list page with the Table primitive, role badges (`OWNER` / `ADMIN` / `MEMBER` / `VIEWER`), search, and pagination
 - [ ] **3.2.3** Add member detail (`GET /members/:userId`) for identity + role; reuse `getOrganizationMember`
 - [ ] **3.2.4** Replace the `/members` placeholder; add `/members/:userId` if detail is a route rather than a panel
 - [ ] **3.2.5** Surface tenant-context / forbidden / not-found copy with the same error helpers as settings

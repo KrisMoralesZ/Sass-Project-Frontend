@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import {
+  getOrganizationRoleLabel,
   hasMinRole,
   isOrganizationRole,
   OrganizationRole,
@@ -13,6 +14,15 @@ describe('isOrganizationRole', () => {
   it('rejects unknown values', () => {
     expect(isOrganizationRole('SUPERADMIN')).toBe(false)
     expect(isOrganizationRole(undefined)).toBe(false)
+  })
+})
+
+describe('getOrganizationRoleLabel', () => {
+  it('returns the display label for each role', () => {
+    expect(getOrganizationRoleLabel(OrganizationRole.OWNER)).toBe('Owner')
+    expect(getOrganizationRoleLabel(OrganizationRole.ADMIN)).toBe('Admin')
+    expect(getOrganizationRoleLabel(OrganizationRole.MEMBER)).toBe('Member')
+    expect(getOrganizationRoleLabel(OrganizationRole.VIEWER)).toBe('Viewer')
   })
 })
 
