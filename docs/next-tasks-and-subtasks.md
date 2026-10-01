@@ -382,8 +382,8 @@ Subtasks:
 
 - [x] **3.2.1** Add typed list-members API helper and Query options (`['members', organizationId, query]`)
 - [x] **3.2.2** Build the members list page with the Table primitive, role badges (`OWNER` / `ADMIN` / `MEMBER` / `VIEWER`), search, and pagination
-- [ ] **3.2.3** Add member detail (`GET /members/:userId`) for identity + role; reuse `getOrganizationMember`
-- [ ] **3.2.4** Replace the `/members` placeholder; add `/members/:userId` if detail is a route rather than a panel
+- [x] **3.2.3** Add member detail (`GET /members/:userId`) for identity + role; reuse `getOrganizationMember`
+- [x] **3.2.4** Replace the `/members` placeholder; add `/members/:userId` if detail is a route rather than a panel
 - [ ] **3.2.5** Surface tenant-context / forbidden / not-found copy with the same error helpers as settings
 - [ ] **3.2.6** Add Storybook stories for the list (default, empty, loading, error) and role badge
 
@@ -608,7 +608,7 @@ Subtasks:
 - [x] **3.1.8** Register `/profile` outside `RequireOrganization`
 - [x] **3.1.6** Shell user menu (display name + profile link)
 - [x] **3.1.7** Profile stories; wire `setPreference` on profile load/save
-- [ ] **3.2.1–3.2.4** Members list/detail API + pages (replace `/members` placeholder)
+- [x] **3.2.1–3.2.4** Members list/detail API + pages (replace `/members` placeholder)
 - [ ] **3.2.5–3.2.6** Members tenant-error copy + Storybook
 - [x] **3.4.1** Typed invite API helpers (create/list/revoke/accept) mirroring invitation policy
 - [ ] **3.4.2–3.4.6 / 3.5 alongside backend 3.3–3.4** Invite UI + member role/remove (API and screens in the same pass)

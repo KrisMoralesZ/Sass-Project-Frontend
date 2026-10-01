@@ -4,6 +4,7 @@ export const paths = {
   register: '/register',
   profile: '/profile',
   members: '/members',
+  memberDetail: '/members/:userId',
   settings: '/settings',
   projects: '/projects',
   boards: '/boards',

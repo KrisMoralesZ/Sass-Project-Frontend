@@ -5,6 +5,7 @@ import PublicLayout from '@/components/layout/PublicLayout'
 import HomePage from '@/pages/HomePage'
 import CreateOrganizationPage from '@/pages/CreateOrganizationPage'
 import LoginPage from '@/pages/LoginPage'
+import MemberDetailPage from '@/pages/MemberDetailPage'
 import MembersPage from '@/pages/MembersPage'
 import NotFoundPage from '@/pages/NotFoundPage'
 import OrganizationSettingsPage from '@/pages/OrganizationSettingsPage'
@@ -57,6 +58,7 @@ const AppRoutes: FC = () => {
               }
             />
             <Route path={paths.members} element={<MembersPage />} />
+            <Route path={paths.memberDetail} element={<MemberDetailPage />} />
             <Route
               path={paths.settings}
               element={<OrganizationSettingsPage />}
