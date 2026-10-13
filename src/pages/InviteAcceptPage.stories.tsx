@@ -152,7 +152,7 @@ export const Default: Story = {
 }
 
 export const MissingToken: Story = {
-  parameters: { acceptToken: undefined },
+  parameters: { acceptToken: '' },
   play: async ({ canvas }) => {
     await expect(await canvas.findByRole('alert')).toHaveTextContent(
       'Link is missing its token',

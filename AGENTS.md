@@ -10,15 +10,15 @@ no CSS Modules/Tailwind. Styling is styled-components only. Sibling API: `../sas
 
 ## Locked stack
 
-| Layer | Choice |
-| --- | --- |
-| Bundler | Vite (`VITE_*` env), dev server :5173 |
-| UI runtime | React SPA |
-| Routing | React Router (`src/routes/`) |
-| Styling | styled-components, theme via `AppThemeProvider` |
-| Server state | TanStack Query (app wrapped in `AppQueryProvider`) |
-| HTTP | axios through `apiClient` (never raw axios/fetch in UI) |
-| Component docs/tests | Storybook + `@storybook/addon-vitest` |
+| Layer                | Choice                                                  |
+| -------------------- | ------------------------------------------------------- |
+| Bundler              | Vite (`VITE_*` env), dev server :5173                   |
+| UI runtime           | React SPA                                               |
+| Routing              | React Router (`src/routes/`)                            |
+| Styling              | styled-components, theme via `AppThemeProvider`         |
+| Server state         | TanStack Query (app wrapped in `AppQueryProvider`)      |
+| HTTP                 | axios through `apiClient` (never raw axios/fetch in UI) |
+| Component docs/tests | Storybook + `@storybook/addon-vitest`                   |
 
 ## Commands (run here, `workdir: sass-frontend`)
 
