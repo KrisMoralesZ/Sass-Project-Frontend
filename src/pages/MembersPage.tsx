@@ -22,6 +22,7 @@ import { usePermission } from '@/features/organizations/hooks/use-permission'
 import { OrganizationPermission } from '@/features/organizations/permissions/organization-permission'
 import { getOrganizationRoleLabel } from '@/features/organizations/permissions/organization-role'
 import InviteMemberDialog from '@/features/invitations/components/InviteMemberDialog'
+import PendingInvitations from '@/features/invitations/components/PendingInvitations'
 import type { Invitation } from '@/features/invitations/api/invitation-api.types'
 import { paths } from '@/routes/paths'
 import {
@@ -200,6 +201,8 @@ const MembersPage: FC = () => {
           </$Pagination>
         </>
       )}
+
+      <PendingInvitations organizationId={activeOrganizationId} />
 
       <InviteMemberDialog
         open={isInviteDialogOpen}

@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { MemoryRouter } from 'react-router-dom'
-import { expect, screen, userEvent, waitFor } from 'storybook/test'
+import { expect, screen, userEvent, waitFor, within } from 'storybook/test'
 import { vi } from 'vitest'
 import { ApiError } from '@/lib/api/api-error'
 import { ErrorCode } from '@/types/error-code'
@@ -8,6 +8,9 @@ import { OrganizationRole } from '@/features/organizations/permissions/organizat
 import { useActiveOrganizationId } from '@/features/organizations/hooks/use-active-organization-id'
 import { useListOrganizationMembers } from '@/features/organizations/hooks/use-list-organization-members'
 import { usePermission } from '@/features/organizations/hooks/use-permission'
+import { useListInvitations } from '@/features/invitations/hooks/use-list-invitations'
+import { useRevokeInvitation } from '@/features/invitations/hooks/use-revoke-invitation'
+import type { Invitation } from '@/features/invitations/api/invitation-api.types'
 import type { OrganizationMember } from '@/features/organizations/api/get-member'
 import { paths } from '@/routes/paths'
 import MembersPage from './MembersPage'
@@ -22,6 +25,14 @@ vi.mock('@/features/organizations/hooks/use-list-organization-members', () => ({
 
 vi.mock('@/features/organizations/hooks/use-permission', () => ({
   usePermission: vi.fn(),
+}))
+
+vi.mock('@/features/invitations/hooks/use-list-invitations', () => ({
+  useListInvitations: vi.fn(),
+}))
+
+vi.mock('@/features/invitations/hooks/use-revoke-invitation', () => ({
+  useRevokeInvitation: vi.fn(),
 }))
 
 const member: OrganizationMember = {
@@ -60,6 +71,30 @@ const response = {
   },
 }
 
+const invitation: Invitation = {
+  id: 'invite-1',
+  organizationId: 'org-1',
+  email: 'carol@example.com',
+  role: OrganizationRole.MEMBER,
+  status: 'pending',
+  invitedByUserId: 'user-1',
+  expiresAt: '2026-01-22T00:00:00.000Z',
+  createdAt: '2026-01-15T00:00:00.000Z',
+  updatedAt: '2026-01-15T00:00:00.000Z',
+}
+
+const invitationsResponse = {
+  items: [invitation],
+  pagination: {
+    page: 1,
+    limit: 20,
+    total: 1,
+    totalPages: 1,
+    hasNextPage: false,
+    hasPreviousPage: false,
+  },
+}
+
 const meta = {
   title: 'Pages/MembersPage',
   component: MembersPage,
@@ -87,6 +122,19 @@ function mockInvitePermission(allowed: boolean) {
   } as ReturnType<typeof usePermission>)
 }
 
+function mockReadyInvitations() {
+  vi.mocked(useListInvitations).mockReturnValue({
+    data: invitationsResponse,
+    isPending: false,
+    isError: false,
+    isFetching: false,
+  } as unknown as ReturnType<typeof useListInvitations>)
+  vi.mocked(useRevokeInvitation).mockReturnValue({
+    mutate: vi.fn(),
+    isPending: false,
+  } as unknown as ReturnType<typeof useRevokeInvitation>)
+}
+
 function renderScenario(
   query: Record<string, unknown>,
   organizationId: string | null = 'org-1',
@@ -96,6 +144,7 @@ function renderScenario(
     query as unknown as ReturnType<typeof useListOrganizationMembers>,
   )
   mockInvitePermission(true)
+  mockReadyInvitations()
   return <MembersPage />
 }
 
@@ -122,6 +171,7 @@ function mockPaginatedQuery() {
     } as unknown as ReturnType<typeof useListOrganizationMembers>
   })
   mockInvitePermission(true)
+  mockReadyInvitations()
 }
 
 function apiError(
@@ -290,9 +340,15 @@ export const Pagination: Story = {
     await expect(canvas.getAllByText('bob@example.com').length).toBeGreaterThan(
       0,
     )
-    await expect(canvas.getByText('Member')).toBeVisible()
+    const membersTable = canvas.getByRole('table', {
+      name: 'Workspace members',
+    })
+    await expect(within(membersTable).getByText('Member')).toBeVisible()
 
-    const next = canvas.getByRole('button', { name: 'Next' })
+    const membersPagination = canvas.getByRole('navigation', {
+      name: 'Members pagination',
+    })
+    const next = within(membersPagination).getByRole('button', { name: 'Next' })
     await expect(next).toBeEnabled()
     await userEvent.click(next)
 
@@ -306,7 +362,9 @@ export const Pagination: Story = {
       })
     })
 
-    const previous = canvas.getByRole('button', { name: 'Previous' })
+    const previous = within(membersPagination).getByRole('button', {
+      name: 'Previous',
+    })
     await expect(previous).toBeEnabled()
     await userEvent.click(previous)
 
