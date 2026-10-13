@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { MemoryRouter } from 'react-router-dom'
-import { expect, screen, userEvent, waitFor } from 'storybook/test'
+import { expect, screen, userEvent, waitFor, within } from 'storybook/test'
 import { vi } from 'vitest'
 import { ApiError } from '@/lib/api/api-error'
 import { ErrorCode } from '@/types/error-code'
@@ -340,9 +340,15 @@ export const Pagination: Story = {
     await expect(canvas.getAllByText('bob@example.com').length).toBeGreaterThan(
       0,
     )
-    await expect(canvas.getByText('Member')).toBeVisible()
+    const membersTable = canvas.getByRole('table', {
+      name: 'Workspace members',
+    })
+    await expect(within(membersTable).getByText('Member')).toBeVisible()
 
-    const next = canvas.getByRole('button', { name: 'Next' })
+    const membersPagination = canvas.getByRole('navigation', {
+      name: 'Members pagination',
+    })
+    const next = within(membersPagination).getByRole('button', { name: 'Next' })
     await expect(next).toBeEnabled()
     await userEvent.click(next)
 
@@ -356,7 +362,9 @@ export const Pagination: Story = {
       })
     })
 
-    const previous = canvas.getByRole('button', { name: 'Previous' })
+    const previous = within(membersPagination).getByRole('button', {
+      name: 'Previous',
+    })
     await expect(previous).toBeEnabled()
     await userEvent.click(previous)
 

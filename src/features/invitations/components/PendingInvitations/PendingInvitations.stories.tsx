@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { expect, userEvent, waitFor } from 'storybook/test'
+import { expect, screen, userEvent, waitFor, within } from 'storybook/test'
 import { vi } from 'vitest'
 import { ApiError } from '@/lib/api/api-error'
 import { ErrorCode } from '@/types/error-code'
@@ -277,9 +277,13 @@ export const RevokeFlow: Story = {
   },
   play: async ({ canvas }) => {
     await userEvent.click(canvas.getByRole('button', { name: 'Revoke' }))
-    const dialog = canvas.getByRole('dialog', { name: 'Revoke invitation' })
+    const dialog = await screen.findByRole('dialog', {
+      name: 'Revoke invitation',
+    })
     await expect(dialog).toBeVisible()
-    await userEvent.click(canvas.getByRole('button', { name: 'Revoke invite' }))
+    await userEvent.click(
+      within(dialog).getByRole('button', { name: 'Revoke invite' }),
+    )
     await waitFor(() => {
       expect(revokeMutateMock).toHaveBeenCalledWith(
         'invite-1',
