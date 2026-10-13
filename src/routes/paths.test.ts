@@ -10,6 +10,7 @@ describe('paths', () => {
       profile: '/profile',
       members: '/members',
       memberDetail: '/members/:userId',
+      inviteAccept: '/invites/accept',
       settings: '/settings',
       projects: '/projects',
       boards: '/boards',
