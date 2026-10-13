@@ -10,11 +10,18 @@ import {
 } from '@/features/auth/session-expired-notice'
 
 function getPostLoginPath(state: unknown): string {
-  const from = (state as { from?: { pathname?: string } } | null)?.from
-    ?.pathname
-  return from && from !== paths.login && from !== paths.register
-    ? from
-    : paths.home
+  const from = (
+    state as {
+      from?: { pathname?: string; search?: string }
+    } | null
+  )?.from
+  const fromPath = from?.pathname
+
+  if (!fromPath || fromPath === paths.login || fromPath === paths.register) {
+    return paths.home
+  }
+
+  return from?.search ? `${fromPath}${from.search}` : fromPath
 }
 
 const LoginPage: FC = () => {
