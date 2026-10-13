@@ -62,18 +62,21 @@ function mockPermissions(read: boolean, revoke = read) {
   const readPermission = OrganizationPermission.INVITE_READ
   const revokePermission = OrganizationPermission.INVITE_REVOKE
 
-  vi.mocked(usePermission).mockImplementation((permission) => ({
-    isPending: false,
-    isError: false,
-    error: null,
-    role: OrganizationRole.ADMIN,
-    allowed:
-      permission === readPermission
-        ? read
-        : permission === revokePermission
-          ? revoke
-          : true,
-  }) as ReturnType<typeof usePermission>)
+  vi.mocked(usePermission).mockImplementation(
+    (permission) =>
+      ({
+        isPending: false,
+        isError: false,
+        error: null,
+        role: OrganizationRole.ADMIN,
+        allowed:
+          permission === readPermission
+            ? read
+            : permission === revokePermission
+              ? revoke
+              : true,
+      }) as ReturnType<typeof usePermission>,
+  )
 }
 
 function mockList(query: Partial<ReturnType<typeof useListInvitations>>) {
@@ -153,7 +156,11 @@ describe('PendingInvitations', () => {
 
   it('renders the empty state', () => {
     mockList({
-      data: { ...response, items: [], pagination: { ...response.pagination, total: 0 } },
+      data: {
+        ...response,
+        items: [],
+        pagination: { ...response.pagination, total: 0 },
+      },
     })
 
     renderComponent()
@@ -189,7 +196,9 @@ describe('PendingInvitations', () => {
     await user.click(screen.getByRole('button', { name: 'Revoke invite' }))
 
     expect(screen.getByText('Invite revoked')).toBeTruthy()
-    expect(screen.getByText("carol@example.com's invite was revoked.")).toBeTruthy()
+    expect(
+      screen.getByText("carol@example.com's invite was revoked."),
+    ).toBeTruthy()
   })
 
   it('shows an error toast when a revoke fails', async () => {
