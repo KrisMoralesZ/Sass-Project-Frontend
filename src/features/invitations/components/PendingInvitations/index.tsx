@@ -226,9 +226,7 @@ const PendingInvitations: FC<IPendingInvitations> = ({ organizationId }) => {
         variant="success"
         title="Invite revoked"
       >
-        {lastRevoked
-          ? `${lastRevoked.email}'s invite was revoked.`
-          : undefined}
+        {lastRevoked ? `${lastRevoked.email}'s invite was revoked.` : undefined}
       </Toast>
       <Toast
         open={revokeError !== null}

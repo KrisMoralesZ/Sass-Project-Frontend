@@ -70,14 +70,21 @@ function mockPermissions(read: boolean, revoke = read) {
   const readPermission = OrganizationPermission.INVITE_READ
   const revokePermission = OrganizationPermission.INVITE_REVOKE
 
-  vi.mocked(usePermission).mockImplementation((permission) => ({
-    isPending: false,
-    isError: false,
-    error: null,
-    role: OrganizationRole.ADMIN,
-    allowed:
-      permission === readPermission ? read : permission === revokePermission ? revoke : true,
-  }) as ReturnType<typeof usePermission>)
+  vi.mocked(usePermission).mockImplementation(
+    (permission) =>
+      ({
+        isPending: false,
+        isError: false,
+        error: null,
+        role: OrganizationRole.ADMIN,
+        allowed:
+          permission === readPermission
+            ? read
+            : permission === revokePermission
+              ? revoke
+              : true,
+      }) as ReturnType<typeof usePermission>,
+  )
 }
 
 function mockList(query: Record<string, unknown>) {
@@ -114,7 +121,9 @@ export const Default: Story = {
     await expect(
       canvas.getByRole('heading', { name: 'Pending invitations' }),
     ).toBeVisible()
-    await expect(canvas.getByRole('cell', { name: 'carol@example.com' })).toBeVisible()
+    await expect(
+      canvas.getByRole('cell', { name: 'carol@example.com' }),
+    ).toBeVisible()
     await expect(canvas.getByRole('button', { name: 'Revoke' })).toBeVisible()
   },
 }
@@ -124,14 +133,20 @@ export const Empty: Story = {
     mockPermissions(true)
     mockRevokeReady()
     mockList({
-      data: { ...response, items: [], pagination: { ...response.pagination, total: 0 } },
+      data: {
+        ...response,
+        items: [],
+        pagination: { ...response.pagination, total: 0 },
+      },
       isPending: false,
       isError: false,
     })
     return <PendingInvitations organizationId={args.organizationId} />
   },
   play: async ({ canvas }) => {
-    await expect(canvas.getByRole('cell', { name: 'No pending invitations.' })).toBeVisible()
+    await expect(
+      canvas.getByRole('cell', { name: 'No pending invitations.' }),
+    ).toBeVisible()
   },
 }
 
@@ -159,7 +174,11 @@ export const ErrorForbidden: Story = {
       data: undefined,
       isPending: false,
       isError: true,
-      error: apiError(ErrorCode.FORBIDDEN, 'Missing required permission(s).', 403),
+      error: apiError(
+        ErrorCode.FORBIDDEN,
+        'Missing required permission(s).',
+        403,
+      ),
       refetch: errorRefetch,
     })
     return <PendingInvitations organizationId={args.organizationId} />
@@ -182,7 +201,11 @@ export const ErrorWorkspaceArchived: Story = {
       data: undefined,
       isPending: false,
       isError: true,
-      error: apiError(ErrorCode.RESOURCE_NOT_FOUND, 'Organization not found', 404),
+      error: apiError(
+        ErrorCode.RESOURCE_NOT_FOUND,
+        'Organization not found',
+        404,
+      ),
     })
     return <PendingInvitations organizationId={args.organizationId} />
   },
@@ -258,7 +281,10 @@ export const RevokeFlow: Story = {
     await expect(dialog).toBeVisible()
     await userEvent.click(canvas.getByRole('button', { name: 'Revoke invite' }))
     await waitFor(() => {
-      expect(revokeMutateMock).toHaveBeenCalledWith('invite-1', expect.any(Object))
+      expect(revokeMutateMock).toHaveBeenCalledWith(
+        'invite-1',
+        expect.any(Object),
+      )
     })
   },
 }

@@ -432,7 +432,7 @@ Subtasks:
 - [x] **3.4.3** List pending invites and revoke, gated on `invite:read` / `invite:revoke`
 - [ ] **3.4.4** Add an accept-invite route for tokenized links (authenticated user + token)
 - [ ] **3.4.5** Show the development stub copy (invite URL logged by the API; no real SMTP)
-- [ ] **3.4.6** Stories + forbidden/validation/expired-token feedback *(partial: list/revoke stories + forbidden/revoke-error copy landed; accept/expired-token feedback pending 3.4.4)*
+- [ ] **3.4.6** Stories + forbidden/validation/expired-token feedback _(partial: list/revoke stories + forbidden/revoke-error copy landed; accept/expired-token feedback pending 3.4.4)_
 
 Acceptance criteria:
 
