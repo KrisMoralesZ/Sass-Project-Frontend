@@ -26,6 +26,7 @@ import PendingInvitations from '@/features/invitations/components/PendingInvitat
 import type { Invitation } from '@/features/invitations/api/invitation-api.types'
 import { paths } from '@/routes/paths'
 import {
+  $DevNotice,
   $ErrorPanel,
   $ErrorTitle,
   $Eyebrow,
@@ -203,6 +204,13 @@ const MembersPage: FC = () => {
       )}
 
       <PendingInvitations organizationId={activeOrganizationId} />
+
+      {import.meta.env.DEV ? (
+        <$DevNotice role="note">
+          Development build: invitation emails are not sent. The accept link is
+          printed in the API server logs for local QA.
+        </$DevNotice>
+      ) : null}
 
       <InviteMemberDialog
         open={isInviteDialogOpen}
