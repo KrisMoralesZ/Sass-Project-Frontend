@@ -1,7 +1,10 @@
 import { describe, expect, it } from 'vitest'
 import { ApiError } from '@/lib/api/api-error'
 import { ErrorCode } from '@/types/error-code'
-import { mapInvitationApiError } from './invitation-errors'
+import {
+  describeInvitationAcceptError,
+  mapInvitationApiError,
+} from './invitation-errors'
 
 function apiError(
   code: ErrorCode,
@@ -86,5 +89,77 @@ describe('mapInvitationApiError', () => {
       fieldErrors: {},
       formError: undefined,
     })
+  })
+})
+
+describe('describeInvitationAcceptError', () => {
+  it('keeps the backend message for expired invitations', () => {
+    const message = describeInvitationAcceptError(
+      apiError(
+        ErrorCode.BAD_REQUEST,
+        'This invitation has expired. Ask for a new invitation.',
+        400,
+      ),
+    )
+
+    expect(message).toContain('expired')
+  })
+
+  it('keeps the backend message for revoked invitations', () => {
+    const message = describeInvitationAcceptError(
+      apiError(ErrorCode.BAD_REQUEST, 'This invitation has been revoked', 400),
+    )
+
+    expect(message).toContain('revoked')
+  })
+
+  it('falls back to generic copy when the backend message is empty', () => {
+    const message = describeInvitationAcceptError(
+      apiError(ErrorCode.BAD_REQUEST, '', 400),
+    )
+
+    expect(message).toBe(
+      'This invitation is no longer valid. Ask the sender to invite you again.',
+    )
+  })
+
+  it('explains email-mismatch forbidden failures', () => {
+    const message = describeInvitationAcceptError(
+      apiError(
+        ErrorCode.FORBIDDEN,
+        'This invitation was issued to a different email address',
+        403,
+      ),
+    )
+
+    expect(message).toContain('different email address')
+  })
+
+  it('explains whether the invitation still exists', () => {
+    const message = describeInvitationAcceptError(
+      apiError(ErrorCode.RESOURCE_NOT_FOUND, 'Invitation not found', 404),
+    )
+
+    expect(message).toContain('could not be found')
+  })
+
+  it('explains archived-workspace rejections', () => {
+    const message = describeInvitationAcceptError(
+      apiError(
+        ErrorCode.TENANT_ORGANIZATION_FORBIDDEN,
+        'This organization is archived',
+        403,
+      ),
+    )
+
+    expect(message).toContain('archived')
+  })
+
+  it('falls back to the mapped message for unknown failures', () => {
+    const message = describeInvitationAcceptError(
+      apiError(ErrorCode.INTERNAL_SERVER_ERROR, 'Internal', 500),
+    )
+
+    expect(message).toContain('Something went wrong')
   })
 })

@@ -149,6 +149,39 @@ export function describeInvitationRevokeError(error: unknown): string {
   return getApiErrorMessage(error)
 }
 
+const ACCEPT_BAD_REQUEST_FALLBACK =
+  'This invitation is no longer valid. Ask the sender to invite you again.'
+
+/**
+ * User-facing copy for `POST /invites/accept` failures (task 3.4.4).
+ * Expired/revoked uses the backend message; forbidden (email mismatch) and
+ * not-found cases read consistently with the rest of the invitation screens.
+ * Conflict — already a member or already accepted — falls through to
+ * `getApiErrorMessage`, which prefers the backend message.
+ */
+export function describeInvitationAcceptError(error: unknown): string {
+  if (!isApiError(error)) {
+    return getApiErrorMessage(error)
+  }
+
+  switch (error.code) {
+    case ErrorCode.BAD_REQUEST: {
+      const message = error.message.trim()
+      return message.length > 0 ? message : ACCEPT_BAD_REQUEST_FALLBACK
+    }
+    case ErrorCode.RESOURCE_NOT_FOUND:
+      return 'This invitation could not be found. It may already have been used, revoked, or cleared.'
+    case ErrorCode.FORBIDDEN:
+      return 'This invitation was sent to a different email address. Ask the sender to invite the account you signed in with.'
+    case ErrorCode.TENANT_ORGANIZATION_FORBIDDEN:
+      return 'This workspace is archived and can no longer accept new members.'
+    case ErrorCode.UNAUTHORIZED:
+      return 'Sign in to the invited account before accepting the invitation.'
+    default:
+      return getApiErrorMessage(error)
+  }
+}
+
 /**
  * User-facing copy for `GET /invites` failures (task 3.4.3). Mirrors
  * `describeMembersLoadError` so tenant, forbidden, and not-found cases read
