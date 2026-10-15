@@ -34,6 +34,7 @@ describe('usePermission', () => {
     expect(result.current.role).toBe('OWNER')
     expect(result.current.allowed).toBe(true)
     expect(result.current.isPending).toBe(false)
+    expect(result.current.memberUserId).toBe('user-1')
   })
 
   it('denies permissions when the role is missing or invalid', () => {
@@ -51,5 +52,6 @@ describe('usePermission', () => {
     expect(result.current.role).toBeNull()
     expect(result.current.allowed).toBe(false)
     expect(result.current.isPending).toBe(true)
+    expect(result.current.memberUserId).toBeNull()
   })
 })

@@ -7,6 +7,8 @@ import {
   type OrganizationMember,
 } from '@/features/organizations/api/get-member'
 import { useActiveOrganizationId } from '@/features/organizations/hooks/use-active-organization-id'
+import { usePermission } from '@/features/organizations/hooks/use-permission'
+import { useUpdateMemberRole } from '@/features/organizations/hooks/use-update-member-role'
 import { OrganizationRole } from '@/features/organizations/permissions/organization-role'
 import { ApiError } from '@/lib/api/api-error'
 import { paths } from '@/routes/paths'
@@ -15,6 +17,14 @@ import MemberDetailPage from './MemberDetailPage'
 
 vi.mock('@/features/organizations/hooks/use-active-organization-id', () => ({
   useActiveOrganizationId: vi.fn(),
+}))
+
+vi.mock('@/features/organizations/hooks/use-permission', () => ({
+  usePermission: vi.fn(),
+}))
+
+vi.mock('@/features/organizations/hooks/use-update-member-role', () => ({
+  useUpdateMemberRole: vi.fn(),
 }))
 
 vi.mock('@/features/organizations/api/get-member', () => {
@@ -56,6 +66,8 @@ type MemberDetailScenario =
   | 'no-workspace'
   | 'loading'
   | 'error'
+  | 'self'
+  | 'read-only'
 
 const meta = {
   title: 'Pages/MemberDetailPage',
@@ -64,10 +76,28 @@ const meta = {
   decorators: [
     (Story, context) => {
       vi.mocked(getOrganizationMember).mockReset()
+      vi.mocked(usePermission).mockReset()
+      vi.mocked(useUpdateMemberRole).mockReset()
 
       const scenario =
         (context.parameters.memberDetailScenario as MemberDetailScenario) ??
         'ready-with-avatar'
+
+      vi.mocked(useUpdateMemberRole).mockReturnValue({
+        mutateAsync: vi.fn().mockResolvedValue(memberWithAvatar),
+        isPending: false,
+        error: null,
+      } as unknown as ReturnType<typeof useUpdateMemberRole>)
+
+      const canManage = scenario !== 'read-only'
+      vi.mocked(usePermission).mockReturnValue({
+        isPending: false,
+        isError: false,
+        error: null,
+        role: canManage ? OrganizationRole.ADMIN : OrganizationRole.MEMBER,
+        memberUserId: scenario === 'self' ? 'user-1' : 'owner-1',
+        allowed: canManage,
+      } as ReturnType<typeof usePermission>)
 
       if (scenario === 'no-workspace') {
         vi.mocked(useActiveOrganizationId).mockReturnValue(null)

@@ -1,7 +1,10 @@
 import { describe, expect, it } from 'vitest'
 import { ApiError } from '@/lib/api/api-error'
 import { ErrorCode } from '@/types/error-code'
-import { describeMembersLoadError } from './members-errors'
+import {
+  describeMemberRoleUpdateError,
+  describeMembersLoadError,
+} from './members-errors'
 
 function apiError(
   code: ErrorCode,
@@ -116,5 +119,67 @@ describe('describeMembersLoadError', () => {
       describeMembersLoadError(apiError(ErrorCode.CONFLICT, 'Conflict', 409))
         .message,
     ).toBe('Conflict')
+  })
+})
+
+describe('describeMemberRoleUpdateError', () => {
+  it('explains the last-owner rule', () => {
+    expect(
+      describeMemberRoleUpdateError(
+        apiError(
+          ErrorCode.MEMBER_LAST_OWNER,
+          'The organization must keep at least one owner.',
+          409,
+        ),
+      ),
+    ).toMatch(/at least one owner/)
+  })
+
+  it('explains missing permissions', () => {
+    expect(
+      describeMemberRoleUpdateError(
+        apiError(ErrorCode.FORBIDDEN, 'Forbidden', 403),
+      ),
+    ).toBe('You do not have permission to change member roles.')
+  })
+
+  it('prefers the backend message for conflicts like self-role changes', () => {
+    expect(
+      describeMemberRoleUpdateError(
+        apiError(ErrorCode.CONFLICT, 'You cannot change your own role.', 409),
+      ),
+    ).toBe('You cannot change your own role.')
+  })
+
+  it('explains tenant context and missing members', () => {
+    expect(
+      describeMemberRoleUpdateError(
+        apiError(ErrorCode.TENANT_ORGANIZATION_REQUIRED, 'required'),
+      ),
+    ).toBe('Select a workspace to change member roles.')
+
+    expect(
+      describeMemberRoleUpdateError(
+        apiError(ErrorCode.TENANT_ORGANIZATION_FORBIDDEN, 'forbidden', 403),
+      ),
+    ).toMatch(/Choose another workspace/)
+
+    expect(
+      describeMemberRoleUpdateError(
+        apiError(ErrorCode.RESOURCE_NOT_FOUND, 'Member not found', 404),
+      ),
+    ).toBe('This member is no longer in the workspace.')
+  })
+
+  it('falls back for non-API and unrelated errors', () => {
+    expect(describeMemberRoleUpdateError(new Error('Network down'))).toBe(
+      'Network down',
+    )
+
+    expect(
+      describeMemberRoleUpdateError(
+        apiError(ErrorCode.INTERNAL_SERVER_ERROR, 'Server error', 500),
+      ),
+    ).toBe('Something went wrong on our side. Please try again.')
   })
 })

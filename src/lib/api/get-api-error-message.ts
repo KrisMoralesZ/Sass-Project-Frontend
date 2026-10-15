@@ -14,6 +14,8 @@ const ERROR_CODE_MESSAGES: Record<ErrorCode, string> = {
     'We could not find what you were looking for.',
   [ErrorCode.CONFLICT]:
     'That conflicts with existing data. Please try a different value.',
+  [ErrorCode.MEMBER_LAST_OWNER]:
+    'A workspace needs at least one owner. Assign another owner first.',
   [ErrorCode.TENANT_ORGANIZATION_REQUIRED]: 'Select a workspace to continue.',
   [ErrorCode.TENANT_ORGANIZATION_FORBIDDEN]:
     'You do not have access to this workspace.',
