@@ -7,10 +7,7 @@ import { updateMemberRole } from '../api/update-member-role'
  * (backend-enforced, task 3.4). On success refreshes the active workspace's
  * member list and detail so role changes are reflected everywhere.
  */
-export const useUpdateMemberRole = (
-  organizationId: string,
-  userId: string,
-) => {
+export const useUpdateMemberRole = (organizationId: string, userId: string) => {
   const queryClient = useQueryClient()
 
   return useMutation({

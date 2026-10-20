@@ -152,7 +152,7 @@ export const Default: Story = {
       'https://example.com/avatar.png',
     )
     await expect(canvas.getByText('jane@example.com')).toBeVisible()
-    await expect(canvas.getByText('Admin')).toBeVisible()
+    await expect(canvas.getByText('Admin', { selector: 'span' })).toBeVisible()
     await expect(canvas.getByText('membership-1')).toBeVisible()
     await expect(canvas.getByText('user-1')).toBeVisible()
     await expect(canvas.getByText('org-1')).toBeVisible()

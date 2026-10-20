@@ -48,7 +48,8 @@ const MemberRoleControl: FC<IMemberRoleControl> = ({
   onUpdateRole,
   defaultConfirmOpen = false,
 }) => {
-  const [selectedRole, setSelectedRole] = useState<OrganizationRole>(currentRole)
+  const [selectedRole, setSelectedRole] =
+    useState<OrganizationRole>(currentRole)
   const [isConfirmOpen, setIsConfirmOpen] = useState(defaultConfirmOpen)
 
   useEffect(() => {

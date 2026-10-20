@@ -18,11 +18,11 @@ function renderControl(
     ...overrides,
   }
 
-  render(<MemberRoleControl {...props} />, {
+  const { rerender } = render(<MemberRoleControl {...props} />, {
     wrapper: ({ children }) => <AppThemeProvider>{children}</AppThemeProvider>,
   })
 
-  return props
+  return { props, rerender }
 }
 
 function getSaveButton(): HTMLButtonElement {
@@ -54,7 +54,7 @@ describe('MemberRoleControl', () => {
 
   it('confirms the change before submitting and closes on success', async () => {
     const user = userEvent.setup()
-    const props = renderControl()
+    const { props } = renderControl()
 
     await user.selectOptions(
       screen.getByRole('combobox', { name: 'Workspace role' }),
@@ -79,14 +79,13 @@ describe('MemberRoleControl', () => {
 
   it('keeps the dialog open and explains the last-owner rule on failure', async () => {
     const user = userEvent.setup()
-    const props = renderControl({
-      onUpdateRole: vi.fn().mockRejectedValue(
-        new ApiError({
-          code: ErrorCode.MEMBER_LAST_OWNER,
-          statusCode: 409,
-          message: 'The organization must keep at least one owner.',
-        }),
-      ),
+    const lastOwnerError = new ApiError({
+      code: ErrorCode.MEMBER_LAST_OWNER,
+      statusCode: 409,
+      message: 'The organization must keep at least one owner.',
+    })
+    const { props, rerender } = renderControl({
+      onUpdateRole: vi.fn().mockRejectedValue(lastOwnerError),
     })
 
     await user.selectOptions(
@@ -96,15 +95,21 @@ describe('MemberRoleControl', () => {
     await user.click(getSaveButton())
     await user.click(screen.getByRole('button', { name: 'Change role' }))
 
+    await waitFor(() => {
+      expect(props.onUpdateRole).toHaveBeenCalled()
+    })
+    expect(screen.getByRole('dialog')).toBeTruthy()
+
+    rerender(<MemberRoleControl {...props} error={lastOwnerError} />)
+
     const alert = await screen.findByRole('alert')
     expect(alert.textContent).toContain('at least one owner')
     expect(screen.getByRole('dialog')).toBeTruthy()
-    expect(props.onUpdateRole).toHaveBeenCalled()
   })
 
   it('cancels without submitting', async () => {
     const user = userEvent.setup()
-    const props = renderControl()
+    const { props } = renderControl()
 
     await user.selectOptions(
       screen.getByRole('combobox', { name: 'Workspace role' }),
