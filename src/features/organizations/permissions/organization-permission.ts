@@ -24,6 +24,8 @@ export const OrganizationPermission = {
   INVITE_READ: 'invite:read',
   INVITE_REVOKE: 'invite:revoke',
 
+  MEMBER_UPDATE: 'member:update',
+
   SETTINGS_READ: 'settings:read',
   SETTINGS_UPDATE: 'settings:update',
 } as const

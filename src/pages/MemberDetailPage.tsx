@@ -3,9 +3,13 @@ import { type FC } from 'react'
 import { useParams } from 'react-router-dom'
 import Button from '@/components/ui/Button'
 import MemberRoleBadge from '@/features/organizations/components/MemberRoleBadge'
+import MemberRoleControl from '@/features/organizations/components/MemberRoleControl'
 import { organizationMemberQueryOptions } from '@/features/organizations/api/get-member'
 import { describeMembersLoadError } from '@/features/organizations/members-errors'
 import { useActiveOrganizationId } from '@/features/organizations/hooks/use-active-organization-id'
+import { usePermission } from '@/features/organizations/hooks/use-permission'
+import { useUpdateMemberRole } from '@/features/organizations/hooks/use-update-member-role'
+import { OrganizationPermission } from '@/features/organizations/permissions/organization-permission'
 import { paths } from '@/routes/paths'
 import {
   $ErrorPanel,
@@ -35,6 +39,8 @@ const MemberDetailPage: FC = () => {
     ...organizationMemberQueryOptions(activeOrganizationId ?? '', userId),
     retry: false,
   })
+  const memberUpdate = usePermission(OrganizationPermission.MEMBER_UPDATE)
+  const updateRole = useUpdateMemberRole(activeOrganizationId ?? '', userId)
 
   const header = (
     <$Header>
@@ -81,6 +87,8 @@ const MemberDetailPage: FC = () => {
 
   const member = memberQuery.data
   const memberName = member.displayName?.trim() || member.email
+  const canManageRole =
+    memberUpdate.allowed && member.userId !== memberUpdate.memberUserId
 
   return (
     <$Page>
@@ -117,6 +125,15 @@ const MemberDetailPage: FC = () => {
           </$MetaItem>
         </$Meta>
       </$Card>
+
+      <MemberRoleControl
+        currentRole={member.role}
+        memberName={memberName}
+        canManage={canManageRole}
+        isSubmitting={updateRole.isPending}
+        error={updateRole.error}
+        onUpdateRole={(role) => updateRole.mutateAsync(role)}
+      />
 
       <$BackLink to={paths.members}>Back to members</$BackLink>
     </$Page>

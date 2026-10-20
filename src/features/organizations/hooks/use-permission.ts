@@ -19,6 +19,8 @@ export function usePermission(permission: OrganizationPermission) {
     isError: memberQuery.isError,
     error: memberQuery.error,
     role,
+    /** Current membership's `userId`, so callers can detect "your own row". */
+    memberUserId: memberQuery.data?.userId ?? null,
     allowed: role !== null && roleHasPermission(role, permission),
   }
 }
