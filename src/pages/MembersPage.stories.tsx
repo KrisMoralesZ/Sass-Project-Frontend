@@ -1,12 +1,13 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { MemoryRouter } from 'react-router-dom'
-import { expect, userEvent, waitFor } from 'storybook/test'
+import { expect, screen, userEvent, waitFor } from 'storybook/test'
 import { vi } from 'vitest'
 import { ApiError } from '@/lib/api/api-error'
 import { ErrorCode } from '@/types/error-code'
 import { OrganizationRole } from '@/features/organizations/permissions/organization-role'
 import { useActiveOrganizationId } from '@/features/organizations/hooks/use-active-organization-id'
 import { useListOrganizationMembers } from '@/features/organizations/hooks/use-list-organization-members'
+import { usePermission } from '@/features/organizations/hooks/use-permission'
 import type { OrganizationMember } from '@/features/organizations/api/get-member'
 import { paths } from '@/routes/paths'
 import MembersPage from './MembersPage'
@@ -17,6 +18,10 @@ vi.mock('@/features/organizations/hooks/use-active-organization-id', () => ({
 
 vi.mock('@/features/organizations/hooks/use-list-organization-members', () => ({
   useListOrganizationMembers: vi.fn(),
+}))
+
+vi.mock('@/features/organizations/hooks/use-permission', () => ({
+  usePermission: vi.fn(),
 }))
 
 const member: OrganizationMember = {
@@ -72,6 +77,16 @@ export default meta
 
 type Story = StoryObj<typeof meta>
 
+function mockInvitePermission(allowed: boolean) {
+  vi.mocked(usePermission).mockReturnValue({
+    isPending: false,
+    isError: false,
+    error: null,
+    role: allowed ? OrganizationRole.ADMIN : OrganizationRole.MEMBER,
+    allowed,
+  } as ReturnType<typeof usePermission>)
+}
+
 function renderScenario(
   query: Record<string, unknown>,
   organizationId: string | null = 'org-1',
@@ -80,6 +95,7 @@ function renderScenario(
   vi.mocked(useListOrganizationMembers).mockReturnValue(
     query as unknown as ReturnType<typeof useListOrganizationMembers>,
   )
+  mockInvitePermission(true)
   return <MembersPage />
 }
 
@@ -105,6 +121,7 @@ function mockPaginatedQuery() {
       refetch: vi.fn(),
     } as unknown as ReturnType<typeof useListOrganizationMembers>
   })
+  mockInvitePermission(true)
 }
 
 function apiError(
@@ -302,5 +319,44 @@ export const Pagination: Story = {
         sortOrder: 'ASC',
       })
     })
+  },
+}
+
+export const InviteMember: Story = {
+  render: () =>
+    renderScenario({
+      data: response,
+      isPending: false,
+      isError: false,
+      isFetching: false,
+    }),
+  play: async ({ canvas }) => {
+    await expect(
+      canvas.getByRole('button', { name: 'Invite member' }),
+    ).toBeVisible()
+    await userEvent.click(canvas.getByRole('button', { name: 'Invite member' }))
+    const dialog = await screen.findByRole('dialog', {
+      name: 'Invite a member',
+    })
+    await expect(dialog).toBeVisible()
+  },
+}
+
+export const NoInvitePermission: Story = {
+  render: () => {
+    vi.mocked(useActiveOrganizationId).mockReturnValue('org-1')
+    vi.mocked(useListOrganizationMembers).mockReturnValue({
+      data: response,
+      isPending: false,
+      isError: false,
+      isFetching: false,
+    } as unknown as ReturnType<typeof useListOrganizationMembers>)
+    mockInvitePermission(false)
+    return <MembersPage />
+  },
+  play: async ({ canvas }) => {
+    await expect(
+      canvas.queryByRole('button', { name: 'Invite member' }),
+    ).toBeNull()
   },
 }
