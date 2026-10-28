@@ -2,6 +2,7 @@ import {
   ORGANIZATION_ROLES,
   OrganizationRole,
 } from '@/features/organizations/permissions/organization-role'
+import type { OrganizationMember } from '@/features/organizations/api/get-member'
 import type { ListQuery, PaginatedResult } from '@/types/pagination'
 
 /**
@@ -73,6 +74,14 @@ export interface AcceptInvitationRequest {
   token: string
 }
 
-export type AcceptInvitationResponse = Invitation
+/**
+ * Mirrors backend `AcceptInvitationResponse` (task 3.4.4). The organization
+ * comes from the invitation, never from tenant context, so the client can use
+ * `membership.organizationId` as the active workspace on the next request.
+ */
+export interface AcceptInvitationResponse {
+  invitation: Invitation
+  membership: OrganizationMember
+}
 
 export type RevokeInvitationResponse = Invitation

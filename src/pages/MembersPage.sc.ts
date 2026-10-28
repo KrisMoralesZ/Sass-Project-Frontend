@@ -110,6 +110,16 @@ export const $Pagination = styled.nav`
   }
 `
 
+export const $DevNotice = styled.p`
+  margin: 0;
+  padding: ${({ theme }) => theme.space.md};
+  border: 1px dashed ${({ theme }) => theme.colors.borderStrong};
+  border-radius: ${({ theme }) => theme.radii.sm};
+  color: ${({ theme }) => theme.colors.textMuted};
+  font-size: ${({ theme }) => theme.font.size.sm};
+  line-height: ${({ theme }) => theme.font.lineHeight.relaxed};
+`
+
 export const $PaginationActions = styled.div`
   display: flex;
   gap: ${({ theme }) => theme.space.sm};

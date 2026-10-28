@@ -430,9 +430,9 @@ Subtasks:
 - [x] **3.4.1** Add typed invite API helpers as create/list/revoke/accept endpoints land
 - [x] **3.4.2** Add invite-member modal on the members page, gated on `invite:create`
 - [x] **3.4.3** List pending invites and revoke, gated on `invite:read` / `invite:revoke`
-- [ ] **3.4.4** Add an accept-invite route for tokenized links (authenticated user + token)
-- [ ] **3.4.5** Show the development stub copy (invite URL logged by the API; no real SMTP)
-- [ ] **3.4.6** Stories + forbidden/validation/expired-token feedback _(partial: list/revoke stories + forbidden/revoke-error copy landed; accept/expired-token feedback pending 3.4.4)_
+- [x] **3.4.4** Add an accept-invite route for tokenized links (authenticated user + token)
+- [x] **3.4.5** Show the development stub copy (invite URL logged by the API; no real SMTP)
+- [x] **3.4.6** Stories + forbidden/validation/expired-token feedback
 
 Acceptance criteria:
 
@@ -609,7 +609,7 @@ Subtasks:
 - [x] **3.1.7** Profile stories; wire `setPreference` on profile load/save
 - [x] **3.2.1–3.2.4** Members list/detail API + pages (replace `/members` placeholder)
 - [x] **3.2.5–3.2.6** Members tenant-error copy + Storybook
-- [ ] Defer invites/member mutations/projects/boards/issues until matching backend APIs ship
+- [ ] Defer member mutations/projects/boards/issues until matching backend APIs ship
 - [ ] Keep screens aligned with backend seed users (`owner@acme.local` / `Password1`, …) for local QA
 
 ## Backend / frontend dependency map

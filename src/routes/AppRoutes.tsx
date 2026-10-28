@@ -4,6 +4,7 @@ import AppLayout from '@/components/layout/AppLayout'
 import PublicLayout from '@/components/layout/PublicLayout'
 import HomePage from '@/pages/HomePage'
 import CreateOrganizationPage from '@/pages/CreateOrganizationPage'
+import InviteAcceptPage from '@/pages/InviteAcceptPage'
 import LoginPage from '@/pages/LoginPage'
 import MemberDetailPage from '@/pages/MemberDetailPage'
 import MembersPage from '@/pages/MembersPage'
@@ -31,6 +32,7 @@ const AppRoutes: FC = () => {
       </Route>
 
       <Route element={<RequireAuth />}>
+        <Route path={paths.inviteAccept} element={<InviteAcceptPage />} />
         <Route element={<AppLayout />}>
           <Route
             path={paths.createOrganization}
