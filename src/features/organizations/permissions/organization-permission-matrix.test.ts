@@ -34,6 +34,36 @@ describe('roleHasPermission', () => {
     ).toBe(false)
   })
 
+  it('allows OWNER and ADMIN to update member roles', () => {
+    expect(
+      roleHasPermission(
+        OrganizationRole.OWNER,
+        OrganizationPermission.MEMBER_UPDATE,
+      ),
+    ).toBe(true)
+    expect(
+      roleHasPermission(
+        OrganizationRole.ADMIN,
+        OrganizationPermission.MEMBER_UPDATE,
+      ),
+    ).toBe(true)
+  })
+
+  it('denies MEMBER and VIEWER from updating member roles', () => {
+    expect(
+      roleHasPermission(
+        OrganizationRole.MEMBER,
+        OrganizationPermission.MEMBER_UPDATE,
+      ),
+    ).toBe(false)
+    expect(
+      roleHasPermission(
+        OrganizationRole.VIEWER,
+        OrganizationPermission.MEMBER_UPDATE,
+      ),
+    ).toBe(false)
+  })
+
   it('allows every role to read settings', () => {
     for (const role of Object.values(OrganizationRole)) {
       expect(
