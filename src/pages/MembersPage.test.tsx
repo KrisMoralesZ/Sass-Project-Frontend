@@ -11,6 +11,9 @@ import { useActiveOrganizationId } from '@/features/organizations/hooks/use-acti
 import { useListOrganizationMembers } from '@/features/organizations/hooks/use-list-organization-members'
 import { usePermission } from '@/features/organizations/hooks/use-permission'
 import type { OrganizationMember } from '@/features/organizations/api/get-member'
+import { useListInvitations } from '@/features/invitations/hooks/use-list-invitations'
+import { useRevokeInvitation } from '@/features/invitations/hooks/use-revoke-invitation'
+import type { Invitation } from '@/features/invitations/api/invitation-api.types'
 import MembersPage from './MembersPage'
 
 vi.mock('@/features/organizations/hooks/use-active-organization-id', () => ({
@@ -24,6 +27,38 @@ vi.mock('@/features/organizations/hooks/use-list-organization-members', () => ({
 vi.mock('@/features/organizations/hooks/use-permission', () => ({
   usePermission: vi.fn(),
 }))
+
+vi.mock('@/features/invitations/hooks/use-list-invitations', () => ({
+  useListInvitations: vi.fn(),
+}))
+
+vi.mock('@/features/invitations/hooks/use-revoke-invitation', () => ({
+  useRevokeInvitation: vi.fn(),
+}))
+
+const invitation: Invitation = {
+  id: 'invite-1',
+  organizationId: 'org-1',
+  email: 'carol@example.com',
+  role: OrganizationRole.MEMBER,
+  status: 'pending',
+  invitedByUserId: 'user-1',
+  expiresAt: '2026-01-22T00:00:00.000Z',
+  createdAt: '2026-01-15T00:00:00.000Z',
+  updatedAt: '2026-01-15T00:00:00.000Z',
+}
+
+const invitationsResponse = {
+  items: [invitation],
+  pagination: {
+    page: 1,
+    limit: 20,
+    total: 1,
+    totalPages: 1,
+    hasNextPage: false,
+    hasPreviousPage: false,
+  },
+}
 
 const member: OrganizationMember = {
   id: 'membership-1',
@@ -91,10 +126,26 @@ function mockInvitePermission(allowed = true) {
   } as ReturnType<typeof usePermission>)
 }
 
+function mockInvitationsQuery() {
+  vi.mocked(useListInvitations).mockReturnValue({
+    data: invitationsResponse,
+    isPending: false,
+    isError: false,
+    isFetching: false,
+    error: null,
+    refetch: vi.fn(),
+  } as unknown as ReturnType<typeof useListInvitations>)
+  vi.mocked(useRevokeInvitation).mockReturnValue({
+    mutate: vi.fn(),
+    isPending: false,
+  } as unknown as ReturnType<typeof useRevokeInvitation>)
+}
+
 describe('MembersPage', () => {
   beforeEach(() => {
     vi.clearAllMocks()
     mockInvitePermission(true)
+    mockInvitationsQuery()
   })
 
   it('renders members and their role badges', () => {
