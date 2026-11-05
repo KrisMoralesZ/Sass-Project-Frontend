@@ -90,6 +90,7 @@ function mockPermission(scenario: SettingsPageScenario) {
       isError: false,
       error: null,
       role: null,
+      memberUserId: null,
       allowed: false,
     })
     return
@@ -102,6 +103,7 @@ function mockPermission(scenario: SettingsPageScenario) {
       error: null,
       role: 'VIEWER',
       allowed: false,
+      memberUserId: null,
     })
     return
   }
@@ -112,6 +114,7 @@ function mockPermission(scenario: SettingsPageScenario) {
     error: null,
     role: 'OWNER',
     allowed: true,
+    memberUserId: null,
   })
 }
 
