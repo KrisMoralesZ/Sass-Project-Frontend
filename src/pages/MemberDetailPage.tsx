@@ -1,13 +1,15 @@
 import { useQuery } from '@tanstack/react-query'
 import { type FC } from 'react'
-import { useParams } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import Button from '@/components/ui/Button'
 import MemberRoleBadge from '@/features/organizations/components/MemberRoleBadge'
 import MemberRoleControl from '@/features/organizations/components/MemberRoleControl'
+import RemoveMemberControl from '@/features/organizations/components/RemoveMemberControl'
 import { organizationMemberQueryOptions } from '@/features/organizations/api/get-member'
 import { describeMembersLoadError } from '@/features/organizations/members-errors'
 import { useActiveOrganizationId } from '@/features/organizations/hooks/use-active-organization-id'
 import { usePermission } from '@/features/organizations/hooks/use-permission'
+import { useRemoveMember } from '@/features/organizations/hooks/use-remove-member'
 import { useUpdateMemberRole } from '@/features/organizations/hooks/use-update-member-role'
 import { OrganizationPermission } from '@/features/organizations/permissions/organization-permission'
 import { paths } from '@/routes/paths'
@@ -34,6 +36,7 @@ import {
 
 const MemberDetailPage: FC = () => {
   const { userId = '' } = useParams<{ userId: string }>()
+  const navigate = useNavigate()
   const activeOrganizationId = useActiveOrganizationId()
   const memberQuery = useQuery({
     ...organizationMemberQueryOptions(activeOrganizationId ?? '', userId),
@@ -41,6 +44,7 @@ const MemberDetailPage: FC = () => {
   })
   const memberUpdate = usePermission(OrganizationPermission.MEMBER_UPDATE)
   const updateRole = useUpdateMemberRole(activeOrganizationId ?? '', userId)
+  const removeMember = useRemoveMember(activeOrganizationId ?? '', userId)
 
   const header = (
     <$Header>
@@ -133,6 +137,17 @@ const MemberDetailPage: FC = () => {
         isSubmitting={updateRole.isPending}
         error={updateRole.error}
         onUpdateRole={(role) => updateRole.mutateAsync(role)}
+      />
+
+      <RemoveMemberControl
+        memberName={memberName}
+        canRemove={canManageRole}
+        isRemoving={removeMember.isPending}
+        error={removeMember.error}
+        onRemove={async () => {
+          await removeMember.mutateAsync()
+          navigate(paths.members)
+        }}
       />
 
       <$BackLink to={paths.members}>Back to members</$BackLink>
