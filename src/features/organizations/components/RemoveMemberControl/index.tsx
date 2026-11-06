@@ -1,7 +1,7 @@
 import { type FC, useState } from 'react'
 import Button from '@/components/ui/Button'
 import Dialog from '@/components/ui/Dialog'
-import { getApiErrorMessage } from '@/lib/api/get-api-error-message'
+import { describeMemberRemoveError } from '../../members-errors'
 import {
   $DangerHeader,
   $DangerLead,
@@ -43,7 +43,7 @@ const RemoveMemberControl: FC<IRemoveMemberControl> = ({
     return null
   }
 
-  const removeError = error ? getApiErrorMessage(error) : undefined
+  const removeError = error ? describeMemberRemoveError(error) : undefined
   const lastOwnerNotice =
     lastOwnerMessage ??
     'This member is the last owner in this workspace. The backend requires at least one owner to remain before the member can be removed.'

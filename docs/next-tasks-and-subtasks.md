@@ -448,7 +448,7 @@ Subtasks:
 - [x] **3.5.1** Add role-change controls on member detail, with confirmation
 - [x] **3.5.2** Add remove-member confirmation (Dialog danger pattern from archive)
 - [x] **3.5.3** Prevent last-owner remove/demote in the UI and explain the backend rule
-- [ ] **3.5.4** Stories + forbidden handling
+- [x] **3.5.4** Stories + forbidden handling
 
 Acceptance criteria:
 
