@@ -9,6 +9,7 @@ import {
   $DangerZone,
   $DialogCopy,
   $DialogError,
+  $Notice,
 } from './RemoveMemberControl.sc'
 
 export interface IRemoveMemberControl {
@@ -16,6 +17,10 @@ export interface IRemoveMemberControl {
   /** Caller gates this based on `member:update`; backend remains the source of truth. */
   canRemove?: boolean
   isRemoving?: boolean
+  /** Prevents removing the last owner. */
+  isLastOwner?: boolean
+  /** Explains the backend rule when the member cannot be removed. */
+  lastOwnerMessage?: string
   error?: unknown
   onRemove?: () => void | Promise<unknown>
   /** Storybook: start with the confirmation dialog open. */
@@ -26,6 +31,8 @@ const RemoveMemberControl: FC<IRemoveMemberControl> = ({
   memberName,
   canRemove = false,
   isRemoving = false,
+  isLastOwner = false,
+  lastOwnerMessage,
   error,
   onRemove,
   defaultConfirmOpen = false,
@@ -37,6 +44,9 @@ const RemoveMemberControl: FC<IRemoveMemberControl> = ({
   }
 
   const removeError = error ? getApiErrorMessage(error) : undefined
+  const lastOwnerNotice =
+    lastOwnerMessage ??
+    'This member is the last owner in this workspace. The backend requires at least one owner to remain before the member can be removed.'
 
   const closeConfirm = () => {
     if (!isRemoving) {
@@ -45,6 +55,10 @@ const RemoveMemberControl: FC<IRemoveMemberControl> = ({
   }
 
   const handleConfirm = async () => {
+    if (isLastOwner) {
+      return
+    }
+
     try {
       await onRemove?.()
       setIsConfirmOpen(false)
@@ -62,18 +76,19 @@ const RemoveMemberControl: FC<IRemoveMemberControl> = ({
             Removing this member revokes their access to this workspace.
           </$DangerLead>
         </$DangerHeader>
+        {isLastOwner ? <$Notice role="note">{lastOwnerNotice}</$Notice> : null}
         <Button
           type="button"
           variant="danger"
           onClick={() => setIsConfirmOpen(true)}
-          disabled={isRemoving}
+          disabled={isRemoving || isLastOwner}
         >
           Remove member
         </Button>
       </$DangerZone>
 
       <Dialog
-        open={isConfirmOpen}
+        open={isConfirmOpen && !isLastOwner}
         onClose={closeConfirm}
         title={`Remove ${memberName} from this workspace?`}
         closeOnOverlayClick={!isRemoving}
@@ -92,6 +107,7 @@ const RemoveMemberControl: FC<IRemoveMemberControl> = ({
               type="button"
               variant="danger"
               loading={isRemoving}
+              disabled={isLastOwner}
               onClick={() => {
                 void handleConfirm()
               }}

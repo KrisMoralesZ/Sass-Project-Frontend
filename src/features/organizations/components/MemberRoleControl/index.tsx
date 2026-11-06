@@ -14,6 +14,7 @@ import {
   $DialogError,
   $Header,
   $Lead,
+  $Notice,
   $Section,
   $Select,
   $Title,
@@ -26,6 +27,10 @@ export interface IMemberRoleControl {
   /** Caller decides based on `member:update`; backend remains the source of truth. */
   canManage?: boolean
   isSubmitting?: boolean
+  /** Prevents demotion/removal when this member is the last owner. */
+  isLastOwner?: boolean
+  /** Explains the backend rule when the member cannot be changed. */
+  lastOwnerMessage?: string
   error?: unknown
   /** Must return a promise so the confirmation stays open until it settles. */
   onUpdateRole?: (role: OrganizationRole) => void | Promise<unknown>
@@ -44,6 +49,8 @@ const MemberRoleControl: FC<IMemberRoleControl> = ({
   roles = ORGANIZATION_ROLES,
   canManage = false,
   isSubmitting = false,
+  isLastOwner = false,
+  lastOwnerMessage,
   error,
   onUpdateRole,
   defaultConfirmOpen = false,
@@ -62,6 +69,9 @@ const MemberRoleControl: FC<IMemberRoleControl> = ({
 
   const updateError = error ? describeMemberRoleUpdateError(error) : undefined
   const hasChange = selectedRole !== currentRole
+  const lastOwnerNotice =
+    lastOwnerMessage ??
+    'This member is the last owner in this workspace. The backend requires at least one owner before a role change is allowed.'
 
   const closeConfirm = () => {
     if (isSubmitting) {
@@ -76,6 +86,10 @@ const MemberRoleControl: FC<IMemberRoleControl> = ({
   }
 
   const handleConfirm = async () => {
+    if (isLastOwner) {
+      return
+    }
+
     try {
       await onUpdateRole?.(selectedRole)
       setIsConfirmOpen(false)
@@ -101,7 +115,7 @@ const MemberRoleControl: FC<IMemberRoleControl> = ({
             id="member-role"
             value={selectedRole}
             onChange={handleChange}
-            disabled={isSubmitting}
+            disabled={isSubmitting || isLastOwner}
           >
             {roles.map((role) => (
               <option key={role} value={role}>
@@ -111,10 +125,12 @@ const MemberRoleControl: FC<IMemberRoleControl> = ({
           </$Select>
         </FormField>
 
+        {isLastOwner ? <$Notice role="note">{lastOwnerNotice}</$Notice> : null}
+
         <$Actions>
           <Button
             type="button"
-            disabled={!hasChange || isSubmitting}
+            disabled={!hasChange || isSubmitting || isLastOwner}
             onClick={() => setIsConfirmOpen(true)}
           >
             Save role
@@ -123,7 +139,7 @@ const MemberRoleControl: FC<IMemberRoleControl> = ({
       </$Section>
 
       <Dialog
-        open={isConfirmOpen}
+        open={isConfirmOpen && !isLastOwner}
         onClose={closeConfirm}
         title={`Change ${memberName}'s role?`}
         closeOnOverlayClick={!isSubmitting}
@@ -141,6 +157,7 @@ const MemberRoleControl: FC<IMemberRoleControl> = ({
             <Button
               type="button"
               loading={isSubmitting}
+              disabled={isLastOwner}
               onClick={() => {
                 void handleConfirm()
               }}

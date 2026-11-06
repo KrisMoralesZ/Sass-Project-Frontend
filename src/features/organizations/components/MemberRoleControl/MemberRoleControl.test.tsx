@@ -77,6 +77,22 @@ describe('MemberRoleControl', () => {
     })
   })
 
+  it('disables changing the last owner and explains the backend rule', async () => {
+    const user = userEvent.setup()
+    const { props } = renderControl({ isLastOwner: true })
+
+    const select = screen.getByRole('combobox', {
+      name: 'Workspace role',
+    }) as HTMLSelectElement
+    expect(select.disabled).toBe(true)
+    expect(getSaveButton().disabled).toBe(true)
+    expect(screen.getByRole('note').textContent).toContain('at least one owner')
+
+    await user.selectOptions(select, OrganizationRole.ADMIN)
+    expect(select.value).toBe(OrganizationRole.MEMBER)
+    expect(props.onUpdateRole).not.toHaveBeenCalled()
+  })
+
   it('keeps the dialog open and explains the last-owner rule on failure', async () => {
     const user = userEvent.setup()
     const lastOwnerError = new ApiError({

@@ -50,6 +50,19 @@ describe('RemoveMemberControl', () => {
     })
   })
 
+  it('prevents removing the last owner and explains the backend rule', async () => {
+    const user = userEvent.setup()
+    const props = renderControl({ isLastOwner: true })
+
+    const button = screen.getByRole('button', { name: 'Remove member' })
+    expect((button as HTMLButtonElement).disabled).toBe(true)
+    expect(screen.getByRole('note').textContent).toContain('at least one owner')
+
+    await user.click(button)
+    expect(screen.queryByRole('dialog')).toBeNull()
+    expect(props.onRemove).not.toHaveBeenCalled()
+  })
+
   it('keeps the dialog open and displays errors when removal fails', async () => {
     const user = userEvent.setup()
     const removeError = new Error(

@@ -8,10 +8,12 @@ import RemoveMemberControl from '@/features/organizations/components/RemoveMembe
 import { organizationMemberQueryOptions } from '@/features/organizations/api/get-member'
 import { describeMembersLoadError } from '@/features/organizations/members-errors'
 import { useActiveOrganizationId } from '@/features/organizations/hooks/use-active-organization-id'
+import { useListOrganizationMembers } from '@/features/organizations/hooks/use-list-organization-members'
 import { usePermission } from '@/features/organizations/hooks/use-permission'
 import { useRemoveMember } from '@/features/organizations/hooks/use-remove-member'
 import { useUpdateMemberRole } from '@/features/organizations/hooks/use-update-member-role'
 import { OrganizationPermission } from '@/features/organizations/permissions/organization-permission'
+import { OrganizationRole } from '@/features/organizations/permissions/organization-role'
 import { paths } from '@/routes/paths'
 import {
   $ErrorPanel,
@@ -43,6 +45,12 @@ const MemberDetailPage: FC = () => {
     retry: false,
   })
   const memberUpdate = usePermission(OrganizationPermission.MEMBER_UPDATE)
+  const membersQuery = useListOrganizationMembers(activeOrganizationId, {
+    page: 1,
+    limit: 1000,
+    sortBy: 'createdAt',
+    sortOrder: 'ASC',
+  })
   const updateRole = useUpdateMemberRole(activeOrganizationId ?? '', userId)
   const removeMember = useRemoveMember(activeOrganizationId ?? '', userId)
 
@@ -93,6 +101,13 @@ const MemberDetailPage: FC = () => {
   const memberName = member.displayName?.trim() || member.email
   const canManageRole =
     memberUpdate.allowed && member.userId !== memberUpdate.memberUserId
+  const ownerCount = membersQuery.data?.items.filter(
+    (candidate) => candidate.role === OrganizationRole.OWNER,
+  ).length
+  const isLastOwner =
+    membersQuery.isSuccess &&
+    member.role === OrganizationRole.OWNER &&
+    (ownerCount ?? 0) <= 1
 
   return (
     <$Page>
@@ -135,6 +150,8 @@ const MemberDetailPage: FC = () => {
         memberName={memberName}
         canManage={canManageRole}
         isSubmitting={updateRole.isPending}
+        isLastOwner={isLastOwner}
+        lastOwnerMessage="This member is the last owner in this workspace. Promote another member to Owner, or choose a different user, before changing this role."
         error={updateRole.error}
         onUpdateRole={(role) => updateRole.mutateAsync(role)}
       />
@@ -143,6 +160,8 @@ const MemberDetailPage: FC = () => {
         memberName={memberName}
         canRemove={canManageRole}
         isRemoving={removeMember.isPending}
+        isLastOwner={isLastOwner}
+        lastOwnerMessage="This member is the last owner in this workspace. The backend requires at least one owner to remain before this member can be removed."
         error={removeMember.error}
         onRemove={async () => {
           await removeMember.mutateAsync()

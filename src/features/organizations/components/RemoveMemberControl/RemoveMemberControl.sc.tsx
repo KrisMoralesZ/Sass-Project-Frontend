@@ -33,6 +33,17 @@ export const $DangerLead = styled.p`
   line-height: ${({ theme }) => theme.font.lineHeight.relaxed};
 `
 
+export const $Notice = styled.p`
+  margin: 0;
+  padding: ${({ theme }) => theme.space.sm} ${({ theme }) => theme.space.md};
+  border: 1px solid ${({ theme }) => theme.colors.warning};
+  border-radius: ${({ theme }) => theme.radii.md};
+  background: ${({ theme }) => theme.colors.warningMuted};
+  color: ${({ theme }) => theme.colors.text};
+  font-size: ${({ theme }) => theme.font.size.sm};
+  line-height: ${({ theme }) => theme.font.lineHeight.relaxed};
+`
+
 export const $DialogCopy = styled.p`
   margin: 0;
 `
