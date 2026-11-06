@@ -102,8 +102,8 @@ const RemoveMemberControl: FC<IRemoveMemberControl> = ({
         }
       >
         <$DialogCopy>
-          <strong>{memberName}</strong> will lose access to this workspace.
-          They may need a new invitation to rejoin.
+          <strong>{memberName}</strong> will lose access to this workspace. They
+          may need a new invitation to rejoin.
         </$DialogCopy>
         {removeError ? (
           <$DialogError role="alert">{removeError}</$DialogError>

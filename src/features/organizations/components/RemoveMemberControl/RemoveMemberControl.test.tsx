@@ -52,7 +52,9 @@ describe('RemoveMemberControl', () => {
 
   it('keeps the dialog open and displays errors when removal fails', async () => {
     const user = userEvent.setup()
-    const removeError = new Error('You do not have permission to remove members.')
+    const removeError = new Error(
+      'You do not have permission to remove members.',
+    )
     const props = renderControl({
       error: removeError,
       onRemove: vi.fn().mockRejectedValue(removeError),
