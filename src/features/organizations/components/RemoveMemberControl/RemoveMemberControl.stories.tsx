@@ -30,7 +30,10 @@ export const Default: Story = {
 }
 
 export const LastOwner: Story = {
-  args: { isLastOwner: true, lastOwnerMessage: 'At least one owner is required.' },
+  args: {
+    isLastOwner: true,
+    lastOwnerMessage: 'At least one owner is required.',
+  },
   play: async () => {
     const button = screen.getByRole('button', { name: 'Remove member' })
     await expect(button).toBeDisabled()

@@ -30,20 +30,29 @@ export const Default: Story = {
       name: 'Workspace role',
     }) as HTMLSelectElement
     await expect(select.value).toBe(OrganizationRole.MEMBER)
-    await expect(screen.getByRole('button', { name: 'Save role' })).toBeDisabled()
+    await expect(
+      screen.getByRole('button', { name: 'Save role' }),
+    ).toBeDisabled()
 
     await userEvent.selectOptions(select, OrganizationRole.ADMIN)
-    await expect(screen.getByRole('button', { name: 'Save role' })).not.toBeDisabled()
+    await expect(
+      screen.getByRole('button', { name: 'Save role' }),
+    ).not.toBeDisabled()
   },
 }
 
 export const LastOwner: Story = {
-  args: { isLastOwner: true, lastOwnerMessage: 'At least one owner is required.' },
+  args: {
+    isLastOwner: true,
+    lastOwnerMessage: 'At least one owner is required.',
+  },
   play: async () => {
     await expect(screen.getByRole('note')).toHaveTextContent(
       'At least one owner is required.',
     )
-    await expect(screen.getByRole('button', { name: 'Save role' })).toBeDisabled()
+    await expect(
+      screen.getByRole('button', { name: 'Save role' }),
+    ).toBeDisabled()
     await expect(
       screen.getByRole('combobox', { name: 'Workspace role' }),
     ).toBeDisabled()
@@ -60,7 +69,9 @@ export const ApiErrorDialog: Story = {
     }),
   },
   play: async () => {
-    const dialog = await screen.findByRole('dialog', { name: "Change Jane Doe's role?" })
+    const dialog = await screen.findByRole('dialog', {
+      name: "Change Jane Doe's role?",
+    })
     await expect(dialog).toBeVisible()
     await expect(screen.getByRole('alert')).toHaveTextContent(
       'at least one owner',
@@ -79,7 +90,9 @@ export const Forbidden: Story = {
     }),
   },
   play: async () => {
-    const dialog = await screen.findByRole('dialog', { name: "Change Jane Doe's role?" })
+    const dialog = await screen.findByRole('dialog', {
+      name: "Change Jane Doe's role?",
+    })
     await expect(dialog).toBeVisible()
     await expect(screen.getByRole('alert')).toHaveTextContent(
       'do not have permission to change member roles',
