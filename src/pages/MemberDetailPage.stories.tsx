@@ -39,6 +39,11 @@ vi.mock('@/features/organizations/api/get-member', () => {
       queryFn: () => getMemberMock(userId),
       enabled: organizationId.length > 0 && userId.length > 0,
     }),
+    organizationMemberQueryKey: (organizationId: string, userId: string) => [
+      'members',
+      organizationId,
+      userId,
+    ],
   }
 })
 

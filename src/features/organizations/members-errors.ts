@@ -75,6 +75,36 @@ export function describeMembersLoadError(
 }
 
 /**
+ * User-facing copy for `DELETE /members/:userId` failures (task 3.5.4).
+ * Mirrors `describeMemberRoleUpdateError`: forbidden, tenant, and last-owner
+ * rule copy stays consistent across member-management actions.
+ */
+export function describeMemberRemoveError(error: unknown): string {
+  if (!isApiError(error)) {
+    return getApiErrorMessage(error)
+  }
+
+  switch (error.code) {
+    case ErrorCode.MEMBER_LAST_OWNER:
+      return 'A workspace needs at least one owner. Assign another owner before removing this member.'
+    case ErrorCode.FORBIDDEN:
+      return 'You do not have permission to remove members.'
+    case ErrorCode.TENANT_ORGANIZATION_FORBIDDEN:
+      return 'You do not have access to this workspace. Choose another workspace in the sidebar and try again.'
+    case ErrorCode.TENANT_ORGANIZATION_REQUIRED:
+      return 'Select a workspace to remove a member.'
+    case ErrorCode.RESOURCE_NOT_FOUND:
+      return 'This member is no longer in the workspace.'
+    case ErrorCode.CONFLICT:
+      return error.message.trim().length > 0
+        ? error.message
+        : 'This member cannot be removed right now.'
+    default:
+      return getApiErrorMessage(error)
+  }
+}
+
+/**
  * User-facing copy for `PATCH /members/:userId` failures (task 3.4 / 3.5.1).
  * Mirrors `describeOrganizationArchiveError`: forbidden, tenant, and not-found
  * cases read consistently, and the last-owner rule explains the backend guard.
