@@ -469,24 +469,32 @@ Acceptance criteria:
 
 Subtasks:
 
-- Build project list/detail/create/edit/delete screens
-- Scope all project requests with the active organization header
-- Gate destructive actions with `project:delete` / role helpers
+- [x] **4.1.1** Add typed project API helpers and Query options under `features/projects/`, mirroring the backend DTOs and response shapes
+- [ ] **4.1.2** Build the organization-scoped project list with loading, empty, error, and forbidden states
+- [ ] **4.1.3** Add project creation form with client validation and backend validation/conflict feedback
+- [ ] **4.1.4** Build project detail and edit flows, including update validation and error feedback
+- [ ] **4.1.5** Add project deletion confirmation and gate destructive actions with `usePermission('project:delete')` or the matching backend role helper
+- [ ] **4.1.6** Scope project Query keys and requests to the active organization; clear or invalidate project data when the organization changes
+- [ ] **4.1.7** Add Storybook stories for project list and form states (default, empty, loading, validation/API error, and permission-restricted)
 
 Acceptance criteria:
 
-- Organization members can create and manage projects through the UI
+- Organization members can list and view projects available to them
+- Users can create, update, and delete projects only when permitted by the backend
+- Project data is never fetched or displayed without the active organization context
 
 ### Task 4.2 — Project visibility and navigation
 
 Subtasks:
 
-- Reflect backend visibility rules in list/detail access states
-- Deep-link from org shell → project → boards
+- [ ] **4.2.1** Reflect backend project visibility rules in list and detail access states; handle forbidden and not-found responses distinctly
+- [ ] **4.2.2** Add project routes and deep links from the organization shell to project detail and its boards
+- [ ] **4.2.3** Preserve tenant context during project navigation and avoid rendering stale project data after organization switches
 
 Acceptance criteria:
 
-- Project navigation is clear and tenant-safe
+- Users can navigate from the organization shell to an authorized project and its boards
+- Project routes remain tenant-safe and accurately reflect backend visibility
 
 ---
 
